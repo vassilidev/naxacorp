@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Constants\Status;
 use App\Traits\ApiQuery;
 use App\Traits\Searchable;
@@ -21,22 +23,22 @@ class Loan extends Model
     ];
 
     /* ========= Relations ========= */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function plan()
+    public function plan(): BelongsTo
     {
         return $this->belongsTo(LoanPlan::class, 'plan_id', 'id');
     }
 
-    public function installments()
+    public function installments(): MorphMany
     {
         return $this->morphMany(Installment::class, 'installmentable');
     }
 
-    public function dueInstallments()
+    public function dueInstallments(): MorphMany
     {
         return $this->morphMany(Installment::class, 'installmentable')->whereNull('given_at')->whereDate('installment_date', '<', now()->format('Y-m-d'));
     }

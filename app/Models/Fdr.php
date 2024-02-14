@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Constants\Status;
 use App\Traits\ApiQuery;
 use App\Traits\Searchable;
@@ -20,17 +22,17 @@ class Fdr extends Model
         'next_installment_date' => 'datetime',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function plan()
+    public function plan(): BelongsTo
     {
         return $this->belongsTo(FdrPlan::class, 'plan_id', 'id');
     }
 
-    public function installments()
+    public function installments(): MorphMany
     {
         return $this->morphMany(Installment::class, 'installmentable');
     }

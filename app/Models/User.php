@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Constants\Status;
 use App\Traits\ApiQuery;
 use App\Traits\Searchable;
@@ -24,67 +27,67 @@ class User extends Authenticatable
         'ver_code_send_at' => 'datetime',
     ];
 
-    public function loginLogs()
+    public function loginLogs(): HasMany
     {
         return $this->hasMany(UserLogin::class);
     }
 
-    public function transactions()
+    public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class)->orderBy('id', 'desc');
     }
 
-    public function deposits()
+    public function deposits(): HasMany
     {
         return $this->hasMany(Deposit::class)->where('status', '!=', Status::PAYMENT_INITIATE);
     }
 
-    public function withdrawals()
+    public function withdrawals(): HasMany
     {
         return $this->hasMany(Withdrawal::class)->where('status', '!=', Status::PAYMENT_INITIATE);
     }
 
-    public function fdr()
+    public function fdr(): HasMany
     {
         return $this->hasMany(Fdr::class, 'user_id');
     }
 
-    public function dps()
+    public function dps(): HasMany
     {
         return $this->hasMany(Dps::class, 'user_id');
     }
 
-    public function loan()
+    public function loan(): HasMany
     {
         return $this->hasMany(Loan::class, 'user_id');
     }
 
-    public function branch()
+    public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function deviceTokens()
+    public function deviceTokens(): HasMany
     {
         return $this->hasMany(DeviceToken::class);
     }
 
-    public function branchStaff()
+    public function branchStaff(): BelongsTo
     {
         return $this->belongsTo(BranchStaff::class, 'branch_staff_id');
     }
 
-    public function referrer()
+    public function referrer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'ref_by');
     }
 
-    public function referees()
+    public function referees(): HasMany
     {
         return $this->hasMany(User::class, 'ref_by');
     }
 
-    public function beneficiaryTypes()
+    public function beneficiaryTypes(): MorphMany
     {
         return $this->morphMany(Beneficiary::class, 'beneficiary', 'beneficiary_type', 'beneficiary_id');
     }

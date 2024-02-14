@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Constants\Status;
 use App\Traits\ApiQuery;
 use App\Traits\Searchable;
@@ -19,12 +20,12 @@ class BalanceTransfer extends Model
     ];
 
     // Relations
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function beneficiary()
+    public function beneficiary(): BelongsTo
     {
         return $this->belongsTo(Beneficiary::class, 'beneficiary_id', 'id');
     }

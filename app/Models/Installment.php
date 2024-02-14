@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Model;
 
 class Installment extends Model
@@ -15,7 +16,7 @@ class Installment extends Model
         'installment_date' => 'datetime',
     ];
 
-    public function installmentable()
+    public function installmentable(): MorphTo
     {
         return $this->morphTo();
     }

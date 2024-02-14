@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Traits\ApiQuery;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
@@ -10,17 +11,17 @@ class Transaction extends Model
 {
     use ApiQuery, Searchable;
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function branch()
+    public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function branchStaff()
+    public function branchStaff(): BelongsTo
     {
         return $this->belongsTo(BranchStaff::class, 'branch_staff_id');
     }

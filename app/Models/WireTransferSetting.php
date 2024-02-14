@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Model;
 
 class WireTransferSetting extends Model
 {
-    public function verifications()
+    public function verifications(): MorphMany
     {
         return $this->morphMany(OtpVerification::class, 'verifiable');
     }

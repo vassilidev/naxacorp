@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Request;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,7 +15,7 @@ class RedirectIfNotAdmin
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = 'admin')
+    public function handle(Request $request, Closure $next, $guard = 'admin'): Response
     {
         if (! Auth::guard($guard)->check()) {
             return to_route('admin.login');

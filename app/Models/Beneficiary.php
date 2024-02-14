@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use App\Traits\ApiQuery;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,17 +16,17 @@ class Beneficiary extends Model
         'details' => 'object',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function verifications()
+    public function verifications(): MorphMany
     {
         return $this->morphMany(OtpVerification::class, 'verifiable');
     }
 
-    public function beneficiaryOf()
+    public function beneficiaryOf(): MorphTo
     {
         return $this->morphTo('beneficiaryOf', 'beneficiary_type', 'beneficiary_id');
     }

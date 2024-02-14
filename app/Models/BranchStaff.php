@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Constants\Status;
 use App\Traits\GlobalStatus;
 use App\Traits\Searchable;
@@ -18,7 +19,7 @@ class BranchStaff extends Authenticatable
 
     protected $appends = ['branch_id'];
 
-    public function assignBranch()
+    public function assignBranch(): BelongsToMany
     {
         return $this->belongsToMany(Branch::class, 'assign_branch_staff', 'staff_id', 'branch_id');
     }

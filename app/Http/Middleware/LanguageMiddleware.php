@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Request;
 use App\Constants\Status;
 use App\Models\Language;
 use Closure;
@@ -14,7 +16,7 @@ class LanguageMiddleware
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
         session()->put('lang', $this->getCode());
         app()->setLocale(session('lang', $this->getCode()));

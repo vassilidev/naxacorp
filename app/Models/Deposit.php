@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Constants\Status;
 use App\Traits\ApiQuery;
 use App\Traits\Searchable;
@@ -16,22 +17,22 @@ class Deposit extends Model
         'detail' => 'object',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function gateway()
+    public function gateway(): BelongsTo
     {
         return $this->belongsTo(Gateway::class, 'method_code', 'code');
     }
 
-    public function branch()
+    public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class, 'branch_id');
     }
 
-    public function branchStaff()
+    public function branchStaff(): BelongsTo
     {
         return $this->belongsTo(BranchStaff::class, 'branch_staff_id');
     }

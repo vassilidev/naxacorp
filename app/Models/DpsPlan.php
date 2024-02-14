@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Traits\ApiQuery;
 use App\Traits\GlobalStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -11,7 +12,7 @@ class DpsPlan extends Model
 {
     use ApiQuery, GlobalStatus;
 
-    public function verifications()
+    public function verifications(): MorphMany
     {
         return $this->morphMany(OtpVerification::class, 'verifiable');
     }

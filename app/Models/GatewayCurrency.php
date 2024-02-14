@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Constants\Status;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,7 +11,7 @@ class GatewayCurrency extends Model
     protected $casts = ['status' => 'boolean'];
 
     // Relation
-    public function method()
+    public function method(): BelongsTo
     {
         return $this->belongsTo(Gateway::class, 'method_code', 'code');
     }
