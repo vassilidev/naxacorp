@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\Extension;
 use Illuminate\Http\Request;
 
 class ExtensionController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'Extensions';
         $extensions = Extension::orderBy('name')->get();

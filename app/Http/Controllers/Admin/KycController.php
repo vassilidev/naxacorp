@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\Form;
@@ -9,7 +10,7 @@ use Illuminate\Http\Request;
 
 class KycController extends Controller
 {
-    public function setting()
+    public function setting(): View
     {
         $pageTitle = 'KYC Setting';
         $form = Form::where('act', 'kyc')->first();

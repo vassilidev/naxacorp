@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\GeneralSetting;
 use App\Models\PasswordReset;
@@ -12,7 +13,7 @@ use Illuminate\Validation\Rules\Password;
 
 class ForgotPasswordController extends Controller
 {
-    public function sendResetCodeEmail(Request $request)
+    public function sendResetCodeEmail(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'value' => 'required',
@@ -70,7 +71,7 @@ class ForgotPasswordController extends Controller
         ]);
     }
 
-    public function verifyCode(Request $request)
+    public function verifyCode(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required',
@@ -105,7 +106,7 @@ class ForgotPasswordController extends Controller
         ]);
     }
 
-    public function reset(Request $request)
+    public function reset(Request $request): JsonResponse
     {
 
         $validator = Validator::make($request->all(), $this->rules());

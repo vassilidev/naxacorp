@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Artisan;
 
 class SystemController extends Controller
 {
-    public function systemInfo()
+    public function systemInfo(): View
     {
         $laravelVersion = app()->version();
         $timeZone = config('app.timezone');
@@ -16,7 +17,7 @@ class SystemController extends Controller
         return view('admin.system.info', compact('pageTitle', 'laravelVersion', 'timeZone'));
     }
 
-    public function optimize()
+    public function optimize(): View
     {
         $pageTitle = 'Clear System Cache';
 
@@ -31,7 +32,7 @@ class SystemController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function systemServerInfo()
+    public function systemServerInfo(): View
     {
         $currentPHP = phpversion();
         $pageTitle = 'Server Information';

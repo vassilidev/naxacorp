@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\CurlRequest;
@@ -73,7 +76,7 @@ class AdminController extends Controller
         return $piChart;
     }
 
-    public function dashboard()
+    public function dashboard(): View
     {
 
         $pageTitle = 'Dashboard';
@@ -132,7 +135,7 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('pageTitle', 'widget', 'chartData', 'report', 'months'));
     }
 
-    public function profile()
+    public function profile(): View
     {
         $pageTitle = 'Profile';
         $admin = auth('admin')->user();
@@ -168,7 +171,7 @@ class AdminController extends Controller
         return to_route('admin.profile')->withNotify($notify);
     }
 
-    public function password()
+    public function password(): View
     {
         $pageTitle = 'Password Setting';
         $admin = auth('admin')->user();
@@ -196,7 +199,7 @@ class AdminController extends Controller
         return to_route('admin.password')->withNotify($notify);
     }
 
-    public function notifications()
+    public function notifications(): View
     {
         $notifications = AdminNotification::orderBy('id', 'desc')->with('user')->paginate(getPaginate());
         $pageTitle = 'Notifications';
@@ -204,7 +207,7 @@ class AdminController extends Controller
         return view('admin.notifications', compact('pageTitle', 'notifications'));
     }
 
-    public function notificationRead($id)
+    public function notificationRead($id): RedirectResponse
     {
         $notification = AdminNotification::findOrFail($id);
         $notification->is_read = Status::YES;
@@ -272,7 +275,7 @@ class AdminController extends Controller
         return downloadAttachment($fileHash);
     }
 
-    public function beneficiaryDetails($id)
+    public function beneficiaryDetails($id): JsonResponse
     {
         $beneficiary = Beneficiary::where('id', $id)->first();
 

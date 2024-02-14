@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\Form;
@@ -10,7 +12,7 @@ use Illuminate\Http\Request;
 
 class OtherBankController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'Other Banks';
         $banks = OtherBank::searchAble(['name'])->orderBy('id', 'DESC')->paginate(getPaginate());
@@ -18,7 +20,7 @@ class OtherBankController extends Controller
         return view('admin.other_banks.index', compact('pageTitle', 'banks'));
     }
 
-    public function create()
+    public function create(): View
     {
         $pageTitle = 'Add New Bank';
         $form = new Form();
@@ -27,7 +29,7 @@ class OtherBankController extends Controller
         return view('admin.other_banks.form', compact('pageTitle', 'form'));
     }
 
-    public function edit($id)
+    public function edit($id): View
     {
         $bank = OtherBank::findOrFail($id);
         $pageTitle = 'Edit Bank';
@@ -37,7 +39,7 @@ class OtherBankController extends Controller
         return view('admin.other_banks.form', compact('pageTitle', 'bank', 'form'));
     }
 
-    public function store(Request $request, $id = 0)
+    public function store(Request $request, $id = 0): RedirectResponse
     {
         $this->validation($request);
         $formProcessor = new FormProcessor();

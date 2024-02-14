@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -21,7 +22,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function home()
+    public function home(): View
     {
         $pageTitle = 'Dashboard';
         $user = auth()->user();
@@ -39,7 +40,7 @@ class UserController extends Controller
         return view($this->activeTemplate.'user.dashboard', compact('pageTitle', 'user', 'credits', 'debits', 'widget'));
     }
 
-    public function depositHistory(Request $request)
+    public function depositHistory(Request $request): View
     {
         $pageTitle = 'Deposit History';
         $deposits = auth()->user()->deposits()->searchable(['trx'])->with(['gateway', 'branch'])->orderBy('id', 'desc')->paginate(getPaginate());
@@ -47,7 +48,7 @@ class UserController extends Controller
         return view($this->activeTemplate.'user.deposit_history', compact('pageTitle', 'deposits'));
     }
 
-    public function show2faForm()
+    public function show2faForm(): View
     {
         $general = gs();
         $ga = new GoogleAuthenticator();
@@ -103,7 +104,7 @@ class UserController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function transactions(Request $request)
+    public function transactions(Request $request): View
     {
         $pageTitle = 'Transactions';
         $remarks = Transaction::distinct('remark')->whereNotNull('remark')->orderBy('remark')->get('remark');
@@ -141,7 +142,7 @@ class UserController extends Controller
         return view($this->activeTemplate.'user.kyc.form', compact('pageTitle', 'form'));
     }
 
-    public function kycData()
+    public function kycData(): View
     {
         $user = auth()->user();
         $pageTitle = 'KYC Data';
@@ -247,7 +248,7 @@ class UserController extends Controller
         return downloadAttachment($fileHash);
     }
 
-    public function referredUsers()
+    public function referredUsers(): View
     {
         $pageTitle = 'My referred Users';
         $user = auth()->user();
@@ -257,7 +258,7 @@ class UserController extends Controller
         return view($this->activeTemplate.'user.referral.index', compact('pageTitle', 'referees', 'user', 'maxLevel'));
     }
 
-    public function transferHistory()
+    public function transferHistory(): View
     {
         $pageTitle = 'Transfer History';
         $transfers = BalanceTransfer::where('user_id', auth()->id())->with('beneficiary', 'beneficiary.beneficiaryOf')->orderBy('id', 'DESC')->paginate(getPaginate());

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\AdminNotification;
@@ -11,7 +13,7 @@ use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
-    public function list()
+    public function list(): View
     {
         $loans = Loan::where('user_id', auth()->id())->with('nextInstallment')->with('plan')->orderBy('id', 'desc')->paginate(getPaginate());
         $pageTitle = 'My Loan List';
@@ -19,7 +21,7 @@ class LoanController extends Controller
         return view($this->activeTemplate.'user.loan.list', compact('pageTitle', 'loans'));
     }
 
-    public function plans()
+    public function plans(): View
     {
         $pageTitle = 'Loan Plans';
         $plans = LoanPlan::active()->latest()->get();
@@ -27,7 +29,7 @@ class LoanController extends Controller
         return view($this->activeTemplate.'user.loan.plans', compact('pageTitle', 'plans'));
     }
 
-    public function applyLoan(Request $request, $id)
+    public function applyLoan(Request $request, $id): RedirectResponse
     {
 
         $plan = LoanPlan::active()->findOrFail($id);
@@ -50,7 +52,7 @@ class LoanController extends Controller
         return view($this->activeTemplate.'user.loan.form', compact('pageTitle', 'plan', 'amount'));
     }
 
-    public function confirm(Request $request)
+    public function confirm(Request $request): RedirectResponse
     {
         $loan = session('loan');
         if (! $loan) {
@@ -99,7 +101,7 @@ class LoanController extends Controller
         return redirect()->route('user.loan.list')->withNotify($notify);
     }
 
-    public function installments($loanNumber)
+    public function installments($loanNumber): View
     {
         $loan = Loan::where('loan_number', $loanNumber)->where('user_id', auth()->id())->firstOrFail();
         $installments = $loan->installments()->paginate(getPaginate());

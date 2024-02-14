@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
+use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -45,7 +47,7 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm()
+    public function showLoginForm(): View
     {
         $pageTitle = 'Admin Login';
 
@@ -57,7 +59,7 @@ class LoginController extends Controller
      *
      * @return \Illuminate\Contracts\Auth\StatefulGuard
      */
-    protected function guard()
+    protected function guard(): StatefulGuard
     {
         return auth()->guard('admin');
     }

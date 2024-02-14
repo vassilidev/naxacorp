@@ -91,7 +91,7 @@ class Notify
      *
      * @return void
      */
-    public function send()
+    public function send(): void
     {
         $methods = [];
         //get the notification method classes which are selected
@@ -123,7 +123,7 @@ class Notify
      * @param  array|null  $sendVia
      * @return array|string
      */
-    protected function notifyMethods($sendVia = null)
+    protected function notifyMethods(?array $sendVia = null)
     {
         $methods = [
             'email' => Email::class,

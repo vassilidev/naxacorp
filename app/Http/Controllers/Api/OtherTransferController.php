@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\OTPManager;
@@ -130,7 +131,7 @@ class OtherTransferController extends Controller
         return $bank->fixed_charge + $percentCharge;
     }
 
-    public function confirm($id)
+    public function confirm($id): JsonResponse
     {
 
         $verification = OtpVerification::find($id);

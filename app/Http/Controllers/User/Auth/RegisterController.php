@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User\Auth;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\AdminNotification;
@@ -41,7 +42,7 @@ class RegisterController extends Controller
         $this->middleware('registration.status')->except('registrationNotAllowed');
     }
 
-    public function showRegistrationForm()
+    public function showRegistrationForm(): View
     {
         $pageTitle = 'Register';
         $info = json_decode(json_encode(getIpInfo()), true);
@@ -56,7 +57,7 @@ class RegisterController extends Controller
      *
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validator(array $data): \Illuminate\Contracts\Validation\Validator
     {
         $general = gs();
         $passwordValidation = Password::min(6);
@@ -126,7 +127,7 @@ class RegisterController extends Controller
      *
      * @return \App\User
      */
-    protected function create(array $data)
+    protected function create(array $data): \App\User
     {
         $general = gs();
         $user = new User();

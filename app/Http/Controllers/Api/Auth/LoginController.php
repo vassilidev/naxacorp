@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\UserLogin;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -42,7 +43,7 @@ class LoginController extends Controller
         $this->username = $this->findUsername();
     }
 
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $validator = $this->validateLogin($request);
 
@@ -110,7 +111,7 @@ class LoginController extends Controller
         return $validate;
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
         auth()->user()->tokens()->delete();
         $notify[] = 'Logout Successful';

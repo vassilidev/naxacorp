@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
+use Illuminate\Http\Response;
 use App\Constants\Status;
 use App\Models\AdminNotification;
 use App\Models\Branch;
@@ -19,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 
 class SiteController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $reference = @$_GET['reference'];
         if ($reference) {
@@ -31,7 +34,7 @@ class SiteController extends Controller
         return view($this->activeTemplate.'home', compact('pageTitle', 'sections'));
     }
 
-    public function pages($slug)
+    public function pages($slug): View
     {
         $page = Page::where('tempname', $this->activeTemplate)->where('slug', $slug)->firstOrFail();
         $pageTitle = $page->name;
@@ -40,7 +43,7 @@ class SiteController extends Controller
         return view($this->activeTemplate.'pages', compact('pageTitle', 'sections'));
     }
 
-    public function branches()
+    public function branches(): View
     {
         $pageTitle = 'Our Branches';
         $branches = Branch::active()->orderBy('name')->paginate(getPaginate());
@@ -48,7 +51,7 @@ class SiteController extends Controller
         return view($this->activeTemplate.'branches', compact('pageTitle', 'branches'));
     }
 
-    public function contact()
+    public function contact(): View
     {
         $pageTitle = 'Contact Us';
 
@@ -95,7 +98,7 @@ class SiteController extends Controller
         return to_route('ticket.view', [$ticket->ticket])->withNotify($notify);
     }
 
-    public function policyPages($slug, $id)
+    public function policyPages($slug, $id): View
     {
         $policy = Frontend::where('id', $id)->where('data_keys', 'policy_pages.element')->firstOrFail();
         $pageTitle = $policy->data_values->title;
@@ -115,7 +118,7 @@ class SiteController extends Controller
         return back();
     }
 
-    public function blogDetails($slug, $id)
+    public function blogDetails($slug, $id): View
     {
         $blog = Frontend::where('id', $id)->where('data_keys', 'blog.element')->firstOrFail();
         $pageTitle = $blog->data_values->title;
@@ -129,7 +132,7 @@ class SiteController extends Controller
         Cookie::queue('gdpr_cookie', $general->site_name, 43200);
     }
 
-    public function cookiePolicy()
+    public function cookiePolicy(): View
     {
         $pageTitle = 'Cookie Policy';
         $cookie = Frontend::where('data_keys', 'cookie.data')->first();
@@ -178,7 +181,7 @@ class SiteController extends Controller
         return view($this->activeTemplate.'maintenance', compact('pageTitle', 'maintenance'));
     }
 
-    public function addSubscriber(Request $request)
+    public function addSubscriber(Request $request): JsonResponse
     {
 
         $validator = Validator::make($request->all(), [
@@ -195,14 +198,14 @@ class SiteController extends Controller
         return response()->json(['success' => true, 'message' => 'Subscribed successfully']);
     }
 
-    public function registrationDisabled()
+    public function registrationDisabled(): View
     {
         $pageTitle = 'User Registration Disabled';
 
         return view($this->activeTemplate.'registration_disabled', compact('pageTitle'));
     }
 
-    public function checkUser(Request $request)
+    public function checkUser(Request $request): Response
     {
         $exist['data'] = false;
         $exist['type'] = null;

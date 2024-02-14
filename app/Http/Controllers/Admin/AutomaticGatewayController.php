@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\Gateway;
 use App\Models\GatewayCurrency;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 class AutomaticGatewayController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'Automatic Gateways';
         $gateways = Gateway::automatic()->with('currencies')->get();
@@ -18,7 +19,7 @@ class AutomaticGatewayController extends Controller
         return view('admin.gateways.automatic.list', compact('pageTitle', 'gateways'));
     }
 
-    public function edit($alias)
+    public function edit($alias): View
     {
         $gateway = Gateway::automatic()->with('currencies', 'currencies.method')->where('alias', $alias)->firstOrFail();
         $pageTitle = 'Update Gateway';

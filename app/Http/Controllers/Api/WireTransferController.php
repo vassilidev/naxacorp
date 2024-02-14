@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 
 class WireTransferController extends Controller
 {
-    public function wireTransfer()
+    public function wireTransfer(): JsonResponse
     {
         $setting = WireTransferSetting::first();
         if (! $setting) {
@@ -188,7 +189,7 @@ class WireTransferController extends Controller
         return $setting->fixed_charge + $percentCharge;
     }
 
-    public function confirm($id)
+    public function confirm($id): JsonResponse
     {
         $verification = OtpVerification::find($id);
         if (! $verification) {
@@ -263,7 +264,7 @@ class WireTransferController extends Controller
         ]);
     }
 
-    public function details($id)
+    public function details($id): JsonResponse
     {
         $transfer = BalanceTransfer::wireTransfer()->where('user_id', auth()->id())->where('id', $id)->first();
         if (! $transfer) {

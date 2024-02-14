@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Models\Dps;
 use App\Models\Fdr;
@@ -201,7 +202,7 @@ class CronController extends Controller
         $transaction->save();
     }
 
-    public function miningByDaily()
+    public function miningByDaily(): JsonResponse
     {
 
         $period = $this->getPeriodTime();
@@ -225,7 +226,7 @@ class CronController extends Controller
 
     }
 
-    public function miningByWeek()
+    public function miningByWeek(): JsonResponse
     {
         $period = $this->getPeriodTime();
         $stacks = $this->getStacksByWeek();
@@ -246,7 +247,7 @@ class CronController extends Controller
         return response()->json('ok');
     }
 
-    public function miningByMonth()
+    public function miningByMonth(): JsonResponse
     {
         $period = $this->getPeriodTime();
         $stacks = $this->getStacksByMonth();
@@ -267,7 +268,7 @@ class CronController extends Controller
         return response()->json('ok');
     }
 
-    public function miningByYear()
+    public function miningByYear(): JsonResponse
     {
         $period = $this->getPeriodTime();
         $stacks = $this->getStacksByYear();

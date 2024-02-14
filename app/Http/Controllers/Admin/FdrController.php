@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CronController;
 use App\Models\Fdr;
@@ -49,7 +50,7 @@ class FdrController extends Controller
         return view('admin.fdr.index', compact('pageTitle', 'data'));
     }
 
-    public function installments($id)
+    public function installments($id): View
     {
         $fdr = Fdr::with('installments')->findOrFail($id);
         $installments = $fdr->installments()->paginate(getPaginate());

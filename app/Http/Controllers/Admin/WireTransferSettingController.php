@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\Form;
@@ -10,7 +11,7 @@ use Illuminate\Http\Request;
 
 class WireTransferSettingController extends Controller
 {
-    public function form()
+    public function form(): View
     {
         $pageTitle = 'Wire Transfer Form';
         $form = Form::where('act', 'wire_transfer')->first() ?? new Form();
@@ -31,7 +32,7 @@ class WireTransferSettingController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function setting()
+    public function setting(): View
     {
         $pageTitle = 'Wire Transfer Setting';
         $setting = WireTransferSetting::first();

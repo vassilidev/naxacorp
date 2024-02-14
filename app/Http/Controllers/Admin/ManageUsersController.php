@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\BalanceTransfer;
@@ -20,7 +22,7 @@ use Illuminate\Support\Facades\Validator;
 
 class ManageUsersController extends Controller
 {
-    public function allUsers()
+    public function allUsers(): View
     {
         $pageTitle = 'All Users';
         $users = $this->userData();
@@ -28,7 +30,7 @@ class ManageUsersController extends Controller
         return view('admin.users.list', compact('pageTitle', 'users'));
     }
 
-    public function activeUsers()
+    public function activeUsers(): View
     {
         $pageTitle = 'Active Users';
         $users = $this->userData('active');
@@ -36,7 +38,7 @@ class ManageUsersController extends Controller
         return view('admin.users.list', compact('pageTitle', 'users'));
     }
 
-    public function bannedUsers()
+    public function bannedUsers(): View
     {
         $pageTitle = 'Banned Users';
         $users = $this->userData('banned');
@@ -44,7 +46,7 @@ class ManageUsersController extends Controller
         return view('admin.users.list', compact('pageTitle', 'users'));
     }
 
-    public function emailUnverifiedUsers()
+    public function emailUnverifiedUsers(): View
     {
         $pageTitle = 'Email Unverified Users';
         $users = $this->userData('emailUnverified');
@@ -52,7 +54,7 @@ class ManageUsersController extends Controller
         return view('admin.users.list', compact('pageTitle', 'users'));
     }
 
-    public function kycUnverifiedUsers()
+    public function kycUnverifiedUsers(): View
     {
         $pageTitle = 'KYC Unverified Users';
         $users = $this->userData('kycUnverified');
@@ -60,7 +62,7 @@ class ManageUsersController extends Controller
         return view('admin.users.list', compact('pageTitle', 'users'));
     }
 
-    public function kycPendingUsers()
+    public function kycPendingUsers(): View
     {
         $pageTitle = 'KYC Unverified Users';
         $users = $this->userData('kycPending');
@@ -68,7 +70,7 @@ class ManageUsersController extends Controller
         return view('admin.users.list', compact('pageTitle', 'users'));
     }
 
-    public function emailVerifiedUsers()
+    public function emailVerifiedUsers(): View
     {
         $pageTitle = 'Email Verified Users';
         $users = $this->userData('emailVerified');
@@ -76,7 +78,7 @@ class ManageUsersController extends Controller
         return view('admin.users.list', compact('pageTitle', 'users'));
     }
 
-    public function mobileUnverifiedUsers()
+    public function mobileUnverifiedUsers(): View
     {
         $pageTitle = 'Mobile Unverified Users';
         $users = $this->userData('mobileUnverified');
@@ -84,7 +86,7 @@ class ManageUsersController extends Controller
         return view('admin.users.list', compact('pageTitle', 'users'));
     }
 
-    public function mobileVerifiedUsers()
+    public function mobileVerifiedUsers(): View
     {
         $pageTitle = 'Mobile Verified Users';
         $users = $this->userData('mobileVerified');
@@ -92,7 +94,7 @@ class ManageUsersController extends Controller
         return view('admin.users.list', compact('pageTitle', 'users'));
     }
 
-    public function usersWithBalance()
+    public function usersWithBalance(): View
     {
         $pageTitle = 'Users with Balance';
         $users = $this->userData('withBalance');
@@ -123,7 +125,7 @@ class ManageUsersController extends Controller
         return $users->with('branch:id,name', 'branchStaff')->orderBy('id', 'desc')->paginate(getPaginate());
     }
 
-    public function detail($id)
+    public function detail($id): View
     {
         $user = User::findOrFail($id);
         $countries = json_decode(file_get_contents(resource_path('views/partials/country.json')));
@@ -140,7 +142,7 @@ class ManageUsersController extends Controller
         return view('admin.users.detail', compact('pageTitle', 'user', 'countries', 'widget'));
     }
 
-    public function kycDetails($id)
+    public function kycDetails($id): View
     {
         $pageTitle = 'KYC Details';
         $user = User::findOrFail($id);
@@ -366,7 +368,7 @@ class ManageUsersController extends Controller
         return view('admin.users.notification_all', compact('pageTitle', 'users'));
     }
 
-    public function sendNotificationAll(Request $request)
+    public function sendNotificationAll(Request $request): JsonResponse
     {
 
         $validator = Validator::make($request->all(), [
@@ -398,7 +400,7 @@ class ManageUsersController extends Controller
         ]);
     }
 
-    public function notificationLog($id)
+    public function notificationLog($id): View
     {
         $user = User::findOrFail($id);
         $pageTitle = 'Notifications Sent to '.$user->username;
@@ -407,7 +409,7 @@ class ManageUsersController extends Controller
         return view('admin.reports.notification_history', compact('pageTitle', 'logs', 'user'));
     }
 
-    public function beneficiaries($id)
+    public function beneficiaries($id): View
     {
         $user = User::findOrFail($id);
         $pageTitle = 'Beneficiaries of '.$user->username;

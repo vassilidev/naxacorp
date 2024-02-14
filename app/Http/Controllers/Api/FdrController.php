@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\OTPManager;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 
 class FdrController extends Controller
 {
-    public function list()
+    public function list(): JsonResponse
     {
         $allFdr = Fdr::where('user_id', auth()->id())->with('plan:id,name')->apiQuery();
         $notify[] = 'User FDR Data';
@@ -31,7 +32,7 @@ class FdrController extends Controller
         ]);
     }
 
-    public function plans()
+    public function plans(): JsonResponse
     {
 
         $notify[] = 'Fixed Deposit Receipt Plans';
@@ -78,7 +79,7 @@ class FdrController extends Controller
         return $otpManager->newOTP($plan, $request->auth_mode, 'FDR_OTP', $additionalData, true);
     }
 
-    public function preview($id)
+    public function preview($id): JsonResponse
     {
 
         $verification = OtpVerification::find($id);
@@ -123,7 +124,7 @@ class FdrController extends Controller
         ]);
     }
 
-    public function confirm($id)
+    public function confirm($id): JsonResponse
     {
         $verification = OtpVerification::find($id);
         if (! $verification) {
@@ -223,7 +224,7 @@ class FdrController extends Controller
         ]);
     }
 
-    public function close($id)
+    public function close($id): JsonResponse
     {
         $fdr = Fdr::where('user_id', auth()->id())->find($id);
         if (! $fdr) {
@@ -300,7 +301,7 @@ class FdrController extends Controller
         ]);
     }
 
-    public function installments($fdrNumber)
+    public function installments($fdrNumber): JsonResponse
     {
         $fdr = Fdr::where('user_id', auth()->id())->where('fdr_number', $fdrNumber)->with('plan:id,name')->first();
         if (! $fdr) {

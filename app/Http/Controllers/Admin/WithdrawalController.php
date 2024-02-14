@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
@@ -12,7 +13,7 @@ use Illuminate\Http\Request;
 
 class WithdrawalController extends Controller
 {
-    public function pending()
+    public function pending(): View
     {
         $pageTitle = 'Pending Withdrawals';
         $branches = Branch::active()->orderBy('name')->get();
@@ -21,7 +22,7 @@ class WithdrawalController extends Controller
         return view('admin.withdraw.withdrawals', compact('pageTitle', 'withdrawals', 'branches'));
     }
 
-    public function approved()
+    public function approved(): View
     {
         $pageTitle = 'Approved Withdrawals';
         $branches = Branch::active()->orderBy('name')->get();
@@ -30,7 +31,7 @@ class WithdrawalController extends Controller
         return view('admin.withdraw.withdrawals', compact('pageTitle', 'withdrawals', 'branches'));
     }
 
-    public function rejected()
+    public function rejected(): View
     {
         $pageTitle = 'Rejected Withdrawals';
         $branches = Branch::active()->orderBy('name')->get();
@@ -39,7 +40,7 @@ class WithdrawalController extends Controller
         return view('admin.withdraw.withdrawals', compact('pageTitle', 'withdrawals', 'branches'));
     }
 
-    public function log()
+    public function log(): View
     {
         $pageTitle = 'Withdrawals Log';
         $withdrawalData = $this->withdrawalData($scope = null, $summery = true);
@@ -104,7 +105,7 @@ class WithdrawalController extends Controller
         }
     }
 
-    public function details($id)
+    public function details($id): View
     {
         $general = gs();
         $withdrawal = Withdrawal::where('id', $id)->where('status', '!=', Status::PAYMENT_INITIATE)->with(['user', 'method'])->firstOrFail();

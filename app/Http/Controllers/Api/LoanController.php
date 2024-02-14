@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\AdminNotification;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class LoanController extends Controller
 {
-    public function list()
+    public function list(): JsonResponse
     {
         $loans = Loan::where('user_id', auth()->id())->with('nextInstallment')->with('plan')->apiQuery();
         $notify[] = 'My Loan List';
@@ -27,7 +28,7 @@ class LoanController extends Controller
         ]);
     }
 
-    public function plans()
+    public function plans(): JsonResponse
     {
 
         $notify[] = 'Loan Plans';
@@ -43,7 +44,7 @@ class LoanController extends Controller
         ]);
     }
 
-    public function applyLoan(Request $request, $id)
+    public function applyLoan(Request $request, $id): JsonResponse
     {
         $plan = LoanPlan::active()->where('id', $id)->first();
 
@@ -83,7 +84,7 @@ class LoanController extends Controller
         ]);
     }
 
-    public function loanConfirm(Request $request, $id)
+    public function loanConfirm(Request $request, $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|gt:0',
@@ -169,7 +170,7 @@ class LoanController extends Controller
         ]);
     }
 
-    public function installments($loanNumber)
+    public function installments($loanNumber): JsonResponse
     {
         $loan = Loan::where('loan_number', $loanNumber)->with('plan:id,name')->where('user_id', auth()->id())->first();
         if (! $loan) {

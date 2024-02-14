@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\WithdrawMethod;
@@ -9,7 +10,7 @@ use Illuminate\Http\Request;
 
 class WithdrawMethodController extends Controller
 {
-    public function methods()
+    public function methods(): View
     {
         $pageTitle = 'Withdrawal Methods';
         $methods = WithdrawMethod::orderBy('name')->orderBy('id')->get();
@@ -17,7 +18,7 @@ class WithdrawMethodController extends Controller
         return view('admin.withdraw.index', compact('pageTitle', 'methods'));
     }
 
-    public function create()
+    public function create(): View
     {
         $pageTitle = 'New Withdrawal Method';
 
@@ -61,7 +62,7 @@ class WithdrawMethodController extends Controller
         return to_route('admin.withdraw.method.index')->withNotify($notify);
     }
 
-    public function edit($id)
+    public function edit($id): View
     {
         $pageTitle = 'Update Withdrawal Method';
         $method = WithdrawMethod::with('form')->findOrFail($id);

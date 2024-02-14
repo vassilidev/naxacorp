@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\SupportMessage;
@@ -26,7 +27,7 @@ class SupportTicketController extends Controller
         $this->column = 'admin_id';
     }
 
-    public function tickets()
+    public function tickets(): View
     {
         $pageTitle = 'Support Tickets';
         $items = SupportTicket::orderBy('id', 'desc')->with('user')->paginate(getPaginate());
@@ -34,7 +35,7 @@ class SupportTicketController extends Controller
         return view('admin.support.tickets', compact('items', 'pageTitle'));
     }
 
-    public function pendingTicket()
+    public function pendingTicket(): View
     {
         $pageTitle = 'Pending Tickets';
         $items = SupportTicket::whereIn('status', [Status::TICKET_OPEN, Status::TICKET_REPLY])->orderBy('id', 'desc')->with('user')->paginate(getPaginate());
@@ -42,7 +43,7 @@ class SupportTicketController extends Controller
         return view('admin.support.tickets', compact('items', 'pageTitle'));
     }
 
-    public function closedTicket()
+    public function closedTicket(): View
     {
         $pageTitle = 'Closed Tickets';
         $items = SupportTicket::where('status', Status::TICKET_CLOSE)->orderBy('id', 'desc')->with('user')->paginate(getPaginate());
@@ -50,7 +51,7 @@ class SupportTicketController extends Controller
         return view('admin.support.tickets', compact('items', 'pageTitle'));
     }
 
-    public function answeredTicket()
+    public function answeredTicket(): View
     {
         $pageTitle = 'Answered Tickets';
         $items = SupportTicket::orderBy('id', 'desc')->with('user')->where('status', Status::TICKET_ANSWER)->paginate(getPaginate());
@@ -58,7 +59,7 @@ class SupportTicketController extends Controller
         return view('admin.support.tickets', compact('items', 'pageTitle'));
     }
 
-    public function ticketReply($id)
+    public function ticketReply($id): View
     {
         $ticket = SupportTicket::with('user')->where('id', $id)->firstOrFail();
         $pageTitle = 'Reply Ticket';

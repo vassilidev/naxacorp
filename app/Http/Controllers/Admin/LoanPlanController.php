@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\LoanPlan;
@@ -9,7 +10,7 @@ use Illuminate\Http\Request;
 
 class LoanPlanController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'All Loan Plans';
         $plans = LoanPlan::active()->latest()->paginate(getPaginate());
@@ -17,14 +18,14 @@ class LoanPlanController extends Controller
         return view('admin.plans.loan.index', compact('pageTitle', 'plans'));
     }
 
-    public function create()
+    public function create(): View
     {
         $pageTitle = 'Add New Plan';
 
         return view('admin.plans.loan.form', compact('pageTitle'));
     }
 
-    public function edit($id)
+    public function edit($id): View
     {
         $pageTitle = 'Edit Plan';
         $plan = LoanPlan::findOrFail($id);

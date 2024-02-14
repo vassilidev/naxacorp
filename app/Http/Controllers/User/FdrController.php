@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\OTPManager;
@@ -16,7 +17,7 @@ use Illuminate\Validation\ValidationException;
 
 class FdrController extends Controller
 {
-    public function list()
+    public function list(): View
     {
         $pageTitle = 'My FDR List';
         $allFdr = Fdr::where('user_id', auth()->id())->with('plan:id,name')->orderBy('id', 'DESC')->paginate(getPaginate());
@@ -24,7 +25,7 @@ class FdrController extends Controller
         return view($this->activeTemplate.'user.fdr.list', compact('pageTitle', 'allFdr'));
     }
 
-    public function plans()
+    public function plans(): View
     {
         $pageTitle = 'Fixed Deposit Receipt Plans';
         $plans = FdrPlan::active()->orderBy('interest_rate')->get();
@@ -47,7 +48,7 @@ class FdrController extends Controller
         return $otpManager->newOTP($plan, $request->auth_mode, 'FDR_OTP', $additionalData);
     }
 
-    public function preview()
+    public function preview(): View
     {
 
         $verification = OtpVerification::find(sessionVerificationId());
@@ -189,7 +190,7 @@ class FdrController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function installments($fdr_number)
+    public function installments($fdr_number): View
     {
         $fdr = Fdr::where('user_id', auth()->id())->where('fdr_number', $fdr_number)->firstOrFail();
         $installments = $fdr->installments()->paginate(getPaginate());

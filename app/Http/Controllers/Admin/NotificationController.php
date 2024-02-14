@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\GeneralSetting;
@@ -11,7 +12,7 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    public function global()
+    public function global(): View
     {
         $pageTitle = 'Global Template for Notification';
 
@@ -39,7 +40,7 @@ class NotificationController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function templates()
+    public function templates(): View
     {
         $pageTitle = 'Notification Templates';
         $templates = NotificationTemplate::orderBy('name')->get();
@@ -47,7 +48,7 @@ class NotificationController extends Controller
         return view('admin.notification.templates', compact('pageTitle', 'templates'));
     }
 
-    public function templateEdit($id)
+    public function templateEdit($id): View
     {
         $template = NotificationTemplate::findOrFail($id);
         $pageTitle = $template->name;
@@ -77,7 +78,7 @@ class NotificationController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function emailSetting()
+    public function emailSetting(): View
     {
         $pageTitle = 'Email Notification Settings';
 
@@ -164,7 +165,7 @@ class NotificationController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function smsSetting()
+    public function smsSetting(): View
     {
         $pageTitle = 'SMS Notification Settings';
 
@@ -269,7 +270,7 @@ class NotificationController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function push()
+    public function push(): View
     {
         $pageTitle = 'Push Notification Setting';
 

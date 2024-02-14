@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\BranchStaff;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\AdminNotification;
@@ -13,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 
 class WithdrawController extends Controller
 {
-    public function withdrawals()
+    public function withdrawals(): View
     {
         $staff = authStaff();
         $pageTitle = 'Withdrawals from '.$staff->branch()->name.' Branch';

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Installment;
@@ -53,7 +54,7 @@ class LoanController extends Controller
         return $this->loanData('due');
     }
 
-    public function details($id)
+    public function details($id): View
     {
         $loan = Loan::where('id', $id)->with('plan', 'user')->firstOrFail();
         $pageTitle = 'Loan Details';
@@ -127,7 +128,7 @@ class LoanController extends Controller
         return view('admin.loan.index', compact('pageTitle', 'loans'));
     }
 
-    public function installments($id)
+    public function installments($id): View
     {
         $loan = Loan::with('installments')->findOrFail($id);
         $installments = $loan->installments()->paginate(getPaginate());

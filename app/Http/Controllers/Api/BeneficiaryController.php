@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\Beneficiary;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class BeneficiaryController extends Controller
 {
-    public function ownBeneficiary()
+    public function ownBeneficiary(): JsonResponse
     {
         $notify[] = 'Own Beneficiary';
         $beneficiaries = Beneficiary::ownBank()->where('user_id', auth()->id())->apiQuery();
@@ -32,7 +33,7 @@ class BeneficiaryController extends Controller
         ]);
     }
 
-    public function otherBeneficiary()
+    public function otherBeneficiary(): JsonResponse
     {
         $notify[] = 'Other Beneficiary';
         $otherBanks = OtherBank::active()->with('form')->get();
@@ -51,7 +52,7 @@ class BeneficiaryController extends Controller
         ]);
     }
 
-    public function addOwnBeneficiary(Request $request)
+    public function addOwnBeneficiary(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'account_number' => 'required|string',
@@ -108,7 +109,7 @@ class BeneficiaryController extends Controller
         ]);
     }
 
-    public function addOtherBeneficiary(Request $request)
+    public function addOtherBeneficiary(Request $request): JsonResponse
     {
 
         $validator = Validator::make($request->all(), [
@@ -170,7 +171,7 @@ class BeneficiaryController extends Controller
         ]);
     }
 
-    public function details($id)
+    public function details($id): JsonResponse
     {
         $beneficiary = Beneficiary::where('id', $id)->first();
 
@@ -195,7 +196,7 @@ class BeneficiaryController extends Controller
         ]);
     }
 
-    public function bankFormData(Request $request)
+    public function bankFormData(Request $request): JsonResponse
     {
         $bank = OtherBank::active()->where('id', $request->id)->first();
         if (! $bank) {
@@ -222,7 +223,7 @@ class BeneficiaryController extends Controller
         ]);
     }
 
-    public function checkAccountNumber(Request $request)
+    public function checkAccountNumber(Request $request): JsonResponse
     {
         $user = User::where('account_number', $request->account_number)->orWhere('username', $request->account_name)->first();
         if (! $user || @$user->id == auth()->id()) {

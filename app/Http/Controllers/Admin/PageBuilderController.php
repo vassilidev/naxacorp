@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use Illuminate\Http\Request;
 
 class PageBuilderController extends Controller
 {
-    public function managePages()
+    public function managePages(): View
     {
         $pdata = Page::where('tempname', $this->activeTemplate)->get();
         $pageTitle = 'Manage Pages';
@@ -76,7 +77,7 @@ class PageBuilderController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function manageSection($id)
+    public function manageSection($id): View
     {
         $pdata = Page::findOrFail($id);
         $pageTitle = 'Manage Section of '.$pdata->name;

@@ -116,7 +116,7 @@ class PushNotification extends NotifyProcess implements Notifiable
      *
      * @return void
      */
-    public function prevConfiguration()
+    public function prevConfiguration(): void
     {
         if ($this->user) {
             $this->deviceTokens = $this->user->deviceTokens()->pluck('token')->toArray();

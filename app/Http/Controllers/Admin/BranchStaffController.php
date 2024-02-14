@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Hash;
 
 class BranchStaffController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'Branch Staff';
         $staffs = BranchStaff::query();
@@ -40,7 +41,7 @@ class BranchStaffController extends Controller
         return view('admin.staff.index', compact('pageTitle', 'staffs', 'branches'));
     }
 
-    public function addNew()
+    public function addNew(): View
     {
         $pageTitle = 'Add New Staff';
         $branches = Branch::active()->get();
@@ -48,7 +49,7 @@ class BranchStaffController extends Controller
         return view('admin.staff.add', compact('pageTitle', 'branches'));
     }
 
-    public function details($id)
+    public function details($id): View
     {
         $staff = BranchStaff::findOrFail($id);
         $pageTitle = "$staff->name Branch Details";

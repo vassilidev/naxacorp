@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Lib\OTPManager;
 use App\Models\OtpVerification;
@@ -61,7 +62,7 @@ class OtpController extends Controller
         return callApiMethod($verification->additional_data->after_verified, $verification->id);
     }
 
-    public function resendOtp($id)
+    public function resendOtp($id): JsonResponse
     {
         $verification = OtpVerification::find($id);
 

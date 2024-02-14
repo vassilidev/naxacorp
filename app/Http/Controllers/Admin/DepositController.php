@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Gateway\PaymentController;
@@ -13,7 +14,7 @@ use Illuminate\Http\Request;
 
 class DepositController extends Controller
 {
-    public function pending()
+    public function pending(): View
     {
         $pageTitle = 'Pending Deposits';
         $branches = Branch::active()->orderBy('name')->get();
@@ -22,7 +23,7 @@ class DepositController extends Controller
         return view('admin.deposit.log', compact('pageTitle', 'deposits', 'branches'));
     }
 
-    public function approved()
+    public function approved(): View
     {
         $pageTitle = 'Approved Deposits';
         $branches = Branch::active()->orderBy('name')->get();
@@ -31,7 +32,7 @@ class DepositController extends Controller
         return view('admin.deposit.log', compact('pageTitle', 'deposits', 'branches'));
     }
 
-    public function successful()
+    public function successful(): View
     {
         $pageTitle = 'Successful Deposits';
         $branches = Branch::active()->orderBy('name')->get();
@@ -40,7 +41,7 @@ class DepositController extends Controller
         return view('admin.deposit.log', compact('pageTitle', 'deposits', 'branches'));
     }
 
-    public function rejected()
+    public function rejected(): View
     {
         $pageTitle = 'Rejected Deposits';
         $branches = Branch::active()->orderBy('name')->get();
@@ -49,7 +50,7 @@ class DepositController extends Controller
         return view('admin.deposit.log', compact('pageTitle', 'deposits', 'branches'));
     }
 
-    public function initiated()
+    public function initiated(): View
     {
         $pageTitle = 'Initiated Deposits';
         $branches = Branch::active()->orderBy('name')->get();
@@ -58,7 +59,7 @@ class DepositController extends Controller
         return view('admin.deposit.log', compact('pageTitle', 'deposits', 'branches'));
     }
 
-    public function deposit()
+    public function deposit(): View
     {
         $pageTitle = 'Deposit History';
         $depositData = $this->depositData($scope = null, $summery = true);
@@ -127,7 +128,7 @@ class DepositController extends Controller
         }
     }
 
-    public function details($id)
+    public function details($id): View
     {
         $general = gs();
         $deposit = Deposit::where('id', $id)->with(['user', 'gateway'])->firstOrFail();

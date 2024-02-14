@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
@@ -12,7 +13,7 @@ use Illuminate\Http\Request;
 
 class BranchController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'All Branches';
         $branches = Branch::orderBy('id', 'desc')->searchable(['code', 'name', 'email', 'mobile', 'address'])->paginate(getPaginate());
@@ -20,14 +21,14 @@ class BranchController extends Controller
         return view('admin.branch.index', compact('pageTitle', 'branches'));
     }
 
-    public function addNew()
+    public function addNew(): View
     {
         $pageTitle = 'Add New Branch';
 
         return view('admin.branch.add', compact('pageTitle'));
     }
 
-    public function details($id)
+    public function details($id): View
     {
 
         $branch = Branch::findOrFail($id);
@@ -74,7 +75,7 @@ class BranchController extends Controller
         return Branch::changeStatus($id);
     }
 
-    public function managerList($branchId)
+    public function managerList($branchId): View
     {
         $branch = Branch::findOrFail($branchId);
         $pageTitle = $branch->name.': Manager List';
@@ -86,7 +87,7 @@ class BranchController extends Controller
         return view('admin.branch.staff', compact('pageTitle', 'staffs'));
     }
 
-    public function staffList($branchId)
+    public function staffList($branchId): View
     {
         $branch = Branch::findOrFail($branchId);
         $pageTitle = $branch->name.': Manager List';

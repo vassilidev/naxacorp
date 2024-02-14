@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\OTPManager;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 
 class DpsController extends Controller
 {
-    public function list()
+    public function list(): JsonResponse
     {
         $allDps = Dps::where('user_id', auth()->id())->with('nextInstallment')->withCount('dueInstallments')->with('plan')->apiQuery();
         $notify[] = 'User DPS Data';
@@ -31,7 +32,7 @@ class DpsController extends Controller
         ]);
     }
 
-    public function plans()
+    public function plans(): JsonResponse
     {
         $plans = DpsPlan::active()->apiQuery();
 
@@ -82,7 +83,7 @@ class DpsController extends Controller
         return $validator;
     }
 
-    public function preview($id)
+    public function preview($id): JsonResponse
     {
         $verification = OtpVerification::find($id);
         if (! $verification) {
@@ -200,7 +201,7 @@ class DpsController extends Controller
         ]);
     }
 
-    public function withdraw($id)
+    public function withdraw($id): JsonResponse
     {
         $dps = Dps::where('user_id', auth()->id())->with('plan')->find($id);
 
@@ -271,7 +272,7 @@ class DpsController extends Controller
         ]);
     }
 
-    public function installments($dpsNumber)
+    public function installments($dpsNumber): JsonResponse
     {
         $dps = Dps::where('dps_number', $dpsNumber)->where('user_id', auth()->id())->with('plan:id,name')->first();
         if (! $dps) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -21,7 +22,7 @@ class AuthorizationController extends Controller
         return true;
     }
 
-    public function authorization()
+    public function authorization(): JsonResponse
     {
         $user = auth()->user();
         if (! $user->status) {
@@ -63,7 +64,7 @@ class AuthorizationController extends Controller
 
     }
 
-    public function sendVerifyCode($type)
+    public function sendVerifyCode($type): JsonResponse
     {
         $user = auth()->user();
 
@@ -105,7 +106,7 @@ class AuthorizationController extends Controller
         ]);
     }
 
-    public function emailVerification(Request $request)
+    public function emailVerification(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required',
@@ -144,7 +145,7 @@ class AuthorizationController extends Controller
         ]);
     }
 
-    public function mobileVerification(Request $request)
+    public function mobileVerification(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required',
@@ -181,7 +182,7 @@ class AuthorizationController extends Controller
         ]);
     }
 
-    public function g2faVerification(Request $request)
+    public function g2faVerification(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required',

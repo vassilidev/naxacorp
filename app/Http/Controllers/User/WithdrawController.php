@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -16,7 +17,7 @@ use Illuminate\Validation\ValidationException;
 
 class WithdrawController extends Controller
 {
-    public function withdrawLog(Request $request)
+    public function withdrawLog(Request $request): View
     {
         $pageTitle = 'Withdrawal History';
         $withdraws = auth()->user()->withdrawals();
@@ -28,7 +29,7 @@ class WithdrawController extends Controller
         return view($this->activeTemplate.'user.withdraw.log', compact('pageTitle', 'withdraws'));
     }
 
-    public function withdrawMoney()
+    public function withdrawMoney(): View
     {
         $withdrawMethod = WithdrawMethod::where('status', Status::ENABLE)->get();
         $pageTitle = 'Withdraw Money';
@@ -86,7 +87,7 @@ class WithdrawController extends Controller
         return to_route('user.withdraw.preview');
     }
 
-    public function withdrawPreview()
+    public function withdrawPreview(): View
     {
         $withdraw = Withdrawal::with('method', 'user')->where('trx', session()->get('wtrx'))->where('status', Status::PAYMENT_INITIATE)->orderBy('id', 'desc')->firstOrFail();
         $pageTitle = 'Withdraw Preview';

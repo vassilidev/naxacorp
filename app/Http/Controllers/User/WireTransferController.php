@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -54,7 +56,7 @@ class WireTransferController extends Controller
         return $otpManager->newOTP($wireTransferSetting, $request->auth_mode, 'WIRE_TRANSFER_OTP', $additionalData);
     }
 
-    public function confirm()
+    public function confirm(): RedirectResponse
     {
         $verification = OtpVerification::find(sessionVerificationId());
         $setting = $verification->verifiable;
@@ -118,7 +120,7 @@ class WireTransferController extends Controller
         return redirect()->route('user.transfer.history')->withNotify($notify);
     }
 
-    public function details($id)
+    public function details($id): JsonResponse
     {
         $transfer = BalanceTransfer::wireTransfer()->where('user_id', auth()->id())->where('id', $id)->first();
         if (! $transfer) {

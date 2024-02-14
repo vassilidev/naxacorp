@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
 
 class SubscriberController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'Subscriber Manager';
         $subscribers = Subscriber::orderBy('id', 'desc')->paginate(getPaginate());
@@ -16,7 +17,7 @@ class SubscriberController extends Controller
         return view('admin.subscriber.index', compact('pageTitle', 'subscribers'));
     }
 
-    public function sendEmailForm()
+    public function sendEmailForm(): View
     {
         $pageTitle = 'Email to Subscribers';
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\BranchStaff;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
@@ -24,7 +25,7 @@ class BranchStaffController extends Controller
         }
     }
 
-    public function managerDashboard()
+    public function managerDashboard(): View
     {
         $staff = authStaff();
         $branch = Branch::find(session('branchId'));
@@ -56,7 +57,7 @@ class BranchStaffController extends Controller
         return view('branch_staff.dashboard.staff', compact('pageTitle', 'staff', 'branch', 'deposits', 'withdrawals', 'branchDeposits', 'branchWithdrawals'));
     }
 
-    public function profile()
+    public function profile(): View
     {
         $pageTitle = 'Profile';
         $staff = authStaff();
@@ -64,7 +65,7 @@ class BranchStaffController extends Controller
         return view('branch_staff.profile', compact('pageTitle', 'staff'));
     }
 
-    public function staffProfile($id)
+    public function staffProfile($id): View
     {
         $pageTitle = 'Staff Profile';
         $staff = BranchStaff::findOrFail($id);
@@ -106,7 +107,7 @@ class BranchStaffController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function password()
+    public function password(): View
     {
         $pageTitle = 'Password Setting';
         $staff = authStaff();
@@ -163,7 +164,7 @@ class BranchStaffController extends Controller
         return view('branch_staff.user.banned', compact('pageTitle'));
     }
 
-    public function transactions()
+    public function transactions(): View
     {
         $branch = Branch::find(session('branchId'));
         $transactions = Transaction::searchable(['trx', 'user:username', 'user:account_number', 'branchStaff:name'])
@@ -184,7 +185,7 @@ class BranchStaffController extends Controller
         return view('branch_staff.transactions', compact('pageTitle', 'transactions'));
     }
 
-    public function branches()
+    public function branches(): View
     {
         if (isManager()) {
             $pageTitle = 'Banned Staff';

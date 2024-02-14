@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\OTPManager;
@@ -15,7 +16,7 @@ use Illuminate\Validation\ValidationException;
 
 class OwnBankTransferController extends Controller
 {
-    public function beneficiaries()
+    public function beneficiaries(): View
     {
         $beneficiaries = Beneficiary::where('user_id', auth()->id())->where('beneficiary_type', User::class)->paginate(getPaginate());
         $pageTitle = 'Transfer Money Within '.gs()->site_name;

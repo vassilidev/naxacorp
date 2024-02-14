@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User\Auth;
 
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\UserLogin;
@@ -41,7 +43,7 @@ class LoginController extends Controller
         $this->username = $this->findUsername();
     }
 
-    public function showLoginForm()
+    public function showLoginForm(): View
     {
         $pageTitle = 'Login';
 
@@ -114,7 +116,7 @@ class LoginController extends Controller
         return to_route('user.login')->withNotify($notify);
     }
 
-    public function authenticated(Request $request, $user)
+    public function authenticated(Request $request, $user): RedirectResponse
     {
         $user->tv = $user->ts == Status::ENABLE ? Status::UNVERIFIED : Status::VERIFIED;
         $user->save();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -27,7 +28,7 @@ use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
 {
-    public function dashboard()
+    public function dashboard(): JsonResponse
     {
         $user = auth()->user();
 
@@ -59,7 +60,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function userInfo()
+    public function userInfo(): JsonResponse
     {
         $notify[] = 'User information';
         $user = auth()->user();
@@ -140,7 +141,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function kycForm()
+    public function kycForm(): JsonResponse
     {
         $user = auth()->user();
         if ($user->kv == 2) {
@@ -175,7 +176,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function kycSubmit(Request $request)
+    public function kycSubmit(Request $request): JsonResponse
     {
         $form = Form::where('act', 'kyc')->first();
         $formData = $form->form_data;
@@ -207,7 +208,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function kycData()
+    public function kycData(): JsonResponse
     {
         $user = auth()->user();
         $notify[] = 'User KYC Data';
@@ -220,7 +221,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function depositHistory(Request $request)
+    public function depositHistory(Request $request): JsonResponse
     {
         $deposits = auth()->user()->deposits()->searchable(['trx'])->with(['gateway'])->apiQuery();
         $path = getFilePath('verify');
@@ -237,7 +238,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function transactions(Request $request)
+    public function transactions(Request $request): JsonResponse
     {
         $remarks = Transaction::distinct('remark')->get('remark');
         $transactions = Transaction::where('user_id', auth()->id())->searchable(['trx'])->filter(['trx_type', 'remark'])->apiQuery();
@@ -254,7 +255,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function submitProfile(Request $request)
+    public function submitProfile(Request $request): JsonResponse
     {
 
         $validator = Validator::make($request->all(), [
@@ -314,7 +315,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function submitPassword(Request $request)
+    public function submitPassword(Request $request): JsonResponse
     {
         $passwordValidation = Password::min(6);
         $general = gs();
@@ -360,7 +361,7 @@ class UserController extends Controller
         }
     }
 
-    public function unauthenticated()
+    public function unauthenticated(): JsonResponse
     {
         $notify[] = 'Unauthenticated';
 
@@ -371,7 +372,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function generalSetting()
+    public function generalSetting(): JsonResponse
     {
         $general = GeneralSetting::first();
         $transferCharge = $general->transferCharge();
@@ -388,7 +389,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function referredUsers()
+    public function referredUsers(): JsonResponse
     {
         $maxLevel = ReferralSetting::max('level');
         $relations = [];
@@ -409,7 +410,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function policyPages()
+    public function policyPages(): JsonResponse
     {
         $policyPages = getContent('policy_pages.element', false, null, true);
         $notify[] = 'Policy Pages';
@@ -424,7 +425,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function policyDetail(Request $request)
+    public function policyDetail(Request $request): JsonResponse
     {
 
         $policyDetail = Frontend::where('id', $request->id)->first();
@@ -450,7 +451,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function referralLink()
+    public function referralLink(): JsonResponse
     {
 
         $referralLink = route('home').'?reference='.auth()->user()->username;
@@ -466,7 +467,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function transferHistory()
+    public function transferHistory(): JsonResponse
     {
         $transfers = BalanceTransfer::where('user_id', auth()->id())->with('beneficiary', 'beneficiary.beneficiaryOf')->apiQuery();
         $notify[] = 'User transfer history';
@@ -483,7 +484,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function language($code)
+    public function language($code): JsonResponse
     {
         $language = Language::where('code', $code)->first();
         if (! $language) {
@@ -504,7 +505,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function faq()
+    public function faq(): JsonResponse
     {
         $faqs = Frontend::where('data_keys', 'faq.element')->select('data_values')->get();
         $faqContent = Frontend::where('data_keys', 'faq.content')->select('data_values')->first();
@@ -528,7 +529,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function getDeviceToken(Request $request)
+    public function getDeviceToken(Request $request): JsonResponse
     {
 
         $validator = Validator::make($request->all(), [
@@ -569,7 +570,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function notificationHistory()
+    public function notificationHistory(): JsonResponse
     {
         $notifications = UserNotification::where('user_id', auth()->id())->apiQuery();
         $notify[] = 'User Notification';
@@ -584,7 +585,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function notificationDetail($id)
+    public function notificationDetail($id): JsonResponse
     {
         $notification = UserNotification::where('user_id', auth()->id())->where('id', $id)->first();
         if (! $notification) {

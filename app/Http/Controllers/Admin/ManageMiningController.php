@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Models\MiningConfig;
 use App\Models\MiningHistory;
@@ -16,7 +18,7 @@ class ManageMiningController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): View
     {
 
         return view('admin.mining.index', [
@@ -68,7 +70,7 @@ class ManageMiningController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function edit(MiningConfig $miningConfig, $id)
+    public function edit(MiningConfig $miningConfig, $id): JsonResponse
     {
         return response()->json($miningConfig->findOrFail($id));
     }

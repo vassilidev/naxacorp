@@ -51,7 +51,7 @@ class HttpClient
      * @param $httpRequest HttpRequest
      * @return HttpResponse
      */
-    public function execute(HttpRequest $httpRequest)
+    public function execute(HttpRequest $httpRequest): HttpResponse
     {
         $requestCpy = clone $httpRequest;
         $curl = new Curl();
@@ -143,7 +143,7 @@ class HttpClient
      *
      * @return string
      */
-    protected function getCACertFilePath()
+    protected function getCACertFilePath(): string
     {
         return null;
     }

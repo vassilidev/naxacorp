@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\BranchStaff\Auth;
 
+use Illuminate\View\View;
+use Illuminate\Contracts\Auth\PasswordBroker;
 use App\Http\Controllers\Controller;
 use App\Models\BranchStaff;
 use App\Models\BranchStaffPasswordReset;
@@ -39,7 +41,7 @@ class ForgotPasswordController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLinkRequestForm()
+    public function showLinkRequestForm(): View
     {
         $pageTitle = 'Account Recovery';
 
@@ -51,7 +53,7 @@ class ForgotPasswordController extends Controller
      *
      * @return \Illuminate\Contracts\Auth\PasswordBroker
      */
-    public function broker()
+    public function broker(): PasswordBroker
     {
         return Password::broker('branch_staff');
     }

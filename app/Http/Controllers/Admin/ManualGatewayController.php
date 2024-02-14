@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -11,7 +12,7 @@ use Illuminate\Http\Request;
 
 class ManualGatewayController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'Manual Gateways';
         $gateways = Gateway::manual()->orderBy('id', 'desc')->get();
@@ -19,7 +20,7 @@ class ManualGatewayController extends Controller
         return view('admin.gateways.manual.list', compact('pageTitle', 'gateways'));
     }
 
-    public function create()
+    public function create(): View
     {
         $pageTitle = 'Edit Manual Gateway';
 
@@ -69,7 +70,7 @@ class ManualGatewayController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function edit($alias)
+    public function edit($alias): View
     {
         $pageTitle = 'New Manual Gateway';
         $method = Gateway::manual()->with('singleCurrency')->where('alias', $alias)->firstOrFail();

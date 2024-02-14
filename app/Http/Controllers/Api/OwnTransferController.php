@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\OTPManager;
@@ -49,7 +50,7 @@ class OwnTransferController extends Controller
         return $otpManager->newOTP($beneficiary, $request->auth_mode, 'OWN_BANK_TRANSFER_OTP', $additionalData, true);
     }
 
-    public function confirm($id)
+    public function confirm($id): JsonResponse
     {
         $verification = OtpVerification::find($id);
         $beneficiary = $verification->verifiable;

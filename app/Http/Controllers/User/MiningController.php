@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\MiningConfig;
 use App\Models\MiningHistory;
@@ -15,7 +16,7 @@ class MiningController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): View
     {
         return view($this->activeTemplate.'user.mining.index', [
             'packages' => MiningConfig::all(),

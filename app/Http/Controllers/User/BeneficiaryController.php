@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\Beneficiary;
@@ -11,7 +13,7 @@ use Illuminate\Http\Request;
 
 class BeneficiaryController extends Controller
 {
-    public function ownBankBeneficiaries()
+    public function ownBankBeneficiaries(): View
     {
         $pageTitle = 'Beneficiaries of '.gs()->site_name;
         $beneficiaries = Beneficiary::ownBank()->where('user_id', auth()->id())->paginate(getPaginate());
@@ -19,7 +21,7 @@ class BeneficiaryController extends Controller
         return view($this->activeTemplate.'user.transfer.beneficiary.own', compact('pageTitle', 'beneficiaries'));
     }
 
-    public function otherBankBeneficiaries()
+    public function otherBankBeneficiaries(): View
     {
         $pageTitle = 'Other Bank Beneficiaries';
         $otherBanks = OtherBank::active()->get();
@@ -96,7 +98,7 @@ class BeneficiaryController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function details($id)
+    public function details($id): JsonResponse
     {
         $beneficiary = Beneficiary::where('user_id', auth()->id())->where('id', $id)->first();
 
@@ -116,7 +118,7 @@ class BeneficiaryController extends Controller
         ]);
     }
 
-    public function otherBankForm($id)
+    public function otherBankForm($id): JsonResponse
     {
         $bank = OtherBank::active()->where('id', $id)->first();
 
@@ -136,7 +138,7 @@ class BeneficiaryController extends Controller
         ]);
     }
 
-    public function checkAccountNumber(Request $request)
+    public function checkAccountNumber(Request $request): JsonResponse
     {
         $user = User::where('account_number', $request->account_number)->orWhere('username', $request->account_name)->first();
 

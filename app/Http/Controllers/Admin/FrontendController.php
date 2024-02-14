@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\Frontend;
 use App\Models\GeneralSetting;
@@ -10,7 +11,7 @@ use Illuminate\Http\Request;
 
 class FrontendController extends Controller
 {
-    public function templates()
+    public function templates(): View
     {
         $pageTitle = 'Templates';
         $temPaths = array_filter(glob('core/resources/views/templates/*'), 'is_dir');
@@ -38,7 +39,7 @@ class FrontendController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function seoEdit()
+    public function seoEdit(): View
     {
         $pageTitle = 'SEO Configuration';
         $seo = Frontend::where('data_keys', 'seo.data')->first();

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\OTPManager;
@@ -16,7 +18,7 @@ use Illuminate\Validation\ValidationException;
 
 class DpsController extends Controller
 {
-    public function list()
+    public function list(): View
     {
         $pageTitle = 'My DPS List';
         $allDps = Dps::where('user_id', auth()->id())->withCount('dueInstallments')->with(['plan', 'nextInstallment'])->orderBy('id', 'DESC')->paginate(getPaginate());
@@ -24,7 +26,7 @@ class DpsController extends Controller
         return view($this->activeTemplate.'user.dps.list', compact('pageTitle', 'allDps'));
     }
 
-    public function plans()
+    public function plans(): View
     {
         $pageTitle = 'Deposit Pension Scheme Plans';
         $plans = DpsPlan::active()->orderBy('per_installment')->get();
@@ -42,7 +44,7 @@ class DpsController extends Controller
         return $otpManager->newOTP($plan, $request->auth_mode, 'DPS_OTP', $additionalData);
     }
 
-    public function preview()
+    public function preview(): View
     {
         $verification = OtpVerification::find(sessionVerificationId());
         OTPManager::checkVerificationData($verification, DpsPlan::class);
@@ -53,7 +55,7 @@ class DpsController extends Controller
         return view($this->activeTemplate.'user.dps.preview', compact('pageTitle', 'plan', 'verificationId'));
     }
 
-    public function confirm($id)
+    public function confirm($id): RedirectResponse
     {
         $verification = OtpVerification::find($id);
         OTPManager::checkVerificationData($verification, DpsPlan::class);
@@ -118,7 +120,7 @@ class DpsController extends Controller
         return redirect()->route('user.dps.list');
     }
 
-    public function installments($dpsNumber)
+    public function installments($dpsNumber): View
     {
         $dps = Dps::where('dps_number', $dpsNumber)->where('user_id', auth()->id())->firstOrFail();
         $installments = $dps->installments()->paginate(getPaginate());

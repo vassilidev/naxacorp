@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\BranchStaff;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\ReferralCommission;
@@ -13,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 
 class DepositController extends Controller
 {
-    public function deposits()
+    public function deposits(): View
     {
         $staff = authStaff();
         $deposits = Deposit::successful()->where('branch_id', session('branchId'));

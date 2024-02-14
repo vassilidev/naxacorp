@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Language;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\File;
 
 class LanguageController extends Controller
 {
-    public function langManage($lang = false)
+    public function langManage($lang = false): View
     {
         $pageTitle = 'Language Manager';
         $languages = Language::orderBy('is_default', 'desc')->get();

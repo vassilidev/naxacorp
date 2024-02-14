@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User\Auth;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\PasswordReset;
 use App\Models\User;
@@ -29,7 +30,7 @@ class ForgotPasswordController extends Controller
         $this->middleware('guest');
     }
 
-    public function showLinkRequestForm()
+    public function showLinkRequestForm(): View
     {
         $pageTitle = 'Account Recovery';
 

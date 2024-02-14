@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\DpsPlan;
 use Illuminate\Http\Request;
 
 class DpsPlanController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'All Plans for DPS (Deposit Pension Scheme)';
         $plans = DpsPlan::latest()->paginate(getPaginate());
@@ -16,14 +17,14 @@ class DpsPlanController extends Controller
         return view('admin.plans.dps.index', compact('pageTitle', 'plans'));
     }
 
-    public function addNew()
+    public function addNew(): View
     {
         $pageTitle = 'Add New Plan';
 
         return view('admin.plans.dps.form', compact('pageTitle'));
     }
 
-    public function edit($id)
+    public function edit($id): View
     {
         $pageTitle = 'Edit Plan';
         $plan = DpsPlan::findOrFail($id);

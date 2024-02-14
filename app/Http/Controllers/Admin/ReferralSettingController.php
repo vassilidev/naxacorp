@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\GeneralSetting;
 use App\Models\ReferralSetting;
@@ -9,7 +10,7 @@ use Illuminate\Http\Request;
 
 class ReferralSettingController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'Manage Referral';
         $levels = ReferralSetting::all();

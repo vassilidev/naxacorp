@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\AdminNotification;
@@ -45,7 +46,7 @@ class RegisterController extends Controller
      *
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validator(array $data): \Illuminate\Contracts\Validation\Validator
     {
         $general = gs();
         $passwordValidation = Password::min(6);
@@ -77,7 +78,7 @@ class RegisterController extends Controller
         return $validate;
     }
 
-    public function register(Request $request)
+    public function register(Request $request): JsonResponse
     {
         $validator = $this->validator($request->all());
 

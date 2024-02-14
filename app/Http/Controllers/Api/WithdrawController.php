@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 
 class WithdrawController extends Controller
 {
-    public function withdrawLog()
+    public function withdrawLog(): JsonResponse
     {
         $withdrawals = Withdrawal::where('user_id', auth()->id())->where('status', '!=', Status::PAYMENT_INITIATE)->searchable(['trx'])->with('method')->apiQuery();
         $notify[] = 'Withdrawal History';
@@ -33,7 +34,7 @@ class WithdrawController extends Controller
         ]);
     }
 
-    public function withdrawMethod()
+    public function withdrawMethod(): JsonResponse
     {
         $withdrawMethod = WithdrawMethod::where('status', Status::ENABLE)->get();
         $notify[] = 'Withdrawals methods';
@@ -80,7 +81,7 @@ class WithdrawController extends Controller
         return $otpManager->newOTP($method, $request->auth_mode, 'WITHDRAW_OTP', $additionalData, true);
     }
 
-    public function withdrawStore($id)
+    public function withdrawStore($id): JsonResponse
     {
         $verification = OtpVerification::find($id);
         if (! $verification) {
@@ -145,7 +146,7 @@ class WithdrawController extends Controller
         ]);
     }
 
-    public function withdrawPreview($trx)
+    public function withdrawPreview($trx): JsonResponse
     {
         $withdraw = Withdrawal::with('method', 'user')->where('trx', $trx)->where('status', Status::PAYMENT_INITIATE)->orderBy('id', 'desc')->first();
         if (! $withdraw) {
@@ -170,7 +171,7 @@ class WithdrawController extends Controller
         ]);
     }
 
-    public function withdrawSubmit(Request $request, $trx)
+    public function withdrawSubmit(Request $request, $trx): JsonResponse
     {
         $withdraw = Withdrawal::with('method', 'user')->where('trx', $trx)->where('status', Status::PAYMENT_INITIATE)->orderBy('id', 'desc')->first();
         if (! $withdraw) {

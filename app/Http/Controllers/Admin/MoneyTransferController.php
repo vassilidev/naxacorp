@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\BalanceTransfer;
@@ -66,7 +67,7 @@ class MoneyTransferController extends Controller
         return view('admin.transfers.index', compact('pageTitle', 'transfers'));
     }
 
-    public function details($id)
+    public function details($id): View
     {
         $transfer = BalanceTransfer::where('id', $id)->with('user', 'beneficiary.beneficiaryOf')->firstOrFail();
         $pageTitle = 'Transfer Details';

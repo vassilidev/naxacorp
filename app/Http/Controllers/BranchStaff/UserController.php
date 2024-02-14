@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\BranchStaff;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -15,7 +16,7 @@ use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
-    public function all()
+    public function all(): View
     {
         $pageTitle = 'All Accounts';
         $staff = authStaff();
@@ -60,7 +61,7 @@ class UserController extends Controller
         return view('branch_staff.user.detail', compact('pageTitle', 'user', 'staff'));
     }
 
-    public function open($account = null)
+    public function open($account = null): View
     {
 
         $countries = json_decode(file_get_contents(resource_path('views/partials/country.json')));

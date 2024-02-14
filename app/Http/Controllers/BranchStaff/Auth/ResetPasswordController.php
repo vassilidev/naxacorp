@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\BranchStaff\Auth;
 
+use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Contracts\Auth\PasswordBroker;
 use App\Http\Controllers\Controller;
 use App\Models\BranchStaff;
 use App\Models\BranchStaffPasswordReset;
@@ -50,7 +52,7 @@ class ResetPasswordController extends Controller
      * @param  string|null  $token
      * @return \Illuminate\Http\Response
      */
-    public function showResetForm(Request $request, $token)
+    public function showResetForm(Request $request, ?string $token)
     {
         $pageTitle = 'Account Recovery';
         $resetToken = BranchStaffPasswordReset::where('token', $token)->where('status', 0)->first();
@@ -110,7 +112,7 @@ class ResetPasswordController extends Controller
      *
      * @return \Illuminate\Contracts\Auth\PasswordBroker
      */
-    public function broker()
+    public function broker(): PasswordBroker
     {
         return Password::broker('branch_staff');
     }
@@ -120,7 +122,7 @@ class ResetPasswordController extends Controller
      *
      * @return \Illuminate\Contracts\Auth\StatefulGuard
      */
-    protected function guard()
+    protected function guard(): StatefulGuard
     {
         return auth()->guard('branch_staff');
     }

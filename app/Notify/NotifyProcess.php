@@ -140,7 +140,7 @@ class NotifyProcess
      *
      * @return string
      */
-    protected function getMessage()
+    protected function getMessage(): string
     {
         $this->prevConfiguration();
         $this->setSetting();
@@ -190,7 +190,7 @@ class NotifyProcess
      *
      * @return string
      */
-    protected function replaceShortCode($name, $username, $template, $body)
+    protected function replaceShortCode($name, $username, $template, $body): string
     {
         $message = str_replace('{{fullname}}', $name, $template);
         $message = str_replace('{{username}}', $username, $message);
@@ -204,7 +204,7 @@ class NotifyProcess
      *
      * @return void
      */
-    protected function getSubject()
+    protected function getSubject(): void
     {
         if ($this->template) {
             $subject = $this->template->subj;
@@ -222,7 +222,7 @@ class NotifyProcess
      *
      * @return void
      */
-    protected function setSetting()
+    protected function setSetting(): void
     {
         if (! $this->setting) {
             $this->setting = gs();
@@ -234,7 +234,7 @@ class NotifyProcess
      *
      * @return void
      */
-    public function createErrorLog($message)
+    public function createErrorLog($message): void
     {
         $adminNotification = new AdminNotification();
         $adminNotification->user_id = 0;
@@ -248,7 +248,7 @@ class NotifyProcess
      *
      * @return void
      */
-    public function createLog($type)
+    public function createLog($type): void
     {
         $userColumn = $this->userColumn;
         if ($this->user && $this->createLog) {

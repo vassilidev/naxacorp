@@ -49,7 +49,7 @@ class OTPManager
      * @param  array  $additionalData contains if any additional data needed after verified
      * @return object
      **/
-    public function newOTP($parent, $sendVia, $notifyTemplate, $additionalData, $apiRequest = false)
+    public function newOTP(object $parent, string $sendVia, string $notifyTemplate, array $additionalData, $apiRequest = false): object
     {
         $isOtpEnable = checkIsOtpEnable();
 
@@ -107,7 +107,7 @@ class OTPManager
      *
      * @throws ValidationException
      **/
-    public function renewOTP($apiRequest = false)
+    public function renewOTP($apiRequest = false): object
     {
         $otpTime = gs()->otp_time;
         $targetTime = $this->verification->send_at->addSeconds($otpTime);
@@ -142,7 +142,7 @@ class OTPManager
      *
      * @return void
      **/
-    public function sendOtp()
+    public function sendOtp(): void
     {
         if ($this->sendVia != '2fa') {
             $verification = $this->verification;
@@ -158,7 +158,7 @@ class OTPManager
      *
      * @throws ValidationException
      **/
-    public function checkOTP($otp, $apiRequest = false, $validator = null)
+    public function checkOTP($otp, $apiRequest = false, $validator = null): bool
     {
         $verification = $this->verification;
         if ($verification->send_via == '2fa' && (! verifyG2fa(auth()->user(), $otp))) {
@@ -211,7 +211,7 @@ class OTPManager
      *
      * @return bool
      **/
-    public static function checkVerificationData($verification, $verifiableType, $apiRequest = false, $validator = null)
+    public static function checkVerificationData($verification, $verifiableType, $apiRequest = false, $validator = null): bool
     {
         if ($verification->user_id != auth()->id()) {
             if ($apiRequest) {

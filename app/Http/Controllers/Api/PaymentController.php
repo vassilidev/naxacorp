@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Deposit;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
-    public function methods()
+    public function methods(): JsonResponse
     {
         $gatewayCurrency = GatewayCurrency::whereHas('method', function ($gate) {
             $gate->where('status', Status::ENABLE);
@@ -27,7 +28,7 @@ class PaymentController extends Controller
         ]);
     }
 
-    public function depositInsert(Request $request)
+    public function depositInsert(Request $request): JsonResponse
     {
 
         $validator = Validator::make($request->all(), [

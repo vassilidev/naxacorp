@@ -93,7 +93,7 @@ class FileManager
      *
      * @return void
      */
-    public function upload()
+    public function upload(): void
     {
 
         //create the directory if doesn't exists
@@ -124,7 +124,7 @@ class FileManager
      *
      * @return void
      */
-    protected function uploadImage()
+    protected function uploadImage(): void
     {
         $image = Image::make($this->file);
 
@@ -151,7 +151,7 @@ class FileManager
      *
      * @return void
      */
-    protected function uploadFile()
+    protected function uploadFile(): void
     {
         $this->file->move($this->path, $this->filename);
     }
@@ -162,7 +162,7 @@ class FileManager
      *
      * @return string
      */
-    public function makeDirectory($location = null)
+    public function makeDirectory($location = null): string
     {
         if (! $location) {
             $location = $this->path;
@@ -180,7 +180,7 @@ class FileManager
      *
      * @return void
      */
-    public function removeDirectory($location = null)
+    public function removeDirectory($location = null): void
     {
         if (! $location) {
             $location = $this->path;
@@ -208,7 +208,7 @@ class FileManager
      *
      * @return void
      */
-    public function removeFile($path = null)
+    public function removeFile($path = null): void
     {
         if (! $path) {
             $path = $this->path.'/'.$this->old;
@@ -229,7 +229,7 @@ class FileManager
      *
      * @return string
      */
-    protected function getFileName()
+    protected function getFileName(): string
     {
         return uniqid().time().'.'.$this->file->getClientOriginalExtension();
     }
@@ -258,7 +258,7 @@ class FileManager
      *
      * @return void
      */
-    public static function __callStatic($method, $args)
+    public static function __callStatic($method, $args): void
     {
         $selfClass = new FileManager;
         $selfClass->$method(...$args);

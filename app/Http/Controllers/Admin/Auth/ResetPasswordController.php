@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
+use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Contracts\Auth\PasswordBroker;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
@@ -52,7 +54,7 @@ class ResetPasswordController extends Controller
      * @param  string|null  $token
      * @return \Illuminate\Http\Response
      */
-    public function showResetForm(Request $request, $token)
+    public function showResetForm(Request $request, ?string $token)
     {
         $pageTitle = 'Account Recovery';
         $resetToken = AdminPasswordReset::where('token', $token)->where('status', Status::ENABLE)->first();
@@ -107,7 +109,7 @@ class ResetPasswordController extends Controller
      *
      * @return \Illuminate\Contracts\Auth\PasswordBroker
      */
-    public function broker()
+    public function broker(): PasswordBroker
     {
         return Password::broker('admins');
     }
@@ -117,7 +119,7 @@ class ResetPasswordController extends Controller
      *
      * @return \Illuminate\Contracts\Auth\StatefulGuard
      */
-    protected function guard()
+    protected function guard(): StatefulGuard
     {
         return auth()->guard('admin');
     }

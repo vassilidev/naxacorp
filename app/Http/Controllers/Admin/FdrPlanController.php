@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\FdrPlan;
 use Illuminate\Http\Request;
 
 class FdrPlanController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'FDR Plans (Fixed Deposit Receipt)';
         $plans = FdrPlan::latest()->paginate(getPaginate());

@@ -60,7 +60,7 @@ class Email extends NotifyProcess implements Notifiable
      *
      * @return string
      */
-    protected function mailMethods($name)
+    protected function mailMethods($name): string
     {
         $methods = [
             'php' => 'sendPhpMail',
@@ -157,7 +157,7 @@ class Email extends NotifyProcess implements Notifiable
      *
      * @return void
      */
-    public function prevConfiguration()
+    public function prevConfiguration(): void
     {
         if ($this->user) {
             $this->email = $this->user->email;

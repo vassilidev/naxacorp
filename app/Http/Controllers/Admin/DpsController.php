@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\Dps;
 
@@ -43,7 +44,7 @@ class DpsController extends Controller
         return $this->dpsData('due');
     }
 
-    public function installments($id)
+    public function installments($id): View
     {
         $dps = Dps::with('installments')->findOrFail($id);
         $installments = $dps->installments()->paginate(getPaginate());

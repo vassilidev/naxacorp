@@ -82,7 +82,7 @@ class ResetPasswordController extends Controller
      *
      * @return array
      */
-    protected function rules()
+    protected function rules(): array
     {
         $passwordValidation = Password::min(6);
         $general = gs();

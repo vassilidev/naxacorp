@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Gateway;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -15,7 +16,7 @@ use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
-    public function deposit()
+    public function deposit(): View
     {
         $gatewayCurrency = GatewayCurrency::whereHas('method', function ($gate) {
             $gate->where('status', Status::ENABLE);

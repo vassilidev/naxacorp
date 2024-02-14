@@ -26,7 +26,7 @@ class FileTypeValidate implements Rule
      * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(string $attribute, $value): bool
     {
         return in_array($value->getClientOriginalExtension(), $this->extensions);
     }
@@ -36,7 +36,7 @@ class FileTypeValidate implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return ':attribute file type is not supported.';
     }

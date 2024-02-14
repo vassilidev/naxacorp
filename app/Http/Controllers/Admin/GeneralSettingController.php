@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Frontend;
@@ -12,7 +13,7 @@ use Image;
 
 class GeneralSettingController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'General Setting';
         $timezones = json_decode(file_get_contents(resource_path('views/admin/partials/timezone.json')));
@@ -63,7 +64,7 @@ class GeneralSettingController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function systemConfiguration()
+    public function systemConfiguration(): View
     {
         $pageTitle = 'System Configuration';
         $general = gs();
@@ -114,7 +115,7 @@ class GeneralSettingController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function logoIcon()
+    public function logoIcon(): View
     {
         $pageTitle = 'Logo & Favicon';
 
@@ -161,7 +162,7 @@ class GeneralSettingController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function customCss()
+    public function customCss(): View
     {
         $pageTitle = 'Custom CSS';
         $file = activeTemplate(true).'css/custom.css';
@@ -182,7 +183,7 @@ class GeneralSettingController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function maintenanceMode()
+    public function maintenanceMode(): View
     {
         $pageTitle = 'Maintenance Mode';
         $maintenance = Frontend::where('data_keys', 'maintenance.data')->firstOrFail();
@@ -212,7 +213,7 @@ class GeneralSettingController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function cookie()
+    public function cookie(): View
     {
         $pageTitle = 'GDPR Cookie';
         $cookie = Frontend::where('data_keys', 'cookie.data')->firstOrFail();

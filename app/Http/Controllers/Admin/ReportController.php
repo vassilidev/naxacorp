@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\NotificationLog;
 use App\Models\Transaction;
@@ -10,7 +11,7 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function transaction(Request $request)
+    public function transaction(Request $request): View
     {
         $pageTitle = 'Transaction Logs';
         $remarks = Transaction::distinct('remark')->orderBy('remark')->get('remark');
@@ -19,7 +20,7 @@ class ReportController extends Controller
         return view('admin.reports.transactions', compact('pageTitle', 'transactions', 'remarks'));
     }
 
-    public function loginHistory(Request $request)
+    public function loginHistory(Request $request): View
     {
         $pageTitle = 'User Login History';
         $loginLogs = UserLogin::orderBy('id', 'desc')->searchable(['user:username'])->with('user')->paginate(getPaginate());
@@ -27,7 +28,7 @@ class ReportController extends Controller
         return view('admin.reports.logins', compact('pageTitle', 'loginLogs'));
     }
 
-    public function loginIpHistory($ip)
+    public function loginIpHistory($ip): View
     {
         $pageTitle = 'Login by - '.$ip;
         $loginLogs = UserLogin::where('user_ip', $ip)->orderBy('id', 'desc')->with('user')->paginate(getPaginate());
@@ -35,7 +36,7 @@ class ReportController extends Controller
         return view('admin.reports.logins', compact('pageTitle', 'loginLogs', 'ip'));
     }
 
-    public function notificationHistory(Request $request)
+    public function notificationHistory(Request $request): View
     {
         $pageTitle = 'Notification History';
         $logs = NotificationLog::orderBy('id', 'desc')->searchable(['user:username'])->with('user')->paginate(getPaginate());
@@ -43,7 +44,7 @@ class ReportController extends Controller
         return view('admin.reports.notification_history', compact('pageTitle', 'logs'));
     }
 
-    public function emailDetails($id)
+    public function emailDetails($id): View
     {
         $pageTitle = 'Email Details';
         $email = NotificationLog::findOrFail($id);

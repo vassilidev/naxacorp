@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Rules\FileTypeValidate;
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use Illuminate\Validation\Rules\Password;
 
 class ProfileController extends Controller
 {
-    public function profile()
+    public function profile(): View
     {
         $pageTitle = 'Profile Setting';
         $user = auth()->user();
@@ -64,7 +65,7 @@ class ProfileController extends Controller
         return back()->withNotify($notify);
     }
 
-    public function changePassword()
+    public function changePassword(): View
     {
         $pageTitle = 'Change Password';
 

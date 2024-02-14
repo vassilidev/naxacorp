@@ -58,7 +58,7 @@ class Sms extends NotifyProcess implements Notifiable
      *
      * @return void
      */
-    public function prevConfiguration()
+    public function prevConfiguration(): void
     {
         //Check If User
         if ($this->user) {

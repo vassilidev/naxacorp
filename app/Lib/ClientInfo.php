@@ -9,7 +9,7 @@ class ClientInfo
      *
      * @return array
      */
-    public static function ipInfo()
+    public static function ipInfo(): array
     {
         $ip = getRealIP();
 
@@ -39,7 +39,7 @@ class ClientInfo
      *
      * @return array
      */
-    public static function osBrowser()
+    public static function osBrowser(): array
     {
         $userAgent = $_SERVER['HTTP_USER_AGENT'];
         $osPlatform = 'Unknown OS Platform';

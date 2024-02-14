@@ -23,7 +23,7 @@ class Captcha
      *
      * @return string
      */
-    public static function reCaptcha()
+    public static function reCaptcha(): string
     {
         $reCaptcha = Extension::where('act', 'google-recaptcha2')->where('status', Status::ENABLE)->first();
 
@@ -35,7 +35,7 @@ class Captcha
      *
      * @return string
      */
-    public static function customCaptcha($width = '100%', $height = 46, $bgColor = '#003')
+    public static function customCaptcha($width = '100%', $height = 46, $bgColor = '#003'): string
     {
 
         $textColor = '#'.gs()->base_color;
@@ -62,7 +62,7 @@ class Captcha
      *
      * @return bool
      */
-    public static function verify()
+    public static function verify(): bool
     {
         $gCaptchaPass = self::verifyGoogleCaptcha();
         $cCaptchaPass = self::verifyCustomCaptcha();
@@ -78,7 +78,7 @@ class Captcha
      *
      * @return bool
      */
-    public static function verifyGoogleCaptcha()
+    public static function verifyGoogleCaptcha(): bool
     {
         $pass = true;
         $googleCaptcha = Extension::where('act', 'google-recaptcha2')->where('status', Status::ENABLE)->first();
@@ -97,7 +97,7 @@ class Captcha
      *
      * @return bool
      */
-    public static function verifyCustomCaptcha()
+    public static function verifyCustomCaptcha(): bool
     {
         $pass = true;
         $customCaptcha = Extension::where('act', 'custom-captcha')->where('status', Status::ENABLE)->first();
