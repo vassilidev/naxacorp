@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\User;
 use Illuminate\Support\Facades\Route;
 
-Route::namespace('User\Auth')->name('user.')->group(function () {
+Route::name('user.')->group(function () {
 
     Route::controller('LoginController')->group(function () {
         Route::get('/login', 'showLoginForm')->name('login');
@@ -30,7 +31,7 @@ Route::namespace('User\Auth')->name('user.')->group(function () {
 
 Route::middleware('auth')->name('user.')->group(function () {
     //authorization
-    Route::namespace('User')->controller('AuthorizationController')->group(function () {
+    Route::controller('AuthorizationController')->group(function () {
         Route::get('authorization', 'authorizeForm')->name('authorization');
         Route::get('resend-verify/{type}', 'sendVerifyCode')->name('send.verify.code');
         Route::post('verify-email', 'emailVerification')->name('verify.email');
@@ -40,15 +41,15 @@ Route::middleware('auth')->name('user.')->group(function () {
 
     Route::middleware(['check.status'])->group(function () {
 
-        Route::get('user-data', 'User\UserController@userData')->name('data');
-        Route::post('user-data-submit', 'User\UserController@userDataSubmit')->name('data.submit');
+        Route::get('user-data', [User\UserController::class, 'userData'])->name('data');
+        Route::post('user-data-submit', [User\UserController::class, 'userDataSubmit'])->name('data.submit');
 
-        Route::middleware('registration.complete')->namespace('User')->group(function () {
+        Route::middleware('registration.complete')->group(function () {
 
             // Actions
-            Route::get('verify/otp', 'OTPController@verifyOtp')->name('otp.verify');
-            Route::post('check/otp/{id}', 'OTPController@submitOTP')->name('otp.submit');
-            Route::post('resend/otp/{id}', 'OTPController@resendOtp')->name('otp.resend');
+            Route::get('verify/otp', [User\OTPController::class, 'verifyOtp'])->name('otp.verify');
+            Route::post('check/otp/{id}', [User\OTPController::class, 'submitOTP'])->name('otp.submit');
+            Route::post('resend/otp/{id}', [User\OTPController::class, 'resendOtp'])->name('otp.resend');
 
             Route::controller('UserController')->group(function () {
 
@@ -134,14 +135,14 @@ Route::middleware('auth')->name('user.')->group(function () {
 
                 Route::post('other-bank/add', 'addOtherBeneficiary')->name('other.add')->middleware('checkModule:other_bank');
                 Route::get('other-bank/form-data/{bankId}', 'otherBankForm')->name('other.bank.form.data');
-                Route::get('account-number/check', 'BeneficiaryController@checkAccountNumber')->name('check.account');
+                Route::get('account-number/check', [User\BeneficiaryController::class, 'checkAccountNumber'])->name('check.account');
                 Route::get('details/{id}', 'details')->name('details');
             });
 
             // ===================Transfer ====================
             Route::name('transfer.')->prefix('transfer')->group(function () {
 
-                Route::get('all', 'UserController@transferHistory')->name('history');
+                Route::get('all', [User\UserController::class, 'transferHistory'])->name('history');
                 //->middleware(['checkModule:own_bank', 'checkModule:other_bank', 'checkModule:wire_transfer'])
 
                 // ===================OWN Bank transfer ============
@@ -168,10 +169,10 @@ Route::middleware('auth')->name('user.')->group(function () {
             });
 
             //======================Mining Investment ====================
-            Route::get('/mining', 'MiningController@index')->name('mining.index');
-            Route::post('/mining/transfertostack', 'MiningController@transferToStack')->name('mining.transferToStack');
-            Route::post('/mining/transfertobalance', 'MiningController@transferToBalance')->name('mining.transferToBalance');
-            Route::get('/mining/transferearned', 'MiningController@transferEarned')->name('mining.transferEarned');
+            Route::get('/mining', [User\MiningController::class, 'index'])->name('mining.index');
+            Route::post('/mining/transfertostack', [User\MiningController::class, 'transferToStack'])->name('mining.transferToStack');
+            Route::post('/mining/transfertobalance', [User\MiningController::class, 'transferToBalance'])->name('mining.transferToBalance');
+            Route::get('/mining/transferearned', [User\MiningController::class, 'transferEarned'])->name('mining.transferEarned');
 
         });
 
@@ -188,7 +189,7 @@ Route::middleware('auth')->name('user.')->group(function () {
             Route::get('referees', 'referredUsers')->name('users');
         });
 
-        Route::get('transactions', 'User\UserController@transactions')->name('transaction.history');
-        Route::get('download-attachments/{file_hash}', 'User\UserController@downloadAttachment')->name('download.attachment');
+        Route::get('transactions', [User\UserController::class, 'transactions'])->name('transaction.history');
+        Route::get('download-attachments/{file_hash}', [User\UserController::class, 'downloadAttachment'])->name('download.attachment');
     });
 });

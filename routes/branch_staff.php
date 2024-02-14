@@ -1,8 +1,11 @@
 <?php
 
+use App\Http\Controllers\BranchStaffController;
+use App\Http\Controllers\DepositController;
+use App\Http\Controllers\WithdrawController;
 use Illuminate\Support\Facades\Route;
 
-Route::namespace('Auth')->controller('LoginController')->group(function () {
+Route::controller('LoginController')->group(function () {
     Route::get('/', 'showLoginForm')->name('login');
     Route::post('/', 'login')->name('login');
     Route::get('logout', 'logout')->name('logout');
@@ -21,7 +24,7 @@ Route::namespace('Auth')->controller('LoginController')->group(function () {
     });
 });
 
-Route::get('banned-account', 'BranchStaffController@bannedAccount')->name('banned');
+Route::get('banned-account', [BranchStaffController::class, 'bannedAccount'])->name('banned');
 
 Route::middleware('branch.staff')->group(function () {
     Route::controller('BranchStaffController')->group(function () {
@@ -36,8 +39,8 @@ Route::middleware('branch.staff')->group(function () {
     });
 
     Route::middleware('checkAccountOfficer')->group(function () {
-        Route::post('deposit/{account}', 'DepositController@save')->name('deposit.save');
-        Route::post('withdraw/{account}', 'WithdrawController@save')->name('withdraw.save');
+        Route::post('deposit/{account}', [DepositController::class, 'save'])->name('deposit.save');
+        Route::post('withdraw/{account}', [WithdrawController::class, 'save'])->name('withdraw.save');
 
         Route::controller('UserController')->name('account.')->prefix('account')->group(function () {
             Route::get('accounts', 'all')->name('all');
@@ -55,9 +58,9 @@ Route::middleware('branch.staff')->group(function () {
         Route::get('detail/{account}', 'detail')->name('detail');
     });
 
-    Route::get('branches', 'BranchStaffController@branches')->name('branches');
+    Route::get('branches', [BranchStaffController::class, 'branches'])->name('branches');
 
-    Route::get('deposits', 'DepositController@deposits')->name('deposits');
-    Route::get('withdrawals', 'WithdrawController@withdrawals')->name('withdrawals');
-    Route::get('transactions', 'BranchStaffController@transactions')->name('transactions');
+    Route::get('deposits', [DepositController::class, 'deposits'])->name('deposits');
+    Route::get('withdrawals', [WithdrawController::class, 'withdrawals'])->name('withdrawals');
+    Route::get('transactions', [BranchStaffController::class, 'transactions'])->name('transactions');
 });

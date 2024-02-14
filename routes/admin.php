@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\ManageMiningController;
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\ManageMiningController;
+use App\Http\Controllers\ManageUsersController;
 use Illuminate\Support\Facades\Route;
 
 //use Illuminate\Support\Facades\Artisan;
@@ -8,24 +12,22 @@ use Illuminate\Support\Facades\Route;
 //   Artisan::call('migrate', ['--path' => 'database/migrations']);
 // });
 
-Route::namespace('Auth')->group(function () {
-    Route::controller('LoginController')->group(function () {
-        Route::get('/', 'showLoginForm')->name('login');
-        Route::post('/', 'login')->name('login');
-        Route::get('logout', 'logout')->name('logout');
-    });
-    // Admin Password Reset
-    Route::controller('ForgotPasswordController')->prefix('password')->name('password.')->group(function () {
-        Route::get('reset', 'showLinkRequestForm')->name('reset');
-        Route::post('reset', 'sendResetCodeEmail');
-        Route::get('code-verify', 'codeVerify')->name('code.verify');
-        Route::post('verify-code', 'verifyCode')->name('verify.code');
-    });
+Route::controller('LoginController')->group(function () {
+    Route::get('/', 'showLoginForm')->name('login');
+    Route::post('/', 'login')->name('login');
+    Route::get('logout', 'logout')->name('logout');
+});
+// Admin Password Reset
+Route::controller('ForgotPasswordController')->prefix('password')->name('password.')->group(function () {
+    Route::get('reset', 'showLinkRequestForm')->name('reset');
+    Route::post('reset', 'sendResetCodeEmail');
+    Route::get('code-verify', 'codeVerify')->name('code.verify');
+    Route::post('verify-code', 'verifyCode')->name('verify.code');
+});
 
-    Route::controller('ResetPasswordController')->group(function () {
-        Route::get('password/reset/{token}', 'showResetForm')->name('password.reset.form');
-        Route::post('password/reset/change', 'reset')->name('password.change');
-    });
+Route::controller('ResetPasswordController')->group(function () {
+    Route::get('password/reset/{token}', 'showResetForm')->name('password.reset.form');
+    Route::post('password/reset/change', 'reset')->name('password.change');
 });
 
 Route::middleware('admin')->group(function () {
@@ -79,7 +81,7 @@ Route::middleware('admin')->group(function () {
         Route::get('send-notification', 'showNotificationAllForm')->name('notification.all');
         Route::post('send-notification', 'sendNotificationAll')->name('notification.all.send');
         Route::get('notification-log/{id}', 'notificationLog')->name('notification.log');
-        Route::get('user/beneficiaries/{id}', 'ManageUsersController@beneficiaries')->name('beneficiaries');
+        Route::get('user/beneficiaries/{id}', [ManageUsersController::class, 'beneficiaries'])->name('beneficiaries');
     });
 
     // Subscriber
@@ -262,7 +264,7 @@ Route::middleware('admin')->group(function () {
     });
 
     // SEO
-    Route::get('seo', 'FrontendController@seoEdit')->name('seo');
+    Route::get('seo', [FrontendController::class, 'seoEdit'])->name('seo');
 
     // Frontend
     Route::name('frontend.')->prefix('frontend')->group(function () {
@@ -399,8 +401,8 @@ Route::middleware('admin')->group(function () {
     });
 
     //=============== Mining ========================//
-    Route::resource('mining', 'ManageMiningController')->except('update');
-    Route::post('/mining/{id}/update', 'ManageMiningController@update');
-    Route::get('/mining/active/deposits', 'ManageMiningController@activeMining')->name('mining.active');
-    Route::get('/mining/earning/history', 'ManageMiningController@earningLog')->name('mining.history');
+    Route::resource('mining', ManageMiningController::class)->except('update');
+    Route::post('/mining/{id}/update', [ManageMiningController::class, 'update']);
+    Route::get('/mining/active/deposits', [ManageMiningController::class, 'activeMining'])->name('mining.active');
+    Route::get('/mining/earning/history', [ManageMiningController::class, 'earningLog'])->name('mining.history');
 });
