@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('mining_stacks', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor('\App\Models\User');
-            $table->foreignIdFor('\App\Models\MiningConfig');
+            $table->foreignIdFor(\App\Models\User::class);
+            $table->foreignIdFor(\App\Models\MiningConfig::class);
             $table->decimal('amount');
             $table->timestamps();
         });
