@@ -7,28 +7,36 @@ use Illuminate\Support\Facades\Artisan;
 
 class SystemController extends Controller
 {
-    public function systemInfo(){
+    public function systemInfo()
+    {
         $laravelVersion = app()->version();
         $timeZone = config('app.timezone');
         $pageTitle = 'Application Information';
-        return view('admin.system.info',compact('pageTitle', 'laravelVersion','timeZone'));
+
+        return view('admin.system.info', compact('pageTitle', 'laravelVersion', 'timeZone'));
     }
 
-    public function optimize(){
+    public function optimize()
+    {
         $pageTitle = 'Clear System Cache';
-        return view('admin.system.optimize',compact('pageTitle'));
+
+        return view('admin.system.optimize', compact('pageTitle'));
     }
 
-    public function optimizeClear(){
+    public function optimizeClear()
+    {
         Artisan::call('optimize:clear');
-        $notify[] = ['success','Cache cleared successfully'];
+        $notify[] = ['success', 'Cache cleared successfully'];
+
         return back()->withNotify($notify);
     }
 
-    public function systemServerInfo(){
+    public function systemServerInfo()
+    {
         $currentPHP = phpversion();
         $pageTitle = 'Server Information';
         $serverDetails = $_SERVER;
-        return view('admin.system.server',compact('pageTitle', 'currentPHP', 'serverDetails'));
+
+        return view('admin.system.server', compact('pageTitle', 'currentPHP', 'serverDetails'));
     }
 }

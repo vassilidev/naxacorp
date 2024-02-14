@@ -9,7 +9,8 @@ use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 
-class ForgotPasswordController extends Controller {
+class ForgotPasswordController extends Controller
+{
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -28,7 +29,8 @@ class ForgotPasswordController extends Controller {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('branch.staff.guest');
     }
 
@@ -37,8 +39,10 @@ class ForgotPasswordController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLinkRequestForm() {
+    public function showLinkRequestForm()
+    {
         $pageTitle = 'Account Recovery';
+
         return view('branch_staff.auth.passwords.email', compact('pageTitle'));
     }
 
@@ -47,11 +51,13 @@ class ForgotPasswordController extends Controller {
      *
      * @return \Illuminate\Contracts\Auth\PasswordBroker
      */
-    public function broker() {
+    public function broker()
+    {
         return Password::broker('branch_staff');
     }
 
-    public function sendResetCodeEmail(Request $request) {
+    public function sendResetCodeEmail(Request $request)
+    {
 
         $this->validate($request, [
             'email' => 'required|email|exists:branch_staff,email',
@@ -61,22 +67,22 @@ class ForgotPasswordController extends Controller {
 
         $code = verificationCode(6);
 
-        $staffPassReset        = new BranchStaffPasswordReset();
+        $staffPassReset = new BranchStaffPasswordReset();
         $staffPassReset->email = $staff->email;
         $staffPassReset->token = $code;
         $staffPassReset->save();
 
-        $staffIpInfo      = getIpInfo();
+        $staffIpInfo = getIpInfo();
         $staffBrowserInfo = osBrowser();
 
         $staff->username = $staff->name;
 
         notify($staff, 'PASS_RESET_CODE', [
-            'code'             => $code,
+            'code' => $code,
             'operating_system' => $staffBrowserInfo['os_platform'],
-            'browser'          => $staffBrowserInfo['browser'],
-            'ip'               => $staffIpInfo['ip'],
-            'time'             => $staffIpInfo['time'],
+            'browser' => $staffBrowserInfo['browser'],
+            'ip' => $staffIpInfo['ip'],
+            'time' => $staffIpInfo['time'],
         ], ['email'], false);
 
         $email = $staff->email;
@@ -85,23 +91,27 @@ class ForgotPasswordController extends Controller {
         return to_route('staff.password.code.verify');
     }
 
-    public function codeVerify() {
+    public function codeVerify()
+    {
         $pageTitle = 'Verify Code';
-        $email     = session()->get('pass_res_mail');
-        if (!$email) {
+        $email = session()->get('pass_res_mail');
+        if (! $email) {
             $notify[] = ['error', 'Oops! session expired'];
+
             return to_route('staff.password.reset')->withNotify($notify);
         }
+
         return view('branch_staff.auth.passwords.code_verify', compact('pageTitle', 'email'));
     }
 
-    public function verifyCode(Request $request) {
+    public function verifyCode(Request $request)
+    {
         $request->validate([
             'code' => 'required|digits:6',
         ]);
 
         $notify[] = ['success', 'You can change your password.'];
-        $code     = str_replace(' ', '', $request->code);
+        $code = str_replace(' ', '', $request->code);
 
         return to_route('staff.password.reset.form', $code)->withNotify($notify);
     }

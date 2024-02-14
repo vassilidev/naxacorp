@@ -13,15 +13,17 @@ class MaintenanceMode
 
             if ($request->is('api/*')) {
                 $notify[] = 'Our application is currently in maintenance mode';
+
                 return response()->json([
-                    'remark'=>'maintenance_mode',
-                    'status'=>'error',
-                    'message'=>['error'=>$notify]
+                    'remark' => 'maintenance_mode',
+                    'status' => 'error',
+                    'message' => ['error' => $notify],
                 ]);
-            }else{
+            } else {
                 return to_route('maintenance');
             }
         }
+
         return $next($request);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Serializer;
 class FormPart
 {
     private $value;
+
     private $headers;
 
     public function __construct($value, $headers)

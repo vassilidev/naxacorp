@@ -11,9 +11,10 @@ use App\Http\Controllers\Gateway\PaypalSdk\Orders\OrdersCreateRequest;
 use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\HttpException;
 use App\Models\Deposit;
 
-class ProcessController extends Controller {
-
-    public static function process($deposit) {
+class ProcessController extends Controller
+{
+    public static function process($deposit)
+    {
         $paypalAcc = json_decode($deposit->gatewayCurrency()->gateway_parameter);
 
         // Creating an environment
@@ -24,18 +25,18 @@ class ProcessController extends Controller {
         $request = new OrdersCreateRequest();
         $request->prefer('return=representation');
         $request->body = [
-            "intent" => "CAPTURE",
-            "purchase_units" => [[
-                "reference_id" => $deposit->trx,
-                "amount" => [
-                    "value" => round($deposit->final_amo, 2),
-                    "currency_code" => $deposit->method_currency
-                ]
+            'intent' => 'CAPTURE',
+            'purchase_units' => [[
+                'reference_id' => $deposit->trx,
+                'amount' => [
+                    'value' => round($deposit->final_amo, 2),
+                    'currency_code' => $deposit->method_currency,
+                ],
             ]],
-            "application_context" => [
-                "cancel_url" => route(gatewayRedirectUrl()),
-                "return_url" => route('ipn.' . $deposit->gateway->alias)
-            ]
+            'application_context' => [
+                'cancel_url' => route(gatewayRedirectUrl()),
+                'return_url' => route('ipn.'.$deposit->gateway->alias),
+            ],
         ];
 
         try {
@@ -54,7 +55,8 @@ class ProcessController extends Controller {
         return json_encode($send);
     }
 
-    public function ipn() {
+    public function ipn()
+    {
         $request = new OrdersCaptureRequest($_GET['token']);
         $request->prefer('return=representation');
 
@@ -75,10 +77,12 @@ class ProcessController extends Controller {
                 PaymentController::userDataUpdate($deposit);
 
                 $notify[] = ['success', 'Payment captured successfully'];
+
                 return to_route(gatewayRedirectUrl(true))->withNotify($notify);
             } else {
 
                 $notify[] = ['error', 'Payment captured failed'];
+
                 return to_route(gatewayRedirectUrl())->withNotify($notify);
             }
         } catch (HttpException $ex) {

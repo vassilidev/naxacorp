@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class OtpVerification extends Model
 {
-
     public $timestamps = false;
 
     protected $casts = [

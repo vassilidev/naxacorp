@@ -8,8 +8,9 @@ use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class BranchStaff extends Authenticatable {
-    use Searchable, GlobalStatus;
+class BranchStaff extends Authenticatable
+{
+    use GlobalStatus, Searchable;
 
     protected $hidden = [
         'password', 'remember_token',
@@ -17,21 +18,25 @@ class BranchStaff extends Authenticatable {
 
     protected $appends = ['branch_id'];
 
-    public function assignBranch() {
+    public function assignBranch()
+    {
         return $this->belongsToMany(Branch::class, 'assign_branch_staff', 'staff_id', 'branch_id');
     }
 
-    public function branch() {
+    public function branch()
+    {
         return $this->assignBranch()->first();
     }
 
-    protected function branchId(): Attribute {
+    protected function branchId(): Attribute
+    {
         return new Attribute(
             get: fn () => $this->assignBranch->pluck('id')->toArray()
         );
     }
 
-    public function statusBadge(): Attribute {
+    public function statusBadge(): Attribute
+    {
         return Attribute::make(get: function () {
             $badge = '';
             if ($this->status == Status::STAFF_ACTIVE) {
@@ -39,11 +44,13 @@ class BranchStaff extends Authenticatable {
             } else {
                 $badge = createBadge('warning', 'Banned');
             }
+
             return $badge;
         });
     }
 
-    public function designationText(): Attribute {
+    public function designationText(): Attribute
+    {
         return Attribute::make(get: function () {
             return $this->roll == Status::ROLE_ACCOUNT_OFFICER ? 'Account Officer' : 'Branch Manager';
         });

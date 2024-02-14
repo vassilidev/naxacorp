@@ -17,12 +17,13 @@ class BranchFactory extends Factory
     public function definition()
     {
         $branch = $this->faker->country();
+
         return [
-            'name'    => $branch . '- Branch',
-            'code'    => rand(1000, 9999),
+            'name' => $branch.'- Branch',
+            'code' => rand(1000, 9999),
             'address' => $branch,
-            'email'   => $this->faker->unique()->safeEmail(),
-            'mobile'  => $this->faker->phoneNumber,
+            'email' => $this->faker->unique()->safeEmail(),
+            'mobile' => $this->faker->phoneNumber,
         ];
 
     }

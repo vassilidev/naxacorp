@@ -4,20 +4,17 @@ namespace App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp;
 
 /**
  * Class Curl
- * @package PayPalHttp
  *
- * Curl wrapper used by HttpClient to make curl requests.
  * @see HttpClient
  */
 class Curl
 {
     protected $curl;
 
-    public function __construct($curl = NULL)
+    public function __construct($curl = null)
     {
 
-        if (is_null($curl))
-        {
+        if (is_null($curl)) {
             $curl = curl_init();
         }
         $this->curl = $curl;
@@ -26,12 +23,14 @@ class Curl
     public function setOpt($option, $value)
     {
         curl_setopt($this->curl, $option, $value);
+
         return $this;
     }
 
     public function close()
     {
         curl_close($this->curl);
+
         return $this;
     }
 

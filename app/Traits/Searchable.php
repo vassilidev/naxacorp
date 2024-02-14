@@ -4,8 +4,8 @@ namespace App\Traits;
 
 use Carbon\Carbon;
 
-trait Searchable {
-
+trait Searchable
+{
     /*
     |--------------------------------------------------------------------------
     | Search Data
@@ -16,10 +16,11 @@ trait Searchable {
     | But this trait unable to make search with multiple table.
     |
     */
-    public function scopeSearchable($query, $params, $like = true) {
+    public function scopeSearchable($query, $params, $like = true)
+    {
         $search = request()->search;
 
-        if (!$search) {
+        if (! $search) {
             return $query;
         }
 
@@ -40,7 +41,8 @@ trait Searchable {
         return $query;
     }
 
-    public function scopeFilter($query, $params) {
+    public function scopeFilter($query, $params)
+    {
 
         foreach ($params as $param) {
             $relationData = explode(':', $param);
@@ -54,14 +56,16 @@ trait Searchable {
                 }
             }
         }
+
         return $query;
     }
 
-    function scopeDateFilter($query, $column = 'created_at') {
-        if (!request()->date) {
+    public function scopeDateFilter($query, $column = 'created_at')
+    {
+        if (! request()->date) {
             return $query;
         }
-        $date      = explode('-', request()->date);
+        $date = explode('-', request()->date);
 
         $startDate = Carbon::parse(trim($date[0]))->format('Y-m-d');
 
@@ -71,23 +75,25 @@ trait Searchable {
 
         request()->validate([
             'start_date' => 'required|date_format:Y-m-d',
-            'end_date'   => 'nullable|date_format:Y-m-d',
+            'end_date' => 'nullable|date_format:Y-m-d',
         ]);
 
-        return  $query->whereDate($column, '>=', $startDate)->whereDate($column, '<=', $endDate);
+        return $query->whereDate($column, '>=', $startDate)->whereDate($column, '<=', $endDate);
     }
 
-
-    private function relationSearch($query, $relation, $columns, $search) {
+    private function relationSearch($query, $relation, $columns, $search)
+    {
         foreach (explode(',', $columns) as $column) {
             $query->orWhereHas($relation, function ($q) use ($column, $search) {
                 $q->where($column, 'like', $search);
             });
         }
+
         return $query;
     }
 
-    private function relationFilter($query, $relation, $columns, $filters) {
+    private function relationFilter($query, $relation, $columns, $filters)
+    {
         foreach (explode(',', $columns) as $column) {
             if (in_array($column, $filters) && request()->$column != null) {
                 $query->whereHas($relation, function ($q) use ($column) {
@@ -95,6 +101,7 @@ trait Searchable {
                 });
             }
         }
+
         return $query;
     }
 }

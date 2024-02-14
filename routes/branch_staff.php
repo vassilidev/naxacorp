@@ -21,7 +21,6 @@ Route::namespace('Auth')->controller('LoginController')->group(function () {
     });
 });
 
-
 Route::get('banned-account', 'BranchStaffController@bannedAccount')->name('banned');
 
 Route::middleware('branch.staff')->group(function () {

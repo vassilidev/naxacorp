@@ -7,6 +7,7 @@ use Illuminate\Contracts\Validation\Rule;
 class FileTypeValidate implements Rule
 {
     protected $extensions;
+
     /**
      * Create a new rule instance.
      *

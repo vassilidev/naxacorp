@@ -4,7 +4,8 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
-class Kernel extends HttpKernel {
+class Kernel extends HttpKernel
+{
     /**
      * The application's global HTTP middleware stack.
      *
@@ -76,6 +77,6 @@ class Kernel extends HttpKernel {
         'kyc' => \App\Http\Middleware\KycMiddleware::class,
         'registration.complete' => \App\Http\Middleware\RegistrationStep::class,
         'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
-        'checkModule' => \App\Http\Middleware\CheckModule::class
+        'checkModule' => \App\Http\Middleware\CheckModule::class,
     ];
 }

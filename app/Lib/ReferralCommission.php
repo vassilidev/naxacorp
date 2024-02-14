@@ -5,34 +5,35 @@ namespace App\Lib;
 use App\Models\ReferralSetting;
 use App\Models\Transaction;
 
-class ReferralCommission {
-
-    public static function levelCommission($referee, $amount, $trx) {
+class ReferralCommission
+{
+    public static function levelCommission($referee, $amount, $trx)
+    {
 
         $general = gs();
 
-        if (!$referee->referral_commission_count || !$general->modules->referral_system || !$referee->ref_by) {
+        if (! $referee->referral_commission_count || ! $general->modules->referral_system || ! $referee->ref_by) {
             return;
         }
 
         $referee->referral_commission_count -= 1;
         $referee->save();
 
-        $i           = 1;
-        $settings    = ReferralSetting::all();
+        $i = 1;
+        $settings = ReferralSetting::all();
         $tempReferee = $referee;
 
         while ($i <= $settings->count()) {
 
             $referer = $tempReferee->referrer;
 
-            if (!$referer) {
+            if (! $referer) {
                 break;
             }
 
             $commission = $settings->where('level', $i)->first();
 
-            if (!$commission) {
+            if (! $commission) {
                 break;
             }
 
@@ -41,22 +42,22 @@ class ReferralCommission {
             $referer->save();
 
             $transactions[] = [
-                'user_id'      => $referer->id,
-                'amount'       => $commissionAmount,
+                'user_id' => $referer->id,
+                'amount' => $commissionAmount,
                 'post_balance' => $referer->balance,
-                'charge'       => 0,
-                'trx_type'     => '+',
-                'details'      => ordinal($i) . ' level referral commission from ' . $referee->username,
-                'remark'       => 'referral_commission',
-                'trx'          => $trx,
-                'created_at'   => now(),
+                'charge' => 0,
+                'trx_type' => '+',
+                'details' => ordinal($i).' level referral commission from '.$referee->username,
+                'remark' => 'referral_commission',
+                'trx' => $trx,
+                'created_at' => now(),
             ];
 
             notify($referer, 'REFERRAL_COMMISSION', [
-                'amount'       => showAmount($commissionAmount),
+                'amount' => showAmount($commissionAmount),
                 'post_balance' => showAmount($referer->balance),
-                'trx'          => $trx,
-                'level'        => ordinal($i),
+                'trx' => $trx,
+                'level' => ordinal($i),
             ]);
 
             $tempReferee = $referer;

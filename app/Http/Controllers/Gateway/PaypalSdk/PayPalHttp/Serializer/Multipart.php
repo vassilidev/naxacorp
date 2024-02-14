@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Serializer;
 
-use finfo;
+use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Encoder;
 use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\HttpRequest;
 use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Serializer;
-use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Encoder;
-use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Serializer\FormPart;
+use finfo;
 
 /**
  * Class Multipart
- * @package PayPalHttp\Serializer
- *
- * Serializer for multipart.
  */
 class Multipart implements Serializer
 {
@@ -25,26 +21,25 @@ class Multipart implements Serializer
 
     public function encode(HttpRequest $request)
     {
-        if (!is_array($request->body) || !$this->isAssociative($request->body))
-        {
-            throw new \Exception("HttpRequest body must be an associative array when Content-Type is: " . $request->headers["content-type"]);
+        if (! is_array($request->body) || ! $this->isAssociative($request->body)) {
+            throw new \Exception('HttpRequest body must be an associative array when Content-Type is: '.$request->headers['content-type']);
         }
-        $boundary = "---------------------" . md5(mt_rand() . microtime());
-        $contentTypeHeader = $request->headers["content-type"];
-        $request->headers["content-type"] = "{$contentTypeHeader}; boundary={$boundary}";
+        $boundary = '---------------------'.md5(mt_rand().microtime());
+        $contentTypeHeader = $request->headers['content-type'];
+        $request->headers['content-type'] = "{$contentTypeHeader}; boundary={$boundary}";
 
         $value_params = [];
         $file_params = [];
 
-        $disallow = ["\0", "\"", "\r", "\n"];
+        $disallow = ["\0", '"', "\r", "\n"];
 
         $body = [];
 
         foreach ($request->body as $k => $v) {
-            $k = str_replace($disallow, "_", $k);
+            $k = str_replace($disallow, '_', $k);
             if (is_resource($v)) {
                 $file_params[] = $this->prepareFilePart($k, $v, $boundary);
-            } else if ($v instanceof FormPart) {
+            } elseif ($v instanceof FormPart) {
                 $value_params[] = $this->prepareFormPart($k, $v, $boundary);
             } else {
                 $value_params[] = $this->prepareFormField($k, $v, $boundary);
@@ -55,19 +50,19 @@ class Multipart implements Serializer
 
         // add boundary for each parameters
         array_walk($body, function (&$part) use ($boundary) {
-            $part = "--{$boundary}" . self::LINEFEED . "{$part}";
+            $part = "--{$boundary}".self::LINEFEED."{$part}";
         });
 
         // add final boundary
         $body[] = "--{$boundary}--";
-        $body[] = "";
+        $body[] = '';
 
         return implode(self::LINEFEED, $body);
     }
 
     public function decode($data)
     {
-        throw new \Exception("Multipart does not support deserialization");
+        throw new \Exception('Multipart does not support deserialization');
     }
 
     private function isAssociative(array $array)
@@ -79,7 +74,7 @@ class Multipart implements Serializer
     {
         return implode(self::LINEFEED, [
             "Content-Disposition: form-data; name=\"{$partName}\"",
-            "",
+            '',
             filter_var($value),
         ]);
     }
@@ -93,12 +88,13 @@ class Multipart implements Serializer
 
         $splitFilePath = explode(DIRECTORY_SEPARATOR, $filePath);
         $filePath = end($splitFilePath);
-        $disallow = ["\0", "\"", "\r", "\n"];
-        $filePath = str_replace($disallow, "_", $filePath);
+        $disallow = ["\0", '"', "\r", "\n"];
+        $filePath = str_replace($disallow, '_', $filePath);
+
         return implode(self::LINEFEED, [
             "Content-Disposition: form-data; name=\"{$partName}\"; filename=\"{$filePath}\"",
             "Content-Type: {$mimeType}",
-            "",
+            '',
             $data,
         ]);
     }
@@ -109,8 +105,8 @@ class Multipart implements Serializer
 
         $partHeaders = $formPart->getHeaders();
         $formattedheaders = array_change_key_case($partHeaders);
-        if (array_key_exists("content-type", $formattedheaders)) {
-            if ($formattedheaders["content-type"] === "application/json") {
+        if (array_key_exists('content-type', $formattedheaders)) {
+            if ($formattedheaders['content-type'] === 'application/json') {
                 $contentDisposition .= "; filename=\"{$partName}.json\"";
             }
             $tempRequest = new HttpRequest('/', 'POST');
@@ -127,7 +123,7 @@ class Multipart implements Serializer
             $finalPartHeaders[] = "{$k}: {$v}";
         }
 
-        $body = array_merge([$contentDisposition], $finalPartHeaders, [""], [$partValue]);
+        $body = array_merge([$contentDisposition], $finalPartHeaders, [''], [$partValue]);
 
         return implode(self::LINEFEED, $body);
     }

@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Gateway\PaypalSdk\Core;
 
+use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\HttpClient;
 use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\HttpRequest;
 use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Injector;
-use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\HttpClient;
 
 class AuthorizationInjector implements Injector
 {
     private $client;
+
     private $environment;
+
     private $refreshToken;
+
     public $accessToken;
 
     public function __construct(HttpClient $client, PayPalEnvironment $environment, $refreshToken)
@@ -22,13 +25,11 @@ class AuthorizationInjector implements Injector
 
     public function inject($request)
     {
-        if (!$this->hasAuthHeader($request) && !$this->isAuthRequest($request))
-        {
-            if (is_null($this->accessToken) || $this->accessToken->isExpired())
-            {
+        if (! $this->hasAuthHeader($request) && ! $this->isAuthRequest($request)) {
+            if (is_null($this->accessToken) || $this->accessToken->isExpired()) {
                 $this->accessToken = $this->fetchAccessToken();
             }
-            $request->headers['Authorization'] = 'Bearer ' . $this->accessToken->token;
+            $request->headers['Authorization'] = 'Bearer '.$this->accessToken->token;
         }
     }
 
@@ -36,6 +37,7 @@ class AuthorizationInjector implements Injector
     {
         $accessTokenResponse = $this->client->execute(new AccessTokenRequest($this->environment, $this->refreshToken));
         $accessToken = $accessTokenResponse->result;
+
         return new AccessToken($accessToken->access_token, $accessToken->token_type, $accessToken->expires_in);
     }
 
@@ -46,6 +48,6 @@ class AuthorizationInjector implements Injector
 
     private function hasAuthHeader(HttpRequest $request)
     {
-        return array_key_exists("Authorization", $request->headers);
+        return array_key_exists('Authorization', $request->headers);
     }
 }

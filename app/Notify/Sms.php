@@ -2,13 +2,8 @@
 
 namespace App\Notify;
 
-use App\Notify\NotifyProcess;
-use App\Notify\SmsGateway;
-use App\Notify\Notifiable;
-
-
-class Sms extends NotifyProcess implements Notifiable {
-
+class Sms extends NotifyProcess implements Notifiable
+{
     /**
      * Mobile number of receiver
      *
@@ -21,20 +16,21 @@ class Sms extends NotifyProcess implements Notifiable {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->statusField = 'sms_status';
         $this->body = 'sms_body';
         $this->globalTemplate = 'sms_body';
         $this->notifyConfig = 'sms_config';
     }
 
-
     /**
      * Send notification
      *
      * @return void|bool
      */
-    public function send() {
+    public function send()
+    {
 
         //get message from parent
         $message = $this->getMessage();
@@ -51,8 +47,8 @@ class Sms extends NotifyProcess implements Notifiable {
                     $this->createLog('sms');
                 }
             } catch (\Exception $e) {
-                $this->createErrorLog('SMS Error: ' . $e->getMessage());
-                session()->flash('sms_error', 'API Error: ' . $e->getMessage());
+                $this->createErrorLog('SMS Error: '.$e->getMessage());
+                session()->flash('sms_error', 'API Error: '.$e->getMessage());
             }
         }
     }
@@ -62,7 +58,8 @@ class Sms extends NotifyProcess implements Notifiable {
      *
      * @return void
      */
-    public function prevConfiguration() {
+    public function prevConfiguration()
+    {
         //Check If User
         if ($this->user) {
             $this->mobile = $this->user->mobile;

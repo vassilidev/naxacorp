@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Facade;
 
-require_once('timezone.php');
+require_once 'timezone.php';
+
 return [
 
     /*
@@ -71,7 +72,6 @@ return [
     */
 
     'timezone' => $timezone,
-
 
     /*
     |--------------------------------------------------------------------------
@@ -193,7 +193,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'Status' => App\Constants\Status::class
+        'Status' => App\Constants\Status::class,
     ])->toArray(),
 
 ];

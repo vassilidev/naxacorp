@@ -7,7 +7,8 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Laramin\Utility\Onumoti;
 
-class LoginController extends Controller {
+class LoginController extends Controller
+{
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -33,7 +34,8 @@ class LoginController extends Controller {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('branch.staff.guest')->except('logout');
     }
 
@@ -42,8 +44,10 @@ class LoginController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLoginForm() {
-        $pageTitle = "Staff Login";
+    public function showLoginForm()
+    {
+        $pageTitle = 'Staff Login';
+
         return view('branch_staff.auth.login', compact('pageTitle'));
     }
 
@@ -52,22 +56,26 @@ class LoginController extends Controller {
      *
      * @return \Illuminate\Contracts\Auth\StatefulGuard
      */
-    protected function guard() {
+    protected function guard()
+    {
         return auth()->guard('branch_staff');
     }
 
-    public function username() {
+    public function username()
+    {
         return 'email';
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
 
         $this->validateLogin($request);
 
         $request->session()->regenerateToken();
 
-        if (!verifyCaptcha()) {
+        if (! verifyCaptcha()) {
             $notify[] = ['error', 'Invalid captcha provided'];
+
             return back()->withNotify($notify);
         }
 
@@ -81,6 +89,7 @@ class LoginController extends Controller {
             $this->hasTooManyLoginAttempts($request)
         ) {
             $this->fireLockoutEvent($request);
+
             return $this->sendLockoutResponse($request);
         }
 
@@ -96,9 +105,11 @@ class LoginController extends Controller {
         return $this->sendFailedLoginResponse($request);
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $this->guard('branch_staff')->logout();
         $request->session()->invalidate();
+
         return $this->loggedOut($request) ?: redirect($this->redirectTo);
     }
 }

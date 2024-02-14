@@ -3,26 +3,31 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Constants\Status;
-use App\Models\Gateway;
-use App\Models\GatewayCurrency;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
+use App\Models\Gateway;
+use App\Models\GatewayCurrency;
 use Illuminate\Http\Request;
 
-class ManualGatewayController extends Controller {
-    public function index() {
+class ManualGatewayController extends Controller
+{
+    public function index()
+    {
         $pageTitle = 'Manual Gateways';
         $gateways = Gateway::manual()->orderBy('id', 'desc')->get();
+
         return view('admin.gateways.manual.list', compact('pageTitle', 'gateways'));
     }
 
-    public function create() {
+    public function create()
+    {
         $pageTitle = 'Edit Manual Gateway';
+
         return view('admin.gateways.manual.create', compact('pageTitle'));
     }
 
-
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $formProcessor = new FormProcessor();
         $this->validation($request, $formProcessor);
 
@@ -59,18 +64,22 @@ class ManualGatewayController extends Controller {
         $gatewayCurrency->rate = $request->rate;
         $gatewayCurrency->save();
 
-        $notify[] = ['success', $method->name . ' Manual gateway has been added.'];
+        $notify[] = ['success', $method->name.' Manual gateway has been added.'];
+
         return back()->withNotify($notify);
     }
 
-    public function edit($alias) {
+    public function edit($alias)
+    {
         $pageTitle = 'New Manual Gateway';
         $method = Gateway::manual()->with('singleCurrency')->where('alias', $alias)->firstOrFail();
         $form = $method->form;
+
         return view('admin.gateways.manual.edit', compact('pageTitle', 'method', 'form'));
     }
 
-    public function update(Request $request, $code) {
+    public function update(Request $request, $code)
+    {
         $formProcessor = new FormProcessor();
         $this->validation($request, $formProcessor);
 
@@ -86,8 +95,6 @@ class ManualGatewayController extends Controller {
         $method->form_id = @$generate->id ?? 0;
         $method->save();
 
-
-
         $singleCurrency = $method->singleCurrency;
         $singleCurrency->name = $request->name;
         $singleCurrency->gateway_alias = strtolower(trim(str_replace(' ', '_', $method->name)));
@@ -100,21 +107,22 @@ class ManualGatewayController extends Controller {
         $singleCurrency->rate = $request->rate;
         $singleCurrency->save();
 
+        $notify[] = ['success', $method->name.' manual gateway updated successfully'];
 
-        $notify[] = ['success', $method->name . ' manual gateway updated successfully'];
         return to_route('admin.gateway.manual.edit', [$method->alias])->withNotify($notify);
     }
 
-    private function validation($request, $formProcessor) {
+    private function validation($request, $formProcessor)
+    {
         $validation = [
-            'name'           => 'required',
-            'rate'           => 'required|numeric|gt:0',
-            'currency'       => 'required',
-            'min_limit'      => 'required|numeric|gt:0',
-            'max_limit'      => 'required|numeric|gt:min_limit',
-            'fixed_charge'   => 'required|numeric|gte:0',
+            'name' => 'required',
+            'rate' => 'required|numeric|gt:0',
+            'currency' => 'required',
+            'min_limit' => 'required|numeric|gt:0',
+            'max_limit' => 'required|numeric|gt:min_limit',
+            'fixed_charge' => 'required|numeric|gte:0',
             'percent_charge' => 'required|numeric|between:0,100',
-            'instruction'    => 'required'
+            'instruction' => 'required',
         ];
 
         $generatorValidation = $formProcessor->generatorValidation();
@@ -122,7 +130,8 @@ class ManualGatewayController extends Controller {
         $request->validate($validation, $generatorValidation['messages']);
     }
 
-    public function status($id) {
+    public function status($id)
+    {
         return Gateway::changeStatus($id);
     }
 }

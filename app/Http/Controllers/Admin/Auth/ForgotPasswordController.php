@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\AdminPasswordReset;
-use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 
-class ForgotPasswordController extends Controller {
+class ForgotPasswordController extends Controller
+{
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -28,7 +29,8 @@ class ForgotPasswordController extends Controller {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->middleware('admin.guest');
     }
@@ -38,8 +40,10 @@ class ForgotPasswordController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function showLinkRequestForm() {
+    public function showLinkRequestForm()
+    {
         $pageTitle = 'Account Recovery';
+
         return view('admin.auth.passwords.email', compact('pageTitle'));
     }
 
@@ -48,17 +52,19 @@ class ForgotPasswordController extends Controller {
      *
      * @return \Illuminate\Contracts\Auth\PasswordBroker
      */
-    public function broker() {
+    public function broker()
+    {
         return Password::broker('admins');
     }
 
-    public function sendResetCodeEmail(Request $request) {
+    public function sendResetCodeEmail(Request $request)
+    {
         $this->validate($request, [
             'email' => 'required|email',
         ]);
 
         $admin = Admin::where('email', $request->email)->first();
-        if (!$admin) {
+        if (! $admin) {
             return back()->withErrors(['Email Not Available']);
         }
 
@@ -66,7 +72,7 @@ class ForgotPasswordController extends Controller {
         $adminPasswordReset = new AdminPasswordReset();
         $adminPasswordReset->email = $admin->email;
         $adminPasswordReset->token = $code;
-        $adminPasswordReset->created_at = date("Y-m-d h:i:s");
+        $adminPasswordReset->created_at = date('Y-m-d h:i:s');
         $adminPasswordReset->save();
 
         $adminIpInfo = getIpInfo();
@@ -76,7 +82,7 @@ class ForgotPasswordController extends Controller {
             'operating_system' => $adminBrowser['os_platform'],
             'browser' => $adminBrowser['browser'],
             'ip' => $adminIpInfo['ip'],
-            'time' => $adminIpInfo['time']
+            'time' => $adminIpInfo['time'],
         ], ['email'], false);
 
         $email = $admin->email;
@@ -85,20 +91,25 @@ class ForgotPasswordController extends Controller {
         return to_route('admin.password.code.verify');
     }
 
-    public function codeVerify() {
+    public function codeVerify()
+    {
         $pageTitle = 'Verify Code';
         $email = session()->get('pass_res_mail');
-        if (!$email) {
+        if (! $email) {
             $notify[] = ['error', 'Oops! session expired'];
+
             return to_route('admin.password.reset')->withNotify($notify);
         }
+
         return view('admin.auth.passwords.code_verify', compact('pageTitle', 'email'));
     }
 
-    public function verifyCode(Request $request) {
+    public function verifyCode(Request $request)
+    {
         $request->validate(['code' => 'required']);
         $notify[] = ['success', 'You can change your password.'];
         $code = str_replace(' ', '', $request->code);
+
         return to_route('admin.password.reset.form', $code)->withNotify($notify);
     }
 }

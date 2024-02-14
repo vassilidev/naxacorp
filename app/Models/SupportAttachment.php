@@ -8,6 +8,6 @@ class SupportAttachment extends Model
 {
     public function supportMessage()
     {
-        return $this->belongsTo(SupportMessage::class,'support_message_id');
+        return $this->belongsTo(SupportMessage::class, 'support_message_id');
     }
 }

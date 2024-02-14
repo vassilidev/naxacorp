@@ -19,14 +19,14 @@ Route::get('/import-loan-installments', function () {
         $firstInstallmentDate = $loan->created_at->addDays($loan->installment_interval);
 
         for ($i = 0; $i < $installmentDiteHobe; $i++) {
-            $installmentDate                     = $firstInstallmentDate;
-            $installment['installmentable_id']   = $loan->id;
+            $installmentDate = $firstInstallmentDate;
+            $installment['installmentable_id'] = $loan->id;
             $installment['installmentable_type'] = Loan::class;
-            $installment['installment_date']     = $installmentDate->format('Y-m-d');
-            $installment['given_at']             = null;
-            $installment['delay_charge']         = 0;
-            $data[]                              = $installment;
-            $firstInstallmentDate                = $installmentDate->addDays($loan->installment_interval);
+            $installment['installment_date'] = $installmentDate->format('Y-m-d');
+            $installment['given_at'] = null;
+            $installment['delay_charge'] = 0;
+            $data[] = $installment;
+            $firstInstallmentDate = $installmentDate->addDays($loan->installment_interval);
         }
     }
 
@@ -38,19 +38,19 @@ Route::get('/loan-plans', function () {
     foreach ($loanPlan as $plan) {
         $i = 0;
         foreach (json_decode($plan->requirement_information) as $info) {
-            $label            = titleToKey($info->field_name);
+            $label = titleToKey($info->field_name);
             $formData[$label] = [
-                'name'        => $info->field_name,
-                'label'       => $label,
+                'name' => $info->field_name,
+                'label' => $label,
                 'is_required' => $info->validation,
-                'extensions'  => "",
-                'options'     => [],
-                'type'        => $info->type,
+                'extensions' => '',
+                'options' => [],
+                'type' => $info->type,
             ];
             $i++;
         }
-        $form            = new Form();
-        $form->act       = 'loan_plan';
+        $form = new Form();
+        $form->act = 'loan_plan';
         $form->form_data = $formData;
         $form->save();
 

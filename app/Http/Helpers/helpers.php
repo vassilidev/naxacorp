@@ -14,86 +14,106 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
-function systemDetails() {
-    $system['name']          = 'viserbank';
-    $system['version']       = '2.1';
+function systemDetails()
+{
+    $system['name'] = 'viserbank';
+    $system['version'] = '2.1';
     $system['build_version'] = '4.3.6';
+
     return $system;
 }
 
-function slug($string) {
+function slug($string)
+{
     return Illuminate\Support\Str::slug($string);
 }
 
-function verificationCode($length) {
+function verificationCode($length)
+{
     if ($length == 0) {
         return 0;
     }
 
     $min = pow(10, $length - 1);
-    $max = (int) ($min - 1) . '9';
+    $max = (int) ($min - 1).'9';
+
     return random_int($min, $max);
 }
 
-function getNumber($length = 8) {
-    $characters       = '1234567890';
+function getNumber($length = 8)
+{
+    $characters = '1234567890';
     $charactersLength = strlen($characters);
-    $randomString     = '';
+    $randomString = '';
     for ($i = 0; $i < $length; $i++) {
         $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
+
     return $randomString;
 }
 
-function activeTemplate($asset = false) {
-    $general  = gs();
+function activeTemplate($asset = false)
+{
+    $general = gs();
     $template = $general->active_template;
     if ($asset) {
-        return 'assets/templates/' . $template . '/';
+        return 'assets/templates/'.$template.'/';
     }
 
-    return 'templates.' . $template . '.';
+    return 'templates.'.$template.'.';
 }
 
-function activeTemplateName() {
-    $general  = gs();
+function activeTemplateName()
+{
+    $general = gs();
     $template = $general->active_template;
+
     return $template;
 }
 
-function loadReCaptcha() {
+function loadReCaptcha()
+{
     return Captcha::reCaptcha();
 }
 
-function loadCustomCaptcha($width = '100%', $height = 46, $bgColor = '#003') {
+function loadCustomCaptcha($width = '100%', $height = 46, $bgColor = '#003')
+{
     return Captcha::customCaptcha($width, $height, $bgColor);
 }
 
-function verifyCaptcha() {
+function verifyCaptcha()
+{
     return Captcha::verify();
 }
 
-function loadExtension($key) {
+function loadExtension($key)
+{
     $extension = Extension::where('act', $key)->where('status', Status::ENABLE)->first();
+
     return $extension ? $extension->generateScript() : '';
 }
 
-function getTrx($length = 12) {
-    $characters       = 'ABCDEFGHJKMNOPQRSTUVWXYZ123456789';
+function getTrx($length = 12)
+{
+    $characters = 'ABCDEFGHJKMNOPQRSTUVWXYZ123456789';
     $charactersLength = strlen($characters);
-    $randomString     = '';
+    $randomString = '';
     for ($i = 0; $i < $length; $i++) {
         $randomString .= $characters[rand(0, $charactersLength - 1)];
     }
+
     return $randomString;
 }
 
-function getAmount($amount, $length = 2) {
+function getAmount($amount, $length = 2)
+{
     $amount = round($amount ?? 0, $length);
+
     return $amount + 0;
 }
 
-function showAmount($amount, $decimal = 2, $separate = true, $exceptZeros = false) {
+function showAmount($amount, $decimal = 2, $separate = true, $exceptZeros = false)
+{
     $separator = '';
     if ($separate) {
         $separator = ',';
@@ -107,44 +127,55 @@ function showAmount($amount, $decimal = 2, $separate = true, $exceptZeros = fals
             $printAmount = rtrim($printAmount, '0');
         }
     }
+
     return $printAmount;
 }
 
-function removeElement($array, $value) {
+function removeElement($array, $value)
+{
     return array_diff($array, (is_array($value) ? $value : [$value]));
 }
 
-function cryptoQR($wallet) {
+function cryptoQR($wallet)
+{
     return "https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=$wallet&choe=UTF-8";
 }
 
-function keyToTitle($text) {
-    return ucfirst(preg_replace("/[^A-Za-z0-9 ]/", ' ', $text));
+function keyToTitle($text)
+{
+    return ucfirst(preg_replace('/[^A-Za-z0-9 ]/', ' ', $text));
 }
 
-function titleToKey($text) {
+function titleToKey($text)
+{
     return strtolower(str_replace(' ', '_', $text));
 }
 
-function strLimit($title = null, $length = 10) {
+function strLimit($title = null, $length = 10)
+{
     return Str::limit($title, $length);
 }
 
-function getIpInfo() {
+function getIpInfo()
+{
     $ipInfo = ClientInfo::ipInfo();
+
     return $ipInfo;
 }
 
-function osBrowser() {
+function osBrowser()
+{
     $osBrowser = ClientInfo::osBrowser();
+
     return $osBrowser;
 }
 
-function getTemplates() {
-    $param['purchasecode'] = env("PURCHASECODE");
-    $param['website']      = @$_SERVER['HTTP_HOST'] . @$_SERVER['REQUEST_URI'] . ' - ' . env("APP_URL");
-    $url                   = 'https://license.viserlab.com/updates/templates/' . systemDetails()['name'];
-    $response              = CurlRequest::curlPostContent($url, $param);
+function getTemplates()
+{
+    $param['purchasecode'] = env('PURCHASECODE');
+    $param['website'] = @$_SERVER['HTTP_HOST'].@$_SERVER['REQUEST_URI'].' - '.env('APP_URL');
+    $url = 'https://license.viserlab.com/updates/templates/'.systemDetails()['name'];
+    $response = CurlRequest::curlPostContent($url, $param);
     if ($response) {
         return $response;
     } else {
@@ -152,20 +183,23 @@ function getTemplates() {
     }
 }
 
-function getPageSections($arr = false) {
-    $jsonUrl  = resource_path('views/') . str_replace('.', '/', activeTemplate()) . 'sections.json';
+function getPageSections($arr = false)
+{
+    $jsonUrl = resource_path('views/').str_replace('.', '/', activeTemplate()).'sections.json';
     $sections = json_decode(file_get_contents($jsonUrl));
     if ($arr) {
         $sections = json_decode(file_get_contents($jsonUrl), true);
         ksort($sections);
     }
+
     return $sections;
 }
 
-function getImage($image, $size = null, $avatar = false) {
+function getImage($image, $size = null, $avatar = false)
+{
     $clean = '';
     if (file_exists($image) && is_file($image)) {
-        return asset($image) . $clean;
+        return asset($image).$clean;
     }
     if ($size) {
         return route('placeholder.image', $size);
@@ -174,15 +208,17 @@ function getImage($image, $size = null, $avatar = false) {
     if ($avatar) {
         return asset('assets/images/avatar.png');
     }
+
     return asset('assets/images/default.png');
 }
 
-function notify($user, $templateName, $shortCodes = null, $sendVia = null, $createLog = true, $clickValue = null) {
+function notify($user, $templateName, $shortCodes = null, $sendVia = null, $createLog = true, $clickValue = null)
+{
     $general = gs();
 
     $globalShortCodes = [
-        'site_name'       => $general->site_name,
-        'site_currency'   => $general->cur_text,
+        'site_name' => $general->site_name,
+        'site_currency' => $general->cur_text,
         'currency_symbol' => $general->cur_sym,
     ];
 
@@ -192,25 +228,28 @@ function notify($user, $templateName, $shortCodes = null, $sendVia = null, $crea
 
     $shortCodes = array_merge($shortCodes ?? [], $globalShortCodes);
 
-    $notify               = new Notify($sendVia);
+    $notify = new Notify($sendVia);
     $notify->templateName = $templateName;
-    $notify->shortCodes   = $shortCodes;
-    $notify->user         = $user;
-    $notify->createLog    = $createLog;
-    $notify->userColumn   = isset($user->id) ? $user->getForeignKey() : 'user_id';
-    $notify->clickValue   = $clickValue;
+    $notify->shortCodes = $shortCodes;
+    $notify->user = $user;
+    $notify->createLog = $createLog;
+    $notify->userColumn = isset($user->id) ? $user->getForeignKey() : 'user_id';
+    $notify->clickValue = $clickValue;
     $notify->send();
 }
 
-function getPaginate($paginate = 20) {
+function getPaginate($paginate = 20)
+{
     return $paginate;
 }
 
-function paginateLinks($data) {
+function paginateLinks($data)
+{
     return $data->appends(request()->all())->links();
 }
 
-function menuActive($routeName, $type = null, $param = null) {
+function menuActive($routeName, $type = null, $param = null)
+{
     if ($type == 3) {
         $class = 'side-menu--open';
     } elseif ($type == 2) {
@@ -234,49 +273,61 @@ function menuActive($routeName, $type = null, $param = null) {
                 return;
             }
         }
+
         return $class;
     }
 }
 
-function fileUploader($file, $location, $size = null, $old = null, $thumb = null) {
-    $fileManager        = new FileManager($file);
-    $fileManager->path  = $location;
-    $fileManager->size  = $size;
-    $fileManager->old   = $old;
+function fileUploader($file, $location, $size = null, $old = null, $thumb = null)
+{
+    $fileManager = new FileManager($file);
+    $fileManager->path = $location;
+    $fileManager->size = $size;
+    $fileManager->old = $old;
     $fileManager->thumb = $thumb;
     $fileManager->upload();
+
     return $fileManager->filename;
 }
 
-function fileManager() {
+function fileManager()
+{
     return new FileManager();
 }
 
-function getFilePath($key) {
+function getFilePath($key)
+{
     return fileManager()->$key()->path;
 }
 
-function getFileSize($key) {
+function getFileSize($key)
+{
     return fileManager()->$key()->size;
 }
 
-function getFileExt($key) {
+function getFileExt($key)
+{
     return fileManager()->$key()->extensions;
 }
 
-function diffForHumans($date) {
+function diffForHumans($date)
+{
     $lang = session()->get('lang');
     Carbon::setlocale($lang);
+
     return Carbon::parse($date)->diffForHumans();
 }
 
-function showDateTime($date, $format = 'Y-m-d h:i A') {
+function showDateTime($date, $format = 'Y-m-d h:i A')
+{
     $lang = session()->get('lang');
     Carbon::setlocale($lang);
+
     return Carbon::parse($date)->translatedFormat($format);
 }
 
-function getContent($dataKeys, $singleQuery = false, $limit = null, $orderById = false) {
+function getContent($dataKeys, $singleQuery = false, $limit = null, $orderById = false)
+{
     if ($singleQuery) {
         $content = Frontend::where('data_keys', $dataKeys)->orderBy('id', 'desc')->first();
     } else {
@@ -290,10 +341,12 @@ function getContent($dataKeys, $singleQuery = false, $limit = null, $orderById =
             $content = $article->where('data_keys', $dataKeys)->orderBy('id', 'desc')->get();
         }
     }
+
     return $content;
 }
 
-function gatewayRedirectUrl($type = false) {
+function gatewayRedirectUrl($type = false)
+{
     if ($type) {
         return 'user.deposit.history';
     } else {
@@ -301,45 +354,54 @@ function gatewayRedirectUrl($type = false) {
     }
 }
 
-function verifyG2fa($user, $code, $secret = null) {
+function verifyG2fa($user, $code, $secret = null)
+{
     $authenticator = new GoogleAuthenticator();
-    if (!$secret) {
+    if (! $secret) {
         $secret = $user->tsc;
     }
-    $oneCode  = $authenticator->getCode($secret);
+    $oneCode = $authenticator->getCode($secret);
     $userCode = $code;
     if ($oneCode == $userCode) {
         $user->tv = 1;
         $user->save();
+
         return true;
     } else {
         return false;
     }
 }
 
-function urlPath($routeName, $routeParam = null) {
+function urlPath($routeName, $routeParam = null)
+{
     if ($routeParam == null) {
         $url = route($routeName);
     } else {
         $url = route($routeName, $routeParam);
     }
     $basePath = route('home');
-    $path     = str_replace($basePath, '', $url);
+    $path = str_replace($basePath, '', $url);
+
     return $path;
 }
 
-function showMobileNumber($number) {
+function showMobileNumber($number)
+{
     $length = strlen($number);
+
     return substr_replace($number, '***', 2, $length - 4);
 }
 
-function showEmailAddress($email) {
+function showEmailAddress($email)
+{
     $endPosition = strpos($email, '@') - 1;
+
     return substr_replace($email, '***', 1, $endPosition);
 }
 
-function getRealIP() {
-    $ip = $_SERVER["REMOTE_ADDR"];
+function getRealIP()
+{
+    $ip = $_SERVER['REMOTE_ADDR'];
     //Deep detect ip
     if (filter_var(@$_SERVER['HTTP_FORWARDED'], FILTER_VALIDATE_IP)) {
         $ip = $_SERVER['HTTP_FORWARDED'];
@@ -366,28 +428,35 @@ function getRealIP() {
     return $ip;
 }
 
-function appendQuery($key, $value) {
+function appendQuery($key, $value)
+{
     return request()->fullUrlWithQuery([$key => $value]);
 }
 
-function dateSort($a, $b) {
+function dateSort($a, $b)
+{
     return strtotime($a) - strtotime($b);
 }
 
-function dateSorting($arr) {
-    usort($arr, "dateSort");
+function dateSorting($arr)
+{
+    usort($arr, 'dateSort');
+
     return $arr;
 }
 
-function gs() {
+function gs()
+{
     $general = Cache::get('GeneralSetting');
-    if (!$general) {
+    if (! $general) {
         $general = GeneralSetting::first();
         Cache::put('GeneralSetting', $general);
     }
+
     return $general;
 }
-function displayRating(float $val) {
+function displayRating(float $val)
+{
     $result = '';
     for ($i = 0; $i < intval($val); $i++) {
         $result .= '<i class="la la-star"></i>';
@@ -399,55 +468,64 @@ function displayRating(float $val) {
     for ($k = 0; $k < 5 - $i; $k++) {
         $result .= '<i class="lar la-star"></i>';
     }
+
     return $result;
 }
 
-function checkIsOtpEnable() {
+function checkIsOtpEnable()
+{
     $general = gs();
     if ($general->modules->otp_email || $general->modules->otp_sms || auth()->user()->ts) {
         return 1;
     }
+
     return 0;
 }
 
-function generateAccountNumber() {
-    $general       = gs();
+function generateAccountNumber()
+{
+    $general = gs();
     $accountNumber = $general->account_no_prefix;
-    $uniqueId      = substr(hexdec(uniqid()), -2);
-    $accountNumber .= date('ydis') . rand(11, 99) . $uniqueId;
+    $uniqueId = substr(hexdec(uniqid()), -2);
+    $accountNumber .= date('ydis').rand(11, 99).$uniqueId;
     $suffix = getNumber($general->account_no_length - strlen($accountNumber));
     $accountNumber .= $suffix;
 
     return $accountNumber;
 }
 
-function verification() {
+function verification()
+{
     $verification = [];
-    $general      = gs();
+    $general = gs();
 
     if (@$general->modules->otp_email || @$general->modules->otp_sms) {
         $verification['Email'] = @$general->modules->otp_email ? 1 : 0;
-        $verification['Sms']   = @$general->modules->otp_sms ? 1 : 0;
+        $verification['Sms'] = @$general->modules->otp_sms ? 1 : 0;
     }
+
     return $verification;
 }
 
-function ordinal($number) {
+function ordinal($number)
+{
     $ends = ['th', 'st', 'nd', 'rd', 'th', 'th', 'th', 'th', 'th', 'th'];
     if ((($number % 100) >= 11) && (($number % 100) <= 13)) {
-        return $number . 'th';
+        return $number.'th';
     } else {
-        return $number . $ends[$number % 10];
+        return $number.$ends[$number % 10];
     }
 }
 
-function createBadge($type, $text) {
-    return "<span class='badge badge--$type'>" . trans($text) . '</span>';
+function createBadge($type, $text)
+{
+    return "<span class='badge badge--$type'>".trans($text).'</span>';
 }
 
-function getOtpFields() {
+function getOtpFields()
+{
     $general = gs();
-    $data    = [];
+    $data = [];
 
     if ($general->modules->otp_email) {
         $data[] = 'email';
@@ -460,64 +538,76 @@ function getOtpFields() {
     if (auth()->user()->ts) {
         $data[] = '2fa';
     }
+
     return $data;
 }
 
-function mergeOtpField($rules = []) {
+function mergeOtpField($rules = [])
+{
 
     $otpFields = getOtpFields();
     if (count($otpFields)) {
-        $otpFields          = implode(',', getOtpFields());
+        $otpFields = implode(',', getOtpFields());
         $rules['auth_mode'] = "required|in:$otpFields";
     }
+
     return $rules;
 }
 
-function sessionVerificationId() {
+function sessionVerificationId()
+{
     $id = session()->get('otp_id');
-    if (!$id) {
+    if (! $id) {
         return to_route('user.home');
     }
+
     return $id;
 }
 
-function getFormData($formData) {
+function getFormData($formData)
+{
     return json_encode([
-        'type'        => $formData->type,
+        'type' => $formData->type,
         'is_required' => $formData->is_required,
-        'label'       => $formData->name,
-        'extensions'  => explode(',', $formData->extensions) ?? 'null',
-        'options'     => $formData->options,
-        'old_id'      => '',
+        'label' => $formData->name,
+        'extensions' => explode(',', $formData->extensions) ?? 'null',
+        'options' => $formData->options,
+        'old_id' => '',
     ]);
 }
 
-function authStaff() {
+function authStaff()
+{
     return auth()->guard('branch_staff')->user();
 }
 
-function isManager() {
+function isManager()
+{
     return authStaff()->designation == Status::ROLE_MANAGER;
 }
 
-function downloadAttachment($fileHash) {
-    $filePath  = decrypt($fileHash);
+function downloadAttachment($fileHash)
+{
+    $filePath = decrypt($fileHash);
     $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-    $general   = gs();
+    $general = gs();
 
     try {
-        $title    = slug($general->site_name) . '- attachments.' . $extension;
+        $title = slug($general->site_name).'- attachments.'.$extension;
         $mimetype = mime_content_type($filePath);
-        header('Content-Disposition: attachment; filename="' . $title);
-        header("Content-Type: " . $mimetype);
+        header('Content-Disposition: attachment; filename="'.$title);
+        header('Content-Type: '.$mimetype);
+
         return readfile($filePath);
     } catch (Exception $e) {
         $notify[] = ['error', 'File not found'];
+
         return back()->withNotify($notify);
     }
 }
 
-function addCustomValidation($validator, $key, $message) {
+function addCustomValidation($validator, $key, $message)
+{
     $validator->after(function ($validator) use ($key, $message) {
         $validator->errors()->add($key, $message);
     });
@@ -525,15 +615,18 @@ function addCustomValidation($validator, $key, $message) {
     return $validator;
 }
 
-function callApiMethod($routeName, $actionId) {
-    $action     = \Route::getRoutes()->getByName($routeName)->getActionName();
-    $data       = explode('@', $action);
+function callApiMethod($routeName, $actionId)
+{
+    $action = \Route::getRoutes()->getByName($routeName)->getActionName();
+    $data = explode('@', $action);
     $controller = new $data[0];
-    $method     = $data[1];
+    $method = $data[1];
+
     return $controller->$method($actionId);
 }
 
-function getReferees($user, $maxLevel, $data = [], $depth = 1, $layer = 0) {
+function getReferees($user, $maxLevel, $data = [], $depth = 1, $layer = 0)
+{
     if ($user->allReferees->count() > 0 && $maxLevel > 0) {
         foreach ($user->allReferees as $under) {
             $i = 0;
@@ -542,14 +635,15 @@ function getReferees($user, $maxLevel, $data = [], $depth = 1, $layer = 0) {
             }
             $i++;
 
-            $userData['id']       = $under->id;
+            $userData['id'] = $under->id;
             $userData['username'] = $under->username;
-            $userData['level']    = $depth;
-            $data[]               = $userData;
+            $userData['level'] = $depth;
+            $data[] = $userData;
             if ($under->allReferees->count() > 0 && $layer < $maxLevel) {
                 $data = getReferees($under, $maxLevel, $data, $depth + 1, $layer);
             }
         }
     }
+
     return $data;
 }

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::namespace ('User\Auth')->name('user.')->group(function () {
+Route::namespace('User\Auth')->name('user.')->group(function () {
 
     Route::controller('LoginController')->group(function () {
         Route::get('/login', 'showLoginForm')->name('login');
@@ -30,7 +30,7 @@ Route::namespace ('User\Auth')->name('user.')->group(function () {
 
 Route::middleware('auth')->name('user.')->group(function () {
     //authorization
-    Route::namespace ('User')->controller('AuthorizationController')->group(function () {
+    Route::namespace('User')->controller('AuthorizationController')->group(function () {
         Route::get('authorization', 'authorizeForm')->name('authorization');
         Route::get('resend-verify/{type}', 'sendVerifyCode')->name('send.verify.code');
         Route::post('verify-email', 'emailVerification')->name('verify.email');
@@ -141,9 +141,8 @@ Route::middleware('auth')->name('user.')->group(function () {
             // ===================Transfer ====================
             Route::name('transfer.')->prefix('transfer')->group(function () {
 
-                Route::get('all', 'UserController@transferHistory')->name('history')
+                Route::get('all', 'UserController@transferHistory')->name('history');
                 //->middleware(['checkModule:own_bank', 'checkModule:other_bank', 'checkModule:wire_transfer'])
-                ;
 
                 // ===================OWN Bank transfer ============
                 Route::controller('OwnBankTransferController')->middleware('checkModule:own_bank')->prefix('own-bank')->name('own.bank.')->group(function () {
@@ -167,14 +166,13 @@ Route::middleware('auth')->name('user.')->group(function () {
                     Route::get('details/{id}', 'details')->name('details');
                 });
             });
-            
+
             //======================Mining Investment ====================
             Route::get('/mining', 'MiningController@index')->name('mining.index');
             Route::post('/mining/transfertostack', 'MiningController@transferToStack')->name('mining.transferToStack');
             Route::post('/mining/transfertobalance', 'MiningController@transferToBalance')->name('mining.transferToBalance');
             Route::get('/mining/transferearned', 'MiningController@transferEarned')->name('mining.transferEarned');
-            
-            
+
         });
 
         // Payment

@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
-class ResetPasswordController extends Controller {
+class ResetPasswordController extends Controller
+{
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -36,7 +37,8 @@ class ResetPasswordController extends Controller {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('branch.staff.guest');
     }
 
@@ -45,26 +47,29 @@ class ResetPasswordController extends Controller {
      *
      * If no token is present, display the link request form.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  string|null  $token
      * @return \Illuminate\Http\Response
      */
-    public function showResetForm(Request $request, $token) {
-        $pageTitle  = "Account Recovery";
+    public function showResetForm(Request $request, $token)
+    {
+        $pageTitle = 'Account Recovery';
         $resetToken = BranchStaffPasswordReset::where('token', $token)->where('status', 0)->first();
 
-        if (!$resetToken) {
+        if (! $resetToken) {
             $notify[] = ['error', 'Verification code mismatch'];
+
             return to_route('branch.staff.password.reset')->withNotify($notify);
         }
         $email = $resetToken->email;
+
         return view('branch_staff.auth.passwords.reset', compact('pageTitle', 'email', 'token'));
     }
 
-    public function reset(Request $request) {
+    public function reset(Request $request)
+    {
         $this->validate($request, [
-            'email'    => 'required|email',
-            'token'    => 'required',
+            'email' => 'required|email',
+            'token' => 'required',
             'password' => 'required|confirmed|min:4',
         ]);
 
@@ -73,6 +78,7 @@ class ResetPasswordController extends Controller {
 
         if ($reset->status == 1) {
             $notify[] = ['error', 'Invalid code'];
+
             return to_route('staff.login')->withNotify($notify);
         }
 
@@ -82,19 +88,20 @@ class ResetPasswordController extends Controller {
         $reset->status = 1;
         $reset->save();
 
-        $staffIpInfo      = getIpInfo();
+        $staffIpInfo = getIpInfo();
         $staffBrowserInfo = osBrowser();
 
         $staff->username = $staff->name;
 
         notify($staff, 'PASS_RESET_DONE', [
             'operating_system' => $staffBrowserInfo['os_platform'],
-            'browser'          => $staffBrowserInfo['browser'],
-            'ip'               => $staffIpInfo['ip'],
-            'time'             => $staffIpInfo['time'],
+            'browser' => $staffBrowserInfo['browser'],
+            'ip' => $staffIpInfo['ip'],
+            'time' => $staffIpInfo['time'],
         ], ['email'], false);
 
         $notify[] = ['success', 'Password changed'];
+
         return to_route('staff.login')->withNotify($notify);
     }
 
@@ -103,7 +110,8 @@ class ResetPasswordController extends Controller {
      *
      * @return \Illuminate\Contracts\Auth\PasswordBroker
      */
-    public function broker() {
+    public function broker()
+    {
         return Password::broker('branch_staff');
     }
 
@@ -112,7 +120,8 @@ class ResetPasswordController extends Controller {
      *
      * @return \Illuminate\Contracts\Auth\StatefulGuard
      */
-    protected function guard() {
+    protected function guard()
+    {
         return auth()->guard('branch_staff');
     }
 }

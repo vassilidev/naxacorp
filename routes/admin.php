@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 //use Illuminate\Support\Facades\Artisan;
 
 // Route::get('migrate', function(){
-//   Artisan::call('migrate', ['--path' => 'database/migrations']); 
+//   Artisan::call('migrate', ['--path' => 'database/migrations']);
 // });
 
-Route::namespace ('Auth')->group(function () {
+Route::namespace('Auth')->group(function () {
     Route::controller('LoginController')->group(function () {
         Route::get('/', 'showLoginForm')->name('login');
         Route::post('/', 'login')->name('login');
@@ -396,7 +397,7 @@ Route::middleware('admin')->group(function () {
         Route::post('status/{id}', 'changeStatus')->name('status');
         Route::get('login/{id}', 'login')->name('login');
     });
-    
+
     //=============== Mining ========================//
     Route::resource('mining', 'ManageMiningController')->except('update');
     Route::post('/mining/{id}/update', 'ManageMiningController@update');

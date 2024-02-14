@@ -4,14 +4,11 @@ namespace App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp;
 
 /**
  * Class HttpResponse
- * @package PayPalHttp
- *
- * Object that holds your response details
  */
 class HttpResponse
 {
     /**
-     * @var integer
+     * @var int
      */
     public $statusCode;
 

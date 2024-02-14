@@ -3,20 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Constants\Status;
-use App\Models\Installment;
-use App\Models\Transaction;
 use App\Models\Dps;
 use App\Models\Fdr;
+use App\Models\Installment;
 use App\Models\Loan;
-use App\Models\MiningStack;
 use App\Models\MiningConfig;
 use App\Models\MiningHistory;
+use App\Models\MiningStack;
+use App\Models\Transaction;
 use Carbon\Carbon;
 
-class CronController extends Controller {
-
-    public function dps() {
-        $general                = gs();
+class CronController extends Controller
+{
+    public function dps()
+    {
+        $general = gs();
         $general->last_dps_cron = now();
         $general->save();
 
@@ -30,9 +31,9 @@ class CronController extends Controller {
             ->get();
 
         foreach ($installments as $installment) {
-            $dps              = $installment->installmentable;
-            $amount           = $dps->per_installment;
-            $user             = $dps->user;
+            $dps = $installment->installmentable;
+            $amount = $dps->per_installment;
+            $user = $dps->user;
 
             $shortCodes = $dps->shortCodes();
 
@@ -48,7 +49,7 @@ class CronController extends Controller {
             } else {
 
                 $delayedDays = $installment->installment_date->diffInDays(today());
-                $charge      = 0;
+                $charge = 0;
 
                 if ($delayedDays >= $dps->delay_value) {
                     $charge = $dps->charge_per_installment * $delayedDays;
@@ -71,26 +72,27 @@ class CronController extends Controller {
                 $installment->delay_charge = $charge;
                 $installment->save();
 
-                $transaction               = new Transaction();
-                $transaction->user_id      = $user->id;
-                $transaction->amount       = $amount;
+                $transaction = new Transaction();
+                $transaction->user_id = $user->id;
+                $transaction->amount = $amount;
                 $transaction->post_balance = $user->balance;
-                $transaction->charge       = 0;
-                $transaction->trx_type     = '-';
-                $transaction->details      = 'DPS installment paid';
-                $transaction->remark       = 'dps_installment';
-                $transaction->trx          = $dps->dps_number;
+                $transaction->charge = 0;
+                $transaction->trx_type = '-';
+                $transaction->details = 'DPS installment paid';
+                $transaction->remark = 'dps_installment';
+                $transaction->trx = $dps->dps_number;
                 $transaction->save();
             }
         }
     }
 
-    public function loan() {
-        $general                 = gs();
+    public function loan()
+    {
+        $general = gs();
         $general->last_loan_cron = now();
         $general->save();
 
-        $installments  = Installment::where('installmentable_type', Loan::class)
+        $installments = Installment::where('installmentable_type', Loan::class)
             ->whereDate('installment_date', '<=', today())
             ->whereNull('given_at')
             ->whereHas('installmentable', function ($q) {
@@ -100,9 +102,9 @@ class CronController extends Controller {
             ->get();
 
         foreach ($installments as $installment) {
-            $loan   = $installment->installmentable;
+            $loan = $installment->installmentable;
             $amount = $loan->per_installment;
-            $user   = $loan->user;
+            $user = $loan->user;
 
             $shortCodes = $loan->shortCodes();
 
@@ -118,7 +120,7 @@ class CronController extends Controller {
                 }
             } else {
                 $delayedDays = $installment->installment_date->diffInDays(today());
-                $charge      = 0;
+                $charge = 0;
 
                 if ($delayedDays >= $loan->delay_value) {
                     $charge = $loan->charge_per_installment * $delayedDays;
@@ -139,27 +141,28 @@ class CronController extends Controller {
                 $user->balance -= $amount;
                 $user->save();
 
-                $installment->given_at     = now();
+                $installment->given_at = now();
                 $installment->delay_charge = $charge;
                 $installment->save();
 
-                $transaction               = new Transaction();
-                $transaction->user_id      = $user->id;
-                $transaction->amount       = $amount;
+                $transaction = new Transaction();
+                $transaction->user_id = $user->id;
+                $transaction->amount = $amount;
                 $transaction->post_balance = $user->balance;
-                $transaction->charge       = $charge;
-                $transaction->trx_type     = '-';
-                $transaction->details      = 'Loan installment paid';
-                $transaction->remark       = 'loan_installment';
-                $transaction->trx          = $loan->loan_number;
+                $transaction->charge = $charge;
+                $transaction->trx_type = '-';
+                $transaction->details = 'Loan installment paid';
+                $transaction->remark = 'loan_installment';
+                $transaction->trx = $loan->loan_number;
                 $transaction->save();
             }
         }
     }
 
-    public function fdr() {
-        $general                = gs();
-        $now                    = now()->format('y-m-d');
+    public function fdr()
+    {
+        $general = gs();
+        $now = now()->format('y-m-d');
         $general->last_fdr_cron = now();
         $general->save();
 
@@ -170,11 +173,12 @@ class CronController extends Controller {
         }
     }
 
-    public static function payFdrInstallment($fdr) {
-        $amount                      = $fdr->per_installment;
-        $user                        = $fdr->user;
-        $fdr->next_installment_date  = $fdr->next_installment_date->addDays($fdr->installment_interval);
-        $fdr->profit                += $amount;
+    public static function payFdrInstallment($fdr)
+    {
+        $amount = $fdr->per_installment;
+        $user = $fdr->user;
+        $fdr->next_installment_date = $fdr->next_installment_date->addDays($fdr->installment_interval);
+        $fdr->profit += $amount;
         $fdr->save();
 
         $user->balance += $amount;
@@ -182,160 +186,170 @@ class CronController extends Controller {
 
         $installment = new Installment();
         $installment->installment_date = $fdr->next_installment_date->subDays($fdr->installment_interval);
-        $installment->given_at         = now();
+        $installment->given_at = now();
         $fdr->installments()->save($installment);
 
-        $transaction               = new Transaction();
-        $transaction->user_id      = $user->id;
-        $transaction->amount       = $amount;
+        $transaction = new Transaction();
+        $transaction->user_id = $user->id;
+        $transaction->amount = $amount;
         $transaction->post_balance = $user->balance;
-        $transaction->charge       = 0;
-        $transaction->trx_type     = '+';
-        $transaction->details      = 'FDR installment received';
-        $transaction->remark       = 'fdr_installment';
-        $transaction->trx          = $fdr->fdr_number;
+        $transaction->charge = 0;
+        $transaction->trx_type = '+';
+        $transaction->details = 'FDR installment received';
+        $transaction->remark = 'fdr_installment';
+        $transaction->trx = $fdr->fdr_number;
         $transaction->save();
     }
-    
-    public function miningByDaily(){
-        
-        
+
+    public function miningByDaily()
+    {
+
         $period = $this->getPeriodTime();
         $stacks = $this->getStacksByDaily();
-        
-            if($period->daily !== null && $stacks->daily !== null){
-                // run daily rewards
-                foreach($stacks->daily as $stack){
-                    MiningHistory::create([
-                        'user_id' => $stack->user_id,
-                        'mining_config_id' => $period->daily->id,
-                        'mining_stack_id' => $stack->id,
-                        'earned' => $this->calcuatePercentage($stack->mount,$period->daily->rates),
-                        ]);
-                    $stack->updated_at = Carbon::now();
-                    $stack->save();
-                }
-            }
-        return response()->json('ok');
 
-    }
-    
-    public function miningByWeek(){
-         $period = $this->getPeriodTime();
-         $stacks = $this->getStacksByWeek();
-          if($period->weekly !== null  && $stacks->weekly !== null){
-                // weekly rewards
-                foreach($stacks->weekly as $stack){
-                    MiningHistory::create([
-                        'user_id' => $stack->user_id,
-                        'mining_config_id' => $period->weekly->id,
-                        'mining_stack_id' => $stack->id,
-                        'earned' => $this->calcuatePercentage($stack->mount,$period->weekly->rates),
-                        ]);
-                    $stack->updated_at = Carbon::now();
-                    $stack->save();
-                }
-            }
-        return response()->json('ok');
-    }
-    
-    public function miningByMonth(){
-         $period = $this->getPeriodTime();
-         $stacks = $this->getStacksByMonth();
-        if($period->monthly !== null && $stacks->monthly !== null){
-            // run monthly rewards
-            foreach($stacks->monthly as $stack){
+        if ($period->daily !== null && $stacks->daily !== null) {
+            // run daily rewards
+            foreach ($stacks->daily as $stack) {
                 MiningHistory::create([
                     'user_id' => $stack->user_id,
-                    'mining_config_id' => $period->monthly->id,
+                    'mining_config_id' => $period->daily->id,
                     'mining_stack_id' => $stack->id,
-                    'earned' =>$this->calcuatePercentage($stack->mount,$period->monthly->rates),
-                    ]);
+                    'earned' => $this->calcuatePercentage($stack->mount, $period->daily->rates),
+                ]);
                 $stack->updated_at = Carbon::now();
                 $stack->save();
             }
         }
-        return response()->json('ok');
-    }
-    
-    public function miningByYear(){
-         $period = $this->getPeriodTime();
-         $stacks = $this->getStacksByYear();
 
-            if($period->yearly !== null  && $stacks->yearly !== null){
-                // run yearly rewards
-                foreach($stacks->yearly as $stack){
-                    MiningHistory::create([
-                        'user_id' => $stack->user_id,
-                        'mining_config_id' => $period->yearly->id,
-                        'mining_stack_id' => $stack->id,
-                        'earned' => $this->calcuatePercentage($stack->mount,$period->yearly->rates),
-                        ]);
-                    $stack->updated_at = Carbon::now();
-                    $stack->save();
-                }
+        return response()->json('ok');
+
+    }
+
+    public function miningByWeek()
+    {
+        $period = $this->getPeriodTime();
+        $stacks = $this->getStacksByWeek();
+        if ($period->weekly !== null && $stacks->weekly !== null) {
+            // weekly rewards
+            foreach ($stacks->weekly as $stack) {
+                MiningHistory::create([
+                    'user_id' => $stack->user_id,
+                    'mining_config_id' => $period->weekly->id,
+                    'mining_stack_id' => $stack->id,
+                    'earned' => $this->calcuatePercentage($stack->mount, $period->weekly->rates),
+                ]);
+                $stack->updated_at = Carbon::now();
+                $stack->save();
             }
-        
+        }
+
         return response()->json('ok');
     }
-    
-    protected function getPeriodTime(){
+
+    public function miningByMonth()
+    {
+        $period = $this->getPeriodTime();
+        $stacks = $this->getStacksByMonth();
+        if ($period->monthly !== null && $stacks->monthly !== null) {
+            // run monthly rewards
+            foreach ($stacks->monthly as $stack) {
+                MiningHistory::create([
+                    'user_id' => $stack->user_id,
+                    'mining_config_id' => $period->monthly->id,
+                    'mining_stack_id' => $stack->id,
+                    'earned' => $this->calcuatePercentage($stack->mount, $period->monthly->rates),
+                ]);
+                $stack->updated_at = Carbon::now();
+                $stack->save();
+            }
+        }
+
+        return response()->json('ok');
+    }
+
+    public function miningByYear()
+    {
+        $period = $this->getPeriodTime();
+        $stacks = $this->getStacksByYear();
+
+        if ($period->yearly !== null && $stacks->yearly !== null) {
+            // run yearly rewards
+            foreach ($stacks->yearly as $stack) {
+                MiningHistory::create([
+                    'user_id' => $stack->user_id,
+                    'mining_config_id' => $period->yearly->id,
+                    'mining_stack_id' => $stack->id,
+                    'earned' => $this->calcuatePercentage($stack->mount, $period->yearly->rates),
+                ]);
+                $stack->updated_at = Carbon::now();
+                $stack->save();
+            }
+        }
+
+        return response()->json('ok');
+    }
+
+    protected function getPeriodTime()
+    {
         $config = [];
         $config['daily'] = MiningConfig::where('timers', 'daily')->first();
         $config['weekly'] = MiningConfig::where('timers', 'weekly')->first();
         $config['monthly'] = MiningConfig::where('timers', 'monthly')->first();
         $config['yearly'] = MiningConfig::where('timers', 'yearly')->first();
-        
-        return (object)$config;
+
+        return (object) $config;
     }
-    
-    protected function getStacksByDaily(){
+
+    protected function getStacksByDaily()
+    {
         $stack = [];
         $stacks = MiningStack::where('mount', '>', 0);
-        
+
         $stack['daily'] = $stacks->where('updated_at', '<', Carbon::now()->subDays(1))->get();
-        
-        return (object)$stack;
+
+        return (object) $stack;
     }
-    
-    protected function getStacksByWeek(){
+
+    protected function getStacksByWeek()
+    {
         $stack = [];
         $stacks = MiningStack::where('mount', '>', 0);
-        
-        $stack['weekly'] = $stacks->whereHas('log', function($q){
-           return $q->where('created_at', '<', Carbon::now()->subDays(7)); 
+
+        $stack['weekly'] = $stacks->whereHas('log', function ($q) {
+            return $q->where('created_at', '<', Carbon::now()->subDays(7));
         })->get();
-        
-        return (object)$stack;
+
+        return (object) $stack;
     }
-    
-    protected function getStacksByMonth(){
+
+    protected function getStacksByMonth()
+    {
         $stack = [];
         $stacks = MiningStack::where('mount', '>', 0);
-        
-        $stack['monthly'] = $stacks->whereHas('log', function($q){
-           return $q->where('created_at', '<', Carbon::now()->subDays(30)); 
+
+        $stack['monthly'] = $stacks->whereHas('log', function ($q) {
+            return $q->where('created_at', '<', Carbon::now()->subDays(30));
         })->get();
-        
-        return (object)$stack;
+
+        return (object) $stack;
     }
-    
-    protected function getStacksByYear(){
+
+    protected function getStacksByYear()
+    {
         $stack = [];
         $stacks = MiningStack::where('mount', '>', 0);
-        
-        $stack['yearly'] = $stacks->whereHas('log', function($q){
-           return $q->where('created_at', '<', Carbon::now()->subDays(365)); 
+
+        $stack['yearly'] = $stacks->whereHas('log', function ($q) {
+            return $q->where('created_at', '<', Carbon::now()->subDays(365));
         })->get();
-        
-        return (object)$stack;
+
+        return (object) $stack;
     }
-    
-    
-    protected function calcuatePercentage($mount, $percentage){
-        $calc = ($percentage / 100 ) * $mount;
+
+    protected function calcuatePercentage($mount, $percentage)
+    {
+        $calc = ($percentage / 100) * $mount;
+
         return $calc;
     }
-    
-    
 }

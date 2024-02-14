@@ -14,42 +14,44 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::namespace ('Api')->name('api.')->group(function () {
+Route::namespace('Api')->name('api.')->group(function () {
 
     Route::get('general-setting', function () {
-        $general  = GeneralSetting::first();
+        $general = GeneralSetting::first();
         $notify[] = 'General setting data';
+
         return response()->json([
-            'remark'  => 'general_setting',
-            'status'  => 'success',
+            'remark' => 'general_setting',
+            'status' => 'success',
             'message' => ['success' => $notify],
-            'data'    => [
+            'data' => [
                 'general_setting' => $general,
             ],
         ]);
     });
 
     Route::get('get-countries', function () {
-        $c        = json_decode(file_get_contents(resource_path('views/partials/country.json')));
+        $c = json_decode(file_get_contents(resource_path('views/partials/country.json')));
         $notify[] = 'General setting data';
         foreach ($c as $k => $country) {
             $countries[] = [
-                'country'      => $country->country,
-                'dial_code'    => $country->dial_code,
+                'country' => $country->country,
+                'dial_code' => $country->dial_code,
                 'country_code' => $k,
             ];
         }
+
         return response()->json([
-            'remark'  => 'country_data',
-            'status'  => 'success',
+            'remark' => 'country_data',
+            'status' => 'success',
             'message' => ['success' => $notify],
-            'data'    => [
+            'data' => [
                 'countries' => $countries,
             ],
         ]);
     });
 
-    Route::namespace ('Auth')->group(function () {
+    Route::namespace('Auth')->group(function () {
         Route::post('login', 'LoginController@login');
         Route::post('register', 'RegisterController@register');
         Route::get('logout', 'LoginController@logout')->middleware('auth:sanctum');
@@ -135,7 +137,7 @@ Route::namespace ('Api')->name('api.')->group(function () {
                     Route::get('list', 'list');
                     Route::get('plans', 'plans');
                     Route::post('apply/{id}', 'apply');
-                    Route::get('preview/{id}', 'preview')->name('apply.preview');;
+                    Route::get('preview/{id}', 'preview')->name('apply.preview');
                     Route::post('confirm/{id}', 'confirm');
                     Route::post('close/{id}', 'close')->name('close');
                     Route::get('instalment/logs/{fdr_number}', 'installments');

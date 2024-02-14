@@ -20,7 +20,7 @@ class MiningStack extends Model
     {
         return $this->belongsTo(MiningConfig::class);
     }
-    
+
     public function log()
     {
         return $this->hasMany(MiningHistory::class);

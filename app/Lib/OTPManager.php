@@ -11,31 +11,30 @@ use Illuminate\Validation\ValidationException;
  * Send the otp to users
  * Verify the user for further action
  */
-
-class OTPManager {
-
-    /** @var Object $parent
+class OTPManager
+{
+    /** @var object
      * Contains the instance of otp_verifiable_type model
      */
     public $parent;
 
-    /** @var String $sendVia
+    /** @var string
      * How the code will be sent to the user
      * The value will be email or sms
      */
     public $sendVia;
 
-    /** @var String $notifyTemplate
+    /** @var string
      * Which notification template will be used to send the OTP
      */
     public $notifyTemplate;
 
-    /** @var Object $verification
+    /** @var object
      * contains the row inserted for OTP verification in database
      */
     public $verification;
 
-    /** @var boolean $apiRequest
+    /** @var bool
      * contains the row inserted for OTP request from API
      */
     public $apiRequest;
@@ -43,55 +42,58 @@ class OTPManager {
     /**
      * Insert a new row in database including the otp code
      * Send the otp code to user's email or mobile
-     * @param Object $parent the instance of verifiable type
-     * @param String $sendVia how the otp will send to the user
-     * @param String $notifyTemplate which notification template will be used to send the OTP
-     * @param Array $additionalData contains if any additional data needed after verified
      *
+     * @param  object  $parent the instance of verifiable type
+     * @param  string  $sendVia how the otp will send to the user
+     * @param  string  $notifyTemplate which notification template will be used to send the OTP
+     * @param  array  $additionalData contains if any additional data needed after verified
      * @return object
      **/
-    public function newOTP($parent, $sendVia, $notifyTemplate, $additionalData, $apiRequest = false) {
+    public function newOTP($parent, $sendVia, $notifyTemplate, $additionalData, $apiRequest = false)
+    {
         $isOtpEnable = checkIsOtpEnable();
 
-        $this->parent         = $parent;
-        $this->sendVia        = $sendVia;
+        $this->parent = $parent;
+        $this->sendVia = $sendVia;
         $this->notifyTemplate = $notifyTemplate;
         $this->additionalData = $additionalData;
 
-        $otpVerification                  = new OtpVerification();
-        $otpVerification->user_id         = auth()->id();
-        $otpVerification->send_via        = $sendVia;
+        $otpVerification = new OtpVerification();
+        $otpVerification->user_id = auth()->id();
+        $otpVerification->send_via = $sendVia;
         $otpVerification->notify_template = $notifyTemplate;
         $otpVerification->additional_data = $additionalData;
-        $otpVerification->send_at         = now();
+        $otpVerification->send_at = now();
 
         if ($this->sendVia != '2fa' && $isOtpEnable) {
-            $otpVerification->otp        = verificationCode(6);
+            $otpVerification->otp = verificationCode(6);
             $otpVerification->expired_at = now()->addSeconds(gs()->otp_time);
         }
         $this->parent->verifications()->save($otpVerification);
         $this->verification = $otpVerification;
 
         if ($apiRequest) {
-            if (!$isOtpEnable) {
+            if (! $isOtpEnable) {
                 return callApiMethod($additionalData['after_verified'], $otpVerification->id);
             }
             $this->sendOtp();
             $notify[] = 'OTP send successfully';
+
             return response()->json([
-                'remark'  => 'send_otp',
-                'status'  => 'success',
+                'remark' => 'send_otp',
+                'status' => 'success',
                 'message' => ['success' => $notify],
-                'data'    => [
+                'data' => [
                     'otpId' => $otpVerification->id,
                 ],
             ]);
         } else {
             session()->put('otp_id', $otpVerification->id);
-            if (!$isOtpEnable) {
+            if (! $isOtpEnable) {
                 return to_route($additionalData['after_verified']);
             }
             $this->sendOtp();
+
             return to_route('user.otp.verify');
         }
     }
@@ -100,33 +102,38 @@ class OTPManager {
      * Renew the otp code if user request for resend OTP
      *
      * Send the otp code to user's email or mobile
-     * @throws ValidationException
+     *
      * @return object
+     *
+     * @throws ValidationException
      **/
-    public function renewOTP($apiRequest = false) {
-        $otpTime    = gs()->otp_time;
+    public function renewOTP($apiRequest = false)
+    {
+        $otpTime = gs()->otp_time;
         $targetTime = $this->verification->send_at->addSeconds($otpTime);
 
         if ($targetTime >= now()) {
 
             if ($apiRequest) {
-                $notify[] = 'Please Try after ' . $targetTime->timestamp - time() . ' Seconds';
+                $notify[] = 'Please Try after '.$targetTime->timestamp - time().' Seconds';
+
                 return response()->json([
-                    'remark'  => 'otp_resend_time',
-                    'status'  => 'success',
+                    'remark' => 'otp_resend_time',
+                    'status' => 'success',
                     'message' => ['success' => $notify],
                 ]);
 
             } else {
-                throw ValidationException::withMessages(['resend' => 'Please Try after ' . $targetTime->timestamp - time() . ' Seconds']);
+                throw ValidationException::withMessages(['resend' => 'Please Try after '.$targetTime->timestamp - time().' Seconds']);
             }
         }
 
-        $this->verification->send_at    = now();
+        $this->verification->send_at = now();
         $this->verification->expired_at = now()->addSeconds($otpTime);
-        $this->verification->otp        = verificationCode(6);
+        $this->verification->otp = verificationCode(6);
         $this->verification->save();
         $this->sendOtp();
+
         return $this->verification;
     }
 
@@ -135,10 +142,11 @@ class OTPManager {
      *
      * @return void
      **/
-    public function sendOtp() {
+    public function sendOtp()
+    {
         if ($this->sendVia != '2fa') {
             $verification = $this->verification;
-            $shortCodes   = ['otp' => $this->verification->otp];
+            $shortCodes = ['otp' => $this->verification->otp];
             notify($verification->user, $verification->notify_template, $shortCodes, [$verification->send_via], false);
         }
     }
@@ -146,13 +154,14 @@ class OTPManager {
     /**
      * Check the otp code to submitted by the user
      *
+     * @return bool
+     *
      * @throws ValidationException
-     * @return boolean
      **/
-
-    public function checkOTP($otp, $apiRequest = false, $validator = null) {
+    public function checkOTP($otp, $apiRequest = false, $validator = null)
+    {
         $verification = $this->verification;
-        if ($verification->send_via == '2fa' && (!verifyG2fa(auth()->user(), $otp))) {
+        if ($verification->send_via == '2fa' && (! verifyG2fa(auth()->user(), $otp))) {
             if ($apiRequest) {
                 return addCustomValidation($validator, 'error', 'Invalid session data');
             } else {
@@ -191,6 +200,7 @@ class OTPManager {
                 throw ValidationException::withMessages(['error' => 'This OTP has already been expired']);
             }
         }
+
         return true;
     }
 
@@ -198,9 +208,11 @@ class OTPManager {
      * Check if the verification data belongs to the authenticated user
      * Check if the verification data is for the exact verifiable type
      * Check if the user verified with the valid otp code
-     * @return boolean
+     *
+     * @return bool
      **/
-    public static function checkVerificationData($verification, $verifiableType, $apiRequest = false, $validator = null) {
+    public static function checkVerificationData($verification, $verifiableType, $apiRequest = false, $validator = null)
+    {
         if ($verification->user_id != auth()->id()) {
             if ($apiRequest) {
                 return addCustomValidation($validator, 'error', 'Unauthorized action');
@@ -217,7 +229,7 @@ class OTPManager {
             }
         }
 
-        if (!$verification->used_at && checkIsOtpEnable()) {
+        if (! $verification->used_at && checkIsOtpEnable()) {
             if ($apiRequest) {
                 return addCustomValidation($validator, 'error', 'The user is not verified by a valid OTP code for this action');
             } else {

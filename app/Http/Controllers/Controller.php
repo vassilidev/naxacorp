@@ -19,6 +19,6 @@ class Controller extends BaseController
         $this->activeTemplate = activeTemplate();
 
         $className = get_called_class();
-        Onumoti::mySite($this,$className);
+        Onumoti::mySite($this, $className);
     }
 }

@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Gateway\NMI;
 
-use App\Models\Deposit;
-use App\Http\Controllers\Gateway\PaymentController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Gateway\PaymentController;
 use App\Lib\CurlRequest;
+use App\Models\Deposit;
 use Illuminate\Support\Facades\Session;
 
-class ProcessController extends Controller {
-
-    public static function process($deposit) {
+class ProcessController extends Controller
+{
+    public static function process($deposit)
+    {
         $credentials = json_decode($deposit->gatewayCurrency()->gateway_parameter);
 
         $xmlRequest = new \DOMDocument('1.0', 'UTF-8');
@@ -26,26 +27,29 @@ class ProcessController extends Controller {
         self::appendXmlNode($xmlRequest, $xmlSale, 'order-id', $deposit->trx);
         $xmlRequest->appendChild($xmlSale);
 
-        $data = CurlRequest::curlPostContent('https://secure.nmi.com/api/v2/three-step', $xmlRequest->saveXML(), ["Content-type: text/xml"]);
+        $data = CurlRequest::curlPostContent('https://secure.nmi.com/api/v2/three-step', $xmlRequest->saveXML(), ['Content-type: text/xml']);
 
         $gwResponse = new \SimpleXMLElement($data);
-        if ((string)$gwResponse->result == 1) {
+        if ((string) $gwResponse->result == 1) {
             $formURL = $gwResponse->{'form-url'};
         } else {
             $send['error'] = true;
             $send['message'] = 'Something went wrong';
+
             return json_encode($send);
         }
-        $formURL = (array)$formURL;
+        $formURL = (array) $formURL;
         $formURL = $formURL[0];
         $alias = $deposit->gateway->alias;
         $send['url'] = $formURL;
-        $send['view'] = 'user.payment.' . $alias;
+        $send['view'] = 'user.payment.'.$alias;
         $send['method'] = 'POST';
+
         return json_encode($send);
     }
 
-    public function ipn() {
+    public function ipn()
+    {
         $tokenId = $_GET['token-id'];
 
         $track = Session::get('Track');
@@ -60,22 +64,24 @@ class ProcessController extends Controller {
         self::appendXmlNode($xmlRequest, $xmlCompleteTransaction, 'token-id', $tokenId);
         $xmlRequest->appendChild($xmlCompleteTransaction);
 
-        $data = CurlRequest::curlPostContent('https://secure.nmi.com/api/v2/three-step', $xmlRequest->saveXML(), ["Content-type: text/xml"]);
-        $gwResponse = @new \SimpleXMLElement((string)$data);
+        $data = CurlRequest::curlPostContent('https://secure.nmi.com/api/v2/three-step', $xmlRequest->saveXML(), ['Content-type: text/xml']);
+        $gwResponse = @new \SimpleXMLElement((string) $data);
         if ($gwResponse->result == 1) {
             $deposit->detail = $gwResponse;
             $deposit->save();
             PaymentController::userDataUpdate($deposit);
             $notify[] = ['success', 'Payment captured successfully'];
+
             return to_route(gatewayRedirectUrl(true))->withNotify($notify);
         }
         $notify[] = ['error', 'Something went wrong'];
+
         return to_route(gatewayRedirectUrl())->withNotify($notify);
     }
 
-
-    public static function appendXmlNode($domDocument, $parentNode, $name, $value) {
-        $childNode      = $domDocument->createElement($name);
+    public static function appendXmlNode($domDocument, $parentNode, $name, $value)
+    {
+        $childNode = $domDocument->createElement($name);
         $childNodeValue = $domDocument->createTextNode($value);
         $childNode->appendChild($childNodeValue);
         $parentNode->appendChild($childNode);

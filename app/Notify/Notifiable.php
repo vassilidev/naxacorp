@@ -2,7 +2,8 @@
 
 namespace App\Notify;
 
-interface Notifiable {
+interface Notifiable
+{
     public function send();
 
     public function prevConfiguration();

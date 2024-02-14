@@ -1,1 +1,1 @@
-<?php $timezone = 'Europe/Paris' ?>
+<?php $timezone = 'Europe/Paris';

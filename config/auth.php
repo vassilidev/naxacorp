@@ -37,20 +37,20 @@ return [
 
     'guards' => [
         'web' => [
-            'driver'   => 'session',
+            'driver' => 'session',
             'provider' => 'users',
         ],
         'api' => [
-            'driver'   => 'session',
+            'driver' => 'session',
             'provider' => 'users',
-            'hash'     => true,
+            'hash' => true,
         ],
         'admin' => [
-            'driver'   => 'session',
+            'driver' => 'session',
             'provider' => 'admins',
         ],
         'branch_staff' => [
-            'driver'   => 'session',
+            'driver' => 'session',
             'provider' => 'branch_staff',
         ],
     ],
@@ -111,20 +111,20 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table'    => 'password_resets',
-            'expire'   => 60,
+            'table' => 'password_resets',
+            'expire' => 60,
             'throttle' => 60,
         ],
         'admins' => [
             'provider' => 'admins',
-            'table'    => 'admin_password_resets',
-            'expire'   => 60,
+            'table' => 'admin_password_resets',
+            'expire' => 60,
             'throttle' => 60,
         ],
         'branch_staff' => [
             'provider' => 'branch_staff',
-            'table'    => 'branch_staff_password_resets',
-            'expire'   => 60,
+            'table' => 'branch_staff_password_resets',
+            'expire' => 60,
             'throttle' => 60,
         ],
     ],

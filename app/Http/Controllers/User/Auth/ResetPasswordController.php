@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
-class ResetPasswordController extends Controller {
+class ResetPasswordController extends Controller
+{
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -24,48 +25,55 @@ class ResetPasswordController extends Controller {
 
     use ResetsPasswords;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->middleware('guest');
     }
 
-    public function showResetForm(Request $request, $token = null) {
+    public function showResetForm(Request $request, $token = null)
+    {
 
         $email = session('fpass_email');
         $token = session()->has('token') ? session('token') : $token;
         if (PasswordReset::where('token', $token)->where('email', $email)->count() != 1) {
             $notify[] = ['error', 'Invalid token'];
+
             return to_route('user.password.request')->withNotify($notify);
         }
-        return view($this->activeTemplate . 'user.auth.passwords.reset')->with(
+
+        return view($this->activeTemplate.'user.auth.passwords.reset')->with(
             ['token' => $token, 'email' => $email, 'pageTitle' => 'Reset Password']
         );
     }
 
-    public function reset(Request $request) {
+    public function reset(Request $request)
+    {
 
         session()->put('fpass_email', $request->email);
         $request->validate($this->rules(), $this->validationErrorMessages());
         $reset = PasswordReset::where('token', $request->token)->orderBy('created_at', 'desc')->first();
-        if (!$reset) {
+        if (! $reset) {
             $notify[] = ['error', 'Invalid verification code'];
+
             return to_route('user.login')->withNotify($notify);
         }
 
-        $user           = User::where('email', $reset->email)->first();
+        $user = User::where('email', $reset->email)->first();
         $user->password = Hash::make($request->password);
         $user->save();
 
-        $userIpInfo  = getIpInfo();
+        $userIpInfo = getIpInfo();
         $userBrowser = osBrowser();
         notify($user, 'PASS_RESET_DONE', [
             'operating_system' => @$userBrowser['os_platform'],
-            'browser'          => @$userBrowser['browser'],
-            'ip'               => @$userIpInfo['ip'],
-            'time'             => @$userIpInfo['time'],
+            'browser' => @$userBrowser['browser'],
+            'ip' => @$userIpInfo['ip'],
+            'time' => @$userIpInfo['time'],
         ], ['email']);
 
         $notify[] = ['success', 'Password changed successfully'];
+
         return to_route('user.login')->withNotify($notify);
     }
 
@@ -74,15 +82,17 @@ class ResetPasswordController extends Controller {
      *
      * @return array
      */
-    protected function rules() {
+    protected function rules()
+    {
         $passwordValidation = Password::min(6);
-        $general            = gs();
+        $general = gs();
         if ($general->secure_password) {
             $passwordValidation = $passwordValidation->mixedCase()->numbers()->symbols()->uncompromised();
         }
+
         return [
-            'token'    => 'required',
-            'email'    => 'required|email',
+            'token' => 'required',
+            'email' => 'required|email',
             'password' => ['required', 'confirmed', $passwordValidation],
         ];
     }
