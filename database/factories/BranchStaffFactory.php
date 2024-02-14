@@ -19,7 +19,7 @@ class BranchStaffFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'mobile' => $this->faker->phoneNumber,
+            'mobile' => $this->faker->phoneNumber(),
             'address' => $this->faker->address(),
             'email' => $this->faker->unique()->safeEmail(),
             'password' => Hash::make('123456'),

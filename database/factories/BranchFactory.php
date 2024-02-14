@@ -23,7 +23,7 @@ class BranchFactory extends Factory
             'code' => rand(1000, 9999),
             'address' => $branch,
             'email' => $this->faker->unique()->safeEmail(),
-            'mobile' => $this->faker->phoneNumber,
+            'mobile' => $this->faker->phoneNumber(),
         ];
 
     }
