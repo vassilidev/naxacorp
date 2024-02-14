@@ -67,12 +67,6 @@ class GoogleAuthenticator
 
     /**
      * Get QR-Code URL for image, from google charts.
-     *
-     * @param  string  $name
-     * @param  string  $secret
-     * @param  string  $title
-     * @param  array  $params
-     * @return string
      */
     public function getQRCodeGoogleUrl(string $name, string $secret, string $title = null, array $params = []): string
     {

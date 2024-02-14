@@ -15,8 +15,6 @@ class ManageMiningController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(): View
     {
@@ -67,8 +65,6 @@ class ManageMiningController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function edit(MiningConfig $miningConfig, $id): JsonResponse
     {

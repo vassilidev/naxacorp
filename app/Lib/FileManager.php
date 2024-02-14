@@ -90,8 +90,6 @@ class FileManager
 
     /**
      * File upload process
-     *
-     * @return void
      */
     public function upload(): void
     {
@@ -121,8 +119,6 @@ class FileManager
 
     /**
      * Upload the file if this is image
-     *
-     * @return void
      */
     protected function uploadImage(): void
     {
@@ -148,8 +144,6 @@ class FileManager
 
     /**
      * Upload the file if this is not a image
-     *
-     * @return void
      */
     protected function uploadFile(): void
     {
@@ -159,8 +153,6 @@ class FileManager
     /**
      * Make directory doesn't exists
      * Developer can also call this method statically
-     *
-     * @return string
      */
     public function makeDirectory($location = null): string
     {
@@ -177,8 +169,6 @@ class FileManager
     /**
      * Remove all directory inside the location
      * Developer can also call this method statically
-     *
-     * @return void
      */
     public function removeDirectory($location = null): void
     {
@@ -205,8 +195,6 @@ class FileManager
     /**
      * Remove the file if exists
      * Developer can also call this method statically
-     *
-     * @return void
      */
     public function removeFile($path = null): void
     {
@@ -226,8 +214,6 @@ class FileManager
 
     /**
      * Generating the filename which is uploading
-     *
-     * @return string
      */
     protected function getFileName(): string
     {
@@ -255,8 +241,6 @@ class FileManager
 
     /**
      * Get access some non-static method as static method
-     *
-     * @return void
      */
     public static function __callStatic($method, $args): void
     {

@@ -20,8 +20,6 @@ class Captcha
 
     /**
      * Google recaptcha2 script
-     *
-     * @return string
      */
     public static function reCaptcha(): string
     {
@@ -32,8 +30,6 @@ class Captcha
 
     /**
      * Custom captcha script
-     *
-     * @return string
      */
     public static function customCaptcha($width = '100%', $height = 46, $bgColor = '#003'): string
     {
@@ -59,8 +55,6 @@ class Captcha
 
     /**
      * Verify all captcha
-     *
-     * @return bool
      */
     public static function verify(): bool
     {
@@ -75,8 +69,6 @@ class Captcha
 
     /**
      * Verify google recaptcha2
-     *
-     * @return bool
      */
     public static function verifyGoogleCaptcha(): bool
     {
@@ -94,8 +86,6 @@ class Captcha
 
     /**
      * Verify custom captcha
-     *
-     * @return bool
      */
     public static function verifyCustomCaptcha(): bool
     {

@@ -51,7 +51,6 @@ class ResetPasswordController extends Controller
      *
      * If no token is present, display the link request form.
      *
-     * @param  string|null  $token
      * @return \Illuminate\Http\Response
      */
     public function showResetForm(Request $request, ?string $token)
@@ -106,8 +105,6 @@ class ResetPasswordController extends Controller
 
     /**
      * Get the broker to be used during password reset.
-     *
-     * @return \Illuminate\Contracts\Auth\PasswordBroker
      */
     public function broker(): PasswordBroker
     {
@@ -116,8 +113,6 @@ class ResetPasswordController extends Controller
 
     /**
      * Get the guard to be used during password reset.
-     *
-     * @return \Illuminate\Contracts\Auth\StatefulGuard
      */
     protected function guard(): StatefulGuard
     {

@@ -39,8 +39,6 @@ class ForgotPasswordController extends Controller
 
     /**
      * Display the form to request a password reset link.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function showLinkRequestForm(): View
     {
@@ -51,8 +49,6 @@ class ForgotPasswordController extends Controller
 
     /**
      * Get the broker to be used during password reset.
-     *
-     * @return \Illuminate\Contracts\Auth\PasswordBroker
      */
     public function broker(): PasswordBroker
     {

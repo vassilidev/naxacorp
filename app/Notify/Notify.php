@@ -88,8 +88,6 @@ class Notify
      * Send notification via methods.
      *
      * This method is creating instances of notifications to send the notification.
-     *
-     * @return void
      */
     public function send(): void
     {
@@ -120,7 +118,6 @@ class Notify
     /**
      * Get the notification method classes.
      *
-     * @param  array|null  $sendVia
      * @return array|string
      */
     protected function notifyMethods(?array $sendVia = null)

@@ -55,8 +55,6 @@ class Sms extends NotifyProcess implements Notifiable
 
     /**
      * Configure some properties
-     *
-     * @return void
      */
     public function prevConfiguration(): void
     {

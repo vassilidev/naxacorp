@@ -47,7 +47,6 @@ class OTPManager
      * @param  string  $sendVia how the otp will send to the user
      * @param  string  $notifyTemplate which notification template will be used to send the OTP
      * @param  array  $additionalData contains if any additional data needed after verified
-     * @return object
      **/
     public function newOTP(object $parent, string $sendVia, string $notifyTemplate, array $additionalData, $apiRequest = false): object
     {
@@ -103,7 +102,6 @@ class OTPManager
      *
      * Send the otp code to user's email or mobile
      *
-     * @return object
      *
      * @throws ValidationException
      **/
@@ -140,7 +138,6 @@ class OTPManager
     /**
      * Send the otp code to user's email or mobile
      *
-     * @return void
      **/
     public function sendOtp(): void
     {
@@ -154,7 +151,6 @@ class OTPManager
     /**
      * Check the otp code to submitted by the user
      *
-     * @return bool
      *
      * @throws ValidationException
      **/
@@ -209,7 +205,6 @@ class OTPManager
      * Check if the verification data is for the exact verifiable type
      * Check if the user verified with the valid otp code
      *
-     * @return bool
      **/
     public static function checkVerificationData($verification, $verifiableType, $apiRequest = false, $validator = null): bool
     {

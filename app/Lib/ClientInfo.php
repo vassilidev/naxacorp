@@ -6,8 +6,6 @@ class ClientInfo
 {
     /**
      * Get requestor IP information
-     *
-     * @return array
      */
     public static function ipInfo(): array
     {
@@ -36,8 +34,6 @@ class ClientInfo
 
     /**
      * Get requestor operating system information
-     *
-     * @return array
      */
     public static function osBrowser(): array
     {

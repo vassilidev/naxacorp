@@ -49,7 +49,6 @@ class HttpClient
      * The method that takes an HTTP request, serializes the request, makes a call to given environment, and deserialize response
      *
      * @param $httpRequest HttpRequest
-     * @return HttpResponse
      */
     public function execute(HttpRequest $httpRequest): HttpResponse
     {
@@ -140,8 +139,6 @@ class HttpClient
 
     /**
      * Return the filepath to your custom CA Cert if needed.
-     *
-     * @return string
      */
     protected function getCACertFilePath(): string
     {

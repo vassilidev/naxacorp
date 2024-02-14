@@ -137,8 +137,6 @@ class NotifyProcess
      * Get the final message after replacing the short code.
      *
      * Also custom message will be return from here if notification template doesn't exist.
-     *
-     * @return string
      */
     protected function getMessage(): string
     {
@@ -187,8 +185,6 @@ class NotifyProcess
 
     /**
      * Replace the short code of global template
-     *
-     * @return string
      */
     protected function replaceShortCode($name, $username, $template, $body): string
     {
@@ -201,8 +197,6 @@ class NotifyProcess
 
     /**
      * Set the subject with replaced the short codes
-     *
-     * @return void
      */
     protected function getSubject(): void
     {
@@ -219,8 +213,6 @@ class NotifyProcess
 
     /**
      * Set the setting if not set yet
-     *
-     * @return void
      */
     protected function setSetting(): void
     {
@@ -231,8 +223,6 @@ class NotifyProcess
 
     /**
      * Create the notification log
-     *
-     * @return void
      */
     public function createErrorLog($message): void
     {
@@ -245,8 +235,6 @@ class NotifyProcess
 
     /**
      * Create the error log
-     *
-     * @return void
      */
     public function createLog($type): void
     {

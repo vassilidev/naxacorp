@@ -57,8 +57,6 @@ class Email extends NotifyProcess implements Notifiable
 
     /**
      * Get the method name
-     *
-     * @return string
      */
     protected function mailMethods($name): string
     {
@@ -154,8 +152,6 @@ class Email extends NotifyProcess implements Notifiable
 
     /**
      * Configure some properties
-     *
-     * @return void
      */
     public function prevConfiguration(): void
     {

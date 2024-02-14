@@ -44,8 +44,6 @@ class LoginController extends Controller
 
     /**
      * Show the application's login form.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function showLoginForm(): View
     {
@@ -56,8 +54,6 @@ class LoginController extends Controller
 
     /**
      * Get the guard to be used during authentication.
-     *
-     * @return \Illuminate\Contracts\Auth\StatefulGuard
      */
     protected function guard(): StatefulGuard
     {
