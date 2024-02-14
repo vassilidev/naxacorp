@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\BranchStaff\Auth;
 
-use Illuminate\View\View;
-use Illuminate\Contracts\Auth\PasswordBroker;
 use App\Http\Controllers\Controller;
 use App\Models\BranchStaff;
 use App\Models\BranchStaffPasswordReset;
+use Illuminate\Contracts\Auth\PasswordBroker;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Illuminate\View\View;
 
 class ForgotPasswordController extends Controller
 {

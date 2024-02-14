@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\SupportMessage;
 use App\Models\SupportTicket;
 use App\Traits\SupportTicketManager;
+use Illuminate\View\View;
 
 class SupportTicketController extends Controller
 {

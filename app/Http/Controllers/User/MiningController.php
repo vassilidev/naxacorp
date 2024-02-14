@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\User;
 
-use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\MiningConfig;
 use App\Models\MiningHistory;
 use App\Models\MiningStack;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class MiningController extends Controller
 {

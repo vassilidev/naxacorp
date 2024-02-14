@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CronController;
 use App\Models\Fdr;
+use Illuminate\View\View;
 
 class FdrController extends Controller
 {

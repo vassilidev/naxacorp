@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\BranchStaff;
 
-use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\ReferralCommission;
@@ -11,6 +10,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class DepositController extends Controller
 {

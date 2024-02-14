@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\BranchStaff\Auth;
 
-use Illuminate\Contracts\Auth\StatefulGuard;
-use Illuminate\Contracts\Auth\PasswordBroker;
 use App\Http\Controllers\Controller;
 use App\Models\BranchStaff;
 use App\Models\BranchStaffPasswordReset;
+use Illuminate\Contracts\Auth\PasswordBroker;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;

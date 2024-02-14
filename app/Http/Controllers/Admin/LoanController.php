@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Installment;
 use App\Models\Loan;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class LoanController extends Controller
 {

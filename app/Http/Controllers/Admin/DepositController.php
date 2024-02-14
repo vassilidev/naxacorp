@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Gateway\PaymentController;
@@ -11,6 +10,7 @@ use App\Models\BranchStaff;
 use App\Models\Deposit;
 use App\Models\Gateway;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class DepositController extends Controller
 {

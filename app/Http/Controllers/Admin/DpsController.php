@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\Dps;
+use Illuminate\View\View;
 
 class DpsController extends Controller
 {

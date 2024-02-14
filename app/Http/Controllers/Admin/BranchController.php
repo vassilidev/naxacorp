@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
@@ -10,6 +9,7 @@ use App\Models\BranchStaff;
 use App\Models\Deposit;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class BranchController extends Controller
 {

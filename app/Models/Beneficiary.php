@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use App\Traits\ApiQuery;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use App\Traits\ApiQuery;
-use Illuminate\Database\Eloquent\Model;
 
 class Beneficiary extends Model
 {

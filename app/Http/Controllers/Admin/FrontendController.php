@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\Frontend;
 use App\Models\GeneralSetting;
 use App\Rules\FileTypeValidate;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class FrontendController extends Controller
 {

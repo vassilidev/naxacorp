@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\View\View;
 use App\Http\Controllers\Controller;
 use App\Models\GeneralSetting;
 use App\Models\ReferralSetting;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ReferralSettingController extends Controller
 {

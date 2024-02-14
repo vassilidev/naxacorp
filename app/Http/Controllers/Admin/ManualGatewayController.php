@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\Gateway;
 use App\Models\GatewayCurrency;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ManualGatewayController extends Controller
 {

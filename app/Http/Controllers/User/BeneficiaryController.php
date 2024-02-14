@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\User;
 
-use Illuminate\View\View;
-use Illuminate\Http\JsonResponse;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
 use App\Models\Beneficiary;
 use App\Models\OtherBank;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class BeneficiaryController extends Controller
 {

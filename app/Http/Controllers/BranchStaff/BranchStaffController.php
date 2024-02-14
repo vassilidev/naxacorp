@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\BranchStaff;
 
-use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
@@ -13,6 +12,7 @@ use App\Models\Withdrawal;
 use App\Rules\FileTypeValidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\View\View;
 
 class BranchStaffController extends Controller
 {

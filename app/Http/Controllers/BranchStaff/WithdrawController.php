@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\BranchStaff;
 
-use Illuminate\View\View;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Models\AdminNotification;
@@ -11,6 +10,7 @@ use App\Models\User;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class WithdrawController extends Controller
 {

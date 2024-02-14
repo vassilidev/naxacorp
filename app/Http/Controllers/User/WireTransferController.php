@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\User;
 
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Http\Controllers\Controller;
 use App\Lib\FormProcessor;
@@ -14,6 +12,8 @@ use App\Models\Form;
 use App\Models\OtpVerification;
 use App\Models\Transaction;
 use App\Models\WireTransferSetting;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use App\Constants\Status;
 use App\Models\Dps;
 use App\Models\Fdr;
@@ -13,6 +12,7 @@ use App\Models\MiningHistory;
 use App\Models\MiningStack;
 use App\Models\Transaction;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 
 class CronController extends Controller
 {

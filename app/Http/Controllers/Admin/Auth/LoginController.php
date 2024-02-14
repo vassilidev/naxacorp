@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin\Auth;
 
-use Illuminate\Contracts\Auth\StatefulGuard;
-use Illuminate\View\View;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Laramin\Utility\Onumoti;
 
 class LoginController extends Controller
