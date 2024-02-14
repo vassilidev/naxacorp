@@ -11,7 +11,6 @@ class Captcha extends Component
      *
      * @return void
      */
-
     public $path;
 
     public function __construct($path = null)
@@ -29,6 +28,7 @@ class Captcha extends Component
         if ($this->path) {
             return view($this->path.'.captcha');
         }
+
         return view('partials.captcha');
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace  App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Serializer;
+namespace App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Serializer;
 
-use  App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\HttpRequest;
-use  App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Serializer;
+use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\HttpRequest;
+use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Serializer;
 
 class Form implements Serializer
 {
@@ -16,27 +16,25 @@ class Form implements Serializer
     }
 
     /**
-     * @param HttpRequest $request
      * @return string representation of your data after being serialized.
      */
     public function encode(HttpRequest $request)
     {
-        if (!is_array($request->body) || !$this->isAssociative($request->body))
-        {
-            throw new \Exception("HttpRequest body must be an associative array when Content-Type is: " . $request->headers["Content-Type"]);
+        if (! is_array($request->body) || ! $this->isAssociative($request->body)) {
+            throw new \Exception('HttpRequest body must be an associative array when Content-Type is: '.$request->headers['Content-Type']);
         }
 
         return http_build_query($request->body);
     }
 
     /**
-     * @param $body
      * @return mixed
+     *
      * @throws \Exception as multipart does not support deserialization.
      */
     public function decode($body)
     {
-        throw new \Exception("CurlSupported does not support deserialization");
+        throw new \Exception('CurlSupported does not support deserialization');
     }
 
     private function isAssociative(array $array)

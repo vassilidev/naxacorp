@@ -4,10 +4,14 @@ namespace App\Models;
 
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class NotificationLog extends Model {
+class NotificationLog extends Model
+{
     use Searchable;
-    public function user() {
+
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
 }

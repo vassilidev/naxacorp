@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CronController;
+use App\Http\Controllers\Gateway;
 use App\Models\Form;
 use App\Models\Loan;
 use App\Models\LoanPlan;
@@ -19,14 +21,14 @@ Route::get('/import-loan-installments', function () {
         $firstInstallmentDate = $loan->created_at->addDays($loan->installment_interval);
 
         for ($i = 0; $i < $installmentDiteHobe; $i++) {
-            $installmentDate                     = $firstInstallmentDate;
-            $installment['installmentable_id']   = $loan->id;
+            $installmentDate = $firstInstallmentDate;
+            $installment['installmentable_id'] = $loan->id;
             $installment['installmentable_type'] = Loan::class;
-            $installment['installment_date']     = $installmentDate->format('Y-m-d');
-            $installment['given_at']             = null;
-            $installment['delay_charge']         = 0;
-            $data[]                              = $installment;
-            $firstInstallmentDate                = $installmentDate->addDays($loan->installment_interval);
+            $installment['installment_date'] = $installmentDate->format('Y-m-d');
+            $installment['given_at'] = null;
+            $installment['delay_charge'] = 0;
+            $data[] = $installment;
+            $firstInstallmentDate = $installmentDate->addDays($loan->installment_interval);
         }
     }
 
@@ -38,19 +40,19 @@ Route::get('/loan-plans', function () {
     foreach ($loanPlan as $plan) {
         $i = 0;
         foreach (json_decode($plan->requirement_information) as $info) {
-            $label            = titleToKey($info->field_name);
+            $label = titleToKey($info->field_name);
             $formData[$label] = [
-                'name'        => $info->field_name,
-                'label'       => $label,
+                'name' => $info->field_name,
+                'label' => $label,
                 'is_required' => $info->validation,
-                'extensions'  => "",
-                'options'     => [],
-                'type'        => $info->type,
+                'extensions' => '',
+                'options' => [],
+                'type' => $info->type,
             ];
             $i++;
         }
-        $form            = new Form();
-        $form->act       = 'loan_plan';
+        $form = new Form();
+        $form->act = 'loan_plan';
         $form->form_data = $formData;
         $form->save();
 
@@ -60,13 +62,13 @@ Route::get('/loan-plans', function () {
 });
 
 // Cron Route
-Route::get('cron/dps', 'CronController@dps')->name('cron.dps');
-Route::get('cron/fdr', 'CronController@fdr')->name('cron.fdr');
-Route::get('cron/loan', 'CronController@loan')->name('cron.loan');
-Route::get('cron/mining/daily', 'CronController@miningByDaily')->name('cron.mining');
-Route::get('cron/mining/weekly', 'CronController@miningByWeek')->name('cron.mining.weekly');
-Route::get('cron/mining/monthly', 'CronController@miningByMonth')->name('cron.mining.monthly');
-Route::get('cron/mining/yearly', 'CronController@miningByYear')->name('cron.mining.yearly');
+Route::get('cron/dps', [CronController::class, 'dps'])->name('cron.dps');
+Route::get('cron/fdr', [CronController::class, 'fdr'])->name('cron.fdr');
+Route::get('cron/loan', [CronController::class, 'loan'])->name('cron.loan');
+Route::get('cron/mining/daily', [CronController::class, 'miningByDaily'])->name('cron.mining');
+Route::get('cron/mining/weekly', [CronController::class, 'miningByWeek'])->name('cron.mining.weekly');
+Route::get('cron/mining/monthly', [CronController::class, 'miningByMonth'])->name('cron.mining.monthly');
+Route::get('cron/mining/yearly', [CronController::class, 'miningByYear'])->name('cron.mining.yearly');
 
 // User Support Ticket
 Route::controller('TicketController')->prefix('ticket')->name('ticket.')->group(function () {
@@ -79,7 +81,7 @@ Route::controller('TicketController')->prefix('ticket')->name('ticket.')->group(
     Route::get('download/{ticket}', 'ticketDownload')->name('download');
 });
 
-Route::get('app/deposit/confirm/{hash}', 'Gateway\PaymentController@appDepositConfirm')->name('deposit.app.confirm');
+Route::get('app/deposit/confirm/{hash}', [Gateway\PaymentController::class, 'appDepositConfirm'])->name('deposit.app.confirm');
 
 Route::controller('SiteController')->group(function () {
 

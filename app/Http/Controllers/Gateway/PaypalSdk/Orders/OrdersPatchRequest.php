@@ -13,14 +13,11 @@ use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\HttpRequest;
 
 class OrdersPatchRequest extends HttpRequest
 {
-    function __construct($orderId)
+    public function __construct($orderId)
     {
-        parent::__construct("/v2/checkout/orders/{order_id}?", "PATCH");
+        parent::__construct('/v2/checkout/orders/{order_id}?', 'PATCH');
 
-        $this->path = str_replace("{order_id}", urlencode($orderId), $this->path);
-        $this->headers["Content-Type"] = "application/json";
+        $this->path = str_replace('{order_id}', urlencode($orderId), $this->path);
+        $this->headers['Content-Type'] = 'application/json';
     }
-
-
-
 }

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MiningStack extends Model
 {
@@ -11,17 +13,17 @@ class MiningStack extends Model
 
     protected $guarded = [];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function config()
+    public function config(): BelongsTo
     {
         return $this->belongsTo(MiningConfig::class);
     }
-    
-    public function log()
+
+    public function log(): HasMany
     {
         return $this->hasMany(MiningHistory::class);
     }

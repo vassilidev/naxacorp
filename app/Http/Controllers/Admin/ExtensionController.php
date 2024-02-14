@@ -5,15 +5,20 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Extension;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
-class ExtensionController extends Controller {
-    public function index() {
+class ExtensionController extends Controller
+{
+    public function index(): View
+    {
         $pageTitle = 'Extensions';
         $extensions = Extension::orderBy('name')->get();
+
         return view('admin.extension.index', compact('pageTitle', 'extensions'));
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id)
+    {
         $extension = Extension::findOrFail($id);
         $validation_rule = [];
 
@@ -31,11 +36,13 @@ class ExtensionController extends Controller {
 
         $extension->shortcode = $shortcode;
         $extension->save();
-        $notify[] = ['success', $extension->name . ' updated successfully'];
+        $notify[] = ['success', $extension->name.' updated successfully'];
+
         return back()->withNotify($notify);
     }
 
-    public function status($id) {
+    public function status($id)
+    {
         return Extension::changeStatus($id);
     }
 }

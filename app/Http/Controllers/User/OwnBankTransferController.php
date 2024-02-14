@@ -12,38 +12,45 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
-class OwnBankTransferController extends Controller {
-
-    public function beneficiaries() {
+class OwnBankTransferController extends Controller
+{
+    public function beneficiaries(): View
+    {
         $beneficiaries = Beneficiary::where('user_id', auth()->id())->where('beneficiary_type', User::class)->paginate(getPaginate());
-        $pageTitle     = 'Transfer Money Within ' . gs()->site_name;
-        return view($this->activeTemplate . 'user.transfer.own_bank.beneficiaries', compact('pageTitle', 'beneficiaries'));
+        $pageTitle = 'Transfer Money Within '.gs()->site_name;
+
+        return view($this->activeTemplate.'user.transfer.own_bank.beneficiaries', compact('pageTitle', 'beneficiaries'));
     }
 
-    public function transferRequest(Request $request, $id) {
+    public function transferRequest(Request $request, $id)
+    {
         $beneficiary = Beneficiary::where('user_id', auth()->id())->findOrFail($id);
         $this->validation($request, $beneficiary);
         $this->checkTransferAvailability($request->amount);
 
         $additionalData = [
-            'amount'         => $request->amount,
+            'amount' => $request->amount,
             'after_verified' => 'user.transfer.own.bank.confirm',
         ];
 
         $otpManager = new OTPManager();
+
         return $otpManager->newOTP($beneficiary, $request->auth_mode, 'OWN_BANK_TRANSFER_OTP', $additionalData);
     }
 
-    public function confirm() {
+    public function confirm()
+    {
 
         $verification = OtpVerification::find(sessionVerificationId());
-        $beneficiary  = $verification->verifiable;
+        $beneficiary = $verification->verifiable;
 
         OTPManager::checkVerificationData($verification, Beneficiary::class);
 
         if ($beneficiary->beneficiary_type != User::class) {
             $notify[] = ['error', 'Invalid session data'];
+
             return to_route('user.home')->withNotify($notify);
         }
 
@@ -52,17 +59,17 @@ class OwnBankTransferController extends Controller {
 
         $this->checkTransferAvailability($amount);
 
-        $general     = gs();
-        $charge      = $this->charge($amount);
+        $general = gs();
+        $charge = $this->charge($amount);
         $finalAmount = $amount + $charge;
 
-        $transfer                 = new BalanceTransfer();
-        $transfer->user_id        = $sender->id;
-        $transfer->trx            = getTrx();
+        $transfer = new BalanceTransfer();
+        $transfer->user_id = $sender->id;
+        $transfer->trx = getTrx();
         $transfer->beneficiary_id = $beneficiary->id;
-        $transfer->amount         = $amount;
-        $transfer->charge         = $charge;
-        $transfer->status         = Status::TRANSFER_COMPLETED;
+        $transfer->amount = $amount;
+        $transfer->charge = $charge;
+        $transfer->status = Status::TRANSFER_COMPLETED;
         $transfer->save();
 
         $sender->balance -= $finalAmount;
@@ -89,40 +96,43 @@ class OwnBankTransferController extends Controller {
         return redirect()->route('user.transfer.own.bank.beneficiaries')->withNotify($notify);
     }
 
-    private function sendingTransaction($transfer, $user) {
-        $transaction               = new Transaction();
-        $transaction->user_id      = $user->id;
-        $transaction->amount       = $transfer->amount;
+    private function sendingTransaction($transfer, $user)
+    {
+        $transaction = new Transaction();
+        $transaction->user_id = $user->id;
+        $transaction->amount = $transfer->amount;
         $transaction->post_balance = $user->balance;
-        $transaction->charge       = $transfer->charge;
-        $transaction->trx_type     = '-';
-        $transaction->details      = 'Own bank transfer';
-        $transaction->trx          = $transfer->trx;
-        $transaction->remark       = "own_bank_transfer";
+        $transaction->charge = $transfer->charge;
+        $transaction->trx_type = '-';
+        $transaction->details = 'Own bank transfer';
+        $transaction->trx = $transfer->trx;
+        $transaction->remark = 'own_bank_transfer';
         $transaction->save();
     }
 
-    private function receivingTransaction($transfer, $user) {
-        $transaction               = new Transaction();
-        $transaction->user_id      = $user->id;
-        $transaction->amount       = $transfer->amount;
+    private function receivingTransaction($transfer, $user)
+    {
+        $transaction = new Transaction();
+        $transaction->user_id = $user->id;
+        $transaction->amount = $transfer->amount;
         $transaction->post_balance = $user->balance;
-        $transaction->charge       = 0;
-        $transaction->trx_type     = '+';
-        $transaction->details      = 'Received transferred money';
-        $transaction->remark       = 'received_money';
-        $transaction->trx          = $transfer->trx;
+        $transaction->charge = 0;
+        $transaction->trx_type = '+';
+        $transaction->details = 'Received transferred money';
+        $transaction->remark = 'received_money';
+        $transaction->trx = $transfer->trx;
         $transaction->save();
     }
 
-    private function checkTransferAvailability($amount) {
+    private function checkTransferAvailability($amount)
+    {
 
         $finalAmount = $amount + $this->charge($amount);
-        $user        = auth()->user();
-        $general     = gs();
+        $user = auth()->user();
+        $general = gs();
 
         if ($amount < $general->minimum_transfer_limit) {
-            throw ValidationException::withMessages(['error' => 'Sorry minimum transfer limit is ' . showAmount($general->minimum_transfer_limit)]);
+            throw ValidationException::withMessages(['error' => 'Sorry minimum transfer limit is '.showAmount($general->minimum_transfer_limit)]);
         }
 
         if ($user->balance < $finalAmount) {
@@ -142,30 +152,34 @@ class OwnBankTransferController extends Controller {
         }
     }
 
-    private function charge($amount) {
-        $general       = gs();
+    private function charge($amount)
+    {
+        $general = gs();
         $percentCharge = $amount * $general->percent_transfer_charge / 100;
+
         return $general->fixed_transfer_charge + $percentCharge;
     }
 
-    private function validation($request, $beneficiary) {
+    private function validation($request, $beneficiary)
+    {
         if ($beneficiary->beneficiary_type != User::class) {
             throw ValidationException::withMessages(['error' => 'Invalid beneficiary selected']);
         }
 
-        $rules = ['amount' => "required|numeric|gt:0"];
+        $rules = ['amount' => 'required|numeric|gt:0'];
         $rules = mergeOtpField($rules);
         $request->validate($rules);
     }
 
-    private function shortCodes($transfer, $sender, $recipient, $postBalance) {
+    private function shortCodes($transfer, $sender, $recipient, $postBalance)
+    {
         return [
-            'sender'       => $sender->username,
-            'recipient'    => $recipient->username,
-            'amount'       => showAmount($transfer->amount),
-            'charge'       => showAmount($transfer->charge),
+            'sender' => $sender->username,
+            'recipient' => $recipient->username,
+            'amount' => showAmount($transfer->amount),
+            'charge' => showAmount($transfer->charge),
             'final_amount' => showAmount($transfer->final_amount),
-            'trx'          => $transfer->trx,
+            'trx' => $transfer->trx,
             'post_balance' => showAmount($postBalance),
         ];
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp\Environment;
 abstract class PayPalEnvironment implements Environment
 {
     private $clientId;
+
     private $clientSecret;
 
     public function __construct($clientId, $clientSecret)
@@ -17,7 +18,6 @@ abstract class PayPalEnvironment implements Environment
 
     public function authorizationString()
     {
-        return base64_encode($this->clientId . ":" . $this->clientSecret);
+        return base64_encode($this->clientId.':'.$this->clientSecret);
     }
 }
-

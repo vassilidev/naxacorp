@@ -2,25 +2,26 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Auth;
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class CheckStatus {
+class CheckStatus
+{
     /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
      */
-    public function handle($request, Closure $next) {
+    public function handle(Request $request, Closure $next): Response
+    {
         if (Auth::check()) {
             $user = auth()->user();
-            if ($user->status  && $user->ev  && $user->sv  && $user->tv) {
+            if ($user->status && $user->ev && $user->sv && $user->tv) {
                 return $next($request);
             } else {
                 if ($request->is('api/*')) {
                     $notify[] = 'You need to verify your account first.';
+
                     return response()->json([
                         'remark' => 'unverified',
                         'status' => 'error',

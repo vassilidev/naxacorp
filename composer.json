@@ -8,19 +8,19 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.0.2",
-        "coingate/coingate-php": "^3.0",
+        "php": "^8.1",
+        "coingate/coingate-php": "^4.0",
         "ezyang/htmlpurifier": "^4.13",
         "guzzlehttp/guzzle": "^7.2",
         "intervention/image": "^2.5",
         "laramin/utility": "dev-main",
-        "laravel/framework": "^9.2",
-        "laravel/sanctum": "^2.14.1",
-        "laravel/tinker": "^2.7",
-        "laravel/ui": "^3.4",
-        "mailjet/mailjet-apiv3-php": "^1.4",
+        "laravel/framework": "^10.44",
+        "laravel/sanctum": "^3.3",
+        "laravel/tinker": "^2.8",
+        "laravel/ui": "^4.2",
+        "mailjet/mailjet-apiv3-php": "^1.5",
         "messagebird/php-rest-api": "^1.20",
-        "mollie/laravel-mollie": "^2.14",
+        "mollie/laravel-mollie": "^2.22",
         "phpmailer/phpmailer": "^6.2",
         "razorpay/razorpay": "2.*",
         "sendgrid/sendgrid": "^7.6",
@@ -31,14 +31,14 @@
         "vonage/client": "^2.4"
     },
     "require-dev": {
-        "barryvdh/laravel-debugbar": "^3.3",
-        "beyondcode/laravel-query-detector": "^1.5",
+        "barryvdh/laravel-debugbar": "^3.8",
+        "beyondcode/laravel-query-detector": "^1.7",
         "fakerphp/faker": "^1.9.1",
-        "laravel/sail": "^1.0.1",
+        "laravel/sail": "^1.18",
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "spatie/laravel-ignition": "^2.0"
     },
     "autoload": {
         "psr-4": {
@@ -80,6 +80,6 @@
         "preferred-install": "dist",
         "sort-packages": true
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }

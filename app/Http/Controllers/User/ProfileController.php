@@ -2,35 +2,37 @@
 
 namespace App\Http\Controllers\User;
 
-use Illuminate\Http\Request;
-use App\Rules\FileTypeValidate;
 use App\Http\Controllers\Controller;
+use App\Rules\FileTypeValidate;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    public function profile()
+    public function profile(): View
     {
-        $pageTitle = "Profile Setting";
+        $pageTitle = 'Profile Setting';
         $user = auth()->user();
-        return view($this->activeTemplate . 'user.profile_setting', compact('pageTitle', 'user'));
+
+        return view($this->activeTemplate.'user.profile_setting', compact('pageTitle', 'user'));
     }
 
     public function submitProfile(Request $request)
     {
         $request->validate([
-            'firstname'   => 'required|string',
-            'lastname'    => 'required|string',
-            'address'     => 'nullable|string',
-            'state'       => 'nullable|string',
-            'zip'         => 'nullable|string',
-            'city'        => 'nullable|string',
-            'country'     => 'nullable|string',
-            'image'       => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])]
+            'firstname' => 'required|string',
+            'lastname' => 'required|string',
+            'address' => 'nullable|string',
+            'state' => 'nullable|string',
+            'zip' => 'nullable|string',
+            'city' => 'nullable|string',
+            'country' => 'nullable|string',
+            'image' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png'])],
         ], [
             'firstname.required' => 'First name field is required',
-            'lastname.required'  => 'Last name field is required'
+            'lastname.required' => 'Last name field is required',
         ]);
 
         $user = auth()->user();
@@ -41,6 +43,7 @@ class ProfileController extends Controller
                 $user->image = fileUploader($request->image, getFilePath('userProfile'), getFileSize('userProfile'), $old);
             } catch (\Exception $exp) {
                 $notify[] = ['error', 'Couldn\'t upload your image'];
+
                 return back()->withNotify($notify);
             }
         }
@@ -58,13 +61,15 @@ class ProfileController extends Controller
 
         $user->save();
         $notify[] = ['success', 'Profile updated successfully'];
+
         return back()->withNotify($notify);
     }
 
-    public function changePassword()
+    public function changePassword(): View
     {
         $pageTitle = 'Change Password';
-        return view($this->activeTemplate . 'user.password', compact('pageTitle'));
+
+        return view($this->activeTemplate.'user.password', compact('pageTitle'));
     }
 
     public function submitPassword(Request $request)
@@ -78,7 +83,7 @@ class ProfileController extends Controller
 
         $this->validate($request, [
             'current_password' => 'required',
-            'password' => ['required', 'confirmed', $passwordValidation]
+            'password' => ['required', 'confirmed', $passwordValidation],
         ]);
 
         $user = auth()->user();
@@ -87,9 +92,11 @@ class ProfileController extends Controller
             $user->password = $password;
             $user->save();
             $notify[] = ['success', 'Password changes successfully'];
+
             return back()->withNotify($notify);
         } else {
             $notify[] = ['error', 'The password doesn\'t match!'];
+
             return back()->withNotify($notify);
         }
     }

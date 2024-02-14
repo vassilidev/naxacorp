@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Gateway\PaypalSdk\PayPalHttp;
 
 /**
  * Class HttpRequest
- * @package PayPalHttp
- *
- * Request object that holds all the necessary information required by HTTPClient
  *
  * @see HttpClient
  */
@@ -32,11 +29,11 @@ class HttpRequest
      */
     public $headers;
 
-    function __construct($path, $verb)
+    public function __construct($path, $verb)
     {
         $this->path = $path;
         $this->verb = $verb;
-        $this->body = NULL;
+        $this->body = null;
         $this->headers = [];
     }
 }

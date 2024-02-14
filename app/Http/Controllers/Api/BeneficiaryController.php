@@ -8,67 +8,74 @@ use App\Models\Beneficiary;
 use App\Models\GeneralSetting;
 use App\Models\OtherBank;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class BeneficiaryController extends Controller {
-
-    public function ownBeneficiary() {
-        $notify[]       = 'Own Beneficiary';
-        $beneficiaries  = Beneficiary::ownBank()->where('user_id', auth()->id())->apiQuery();
-        $general        = GeneralSetting::first();
+class BeneficiaryController extends Controller
+{
+    public function ownBeneficiary(): JsonResponse
+    {
+        $notify[] = 'Own Beneficiary';
+        $beneficiaries = Beneficiary::ownBank()->where('user_id', auth()->id())->apiQuery();
+        $general = GeneralSetting::first();
         $transferCharge = $general->transferCharge();
-        return response()->json([
-            'remark'  => 'own_beneficiary',
-            'status'  => 'success',
-            'message' => ['success' => $notify],
-            'data'    => [
-                'beneficiaries'   => $beneficiaries,
-                'transfer_charge' => $transferCharge,
-                'general'         => $general,
-            ],
-        ]);
-    }
 
-    public function otherBeneficiary() {
-        $notify[]      = 'Other Beneficiary';
-        $otherBanks    = OtherBank::active()->with('form')->get();
-        $beneficiaries = Beneficiary::otherBank()->where('user_id', auth()->id())->with('beneficiaryOf')->apiQuery();
-        $path          = getFilePath('verify');
         return response()->json([
-            'remark'  => 'other_beneficiary',
-            'status'  => 'success',
+            'remark' => 'own_beneficiary',
+            'status' => 'success',
             'message' => ['success' => $notify],
-            'data'    => [
+            'data' => [
                 'beneficiaries' => $beneficiaries,
-                'banks'         => $otherBanks,
-                'path'          => $path,
+                'transfer_charge' => $transferCharge,
+                'general' => $general,
             ],
         ]);
     }
 
-    public function addOwnBeneficiary(Request $request) {
+    public function otherBeneficiary(): JsonResponse
+    {
+        $notify[] = 'Other Beneficiary';
+        $otherBanks = OtherBank::active()->with('form')->get();
+        $beneficiaries = Beneficiary::otherBank()->where('user_id', auth()->id())->with('beneficiaryOf')->apiQuery();
+        $path = getFilePath('verify');
+
+        return response()->json([
+            'remark' => 'other_beneficiary',
+            'status' => 'success',
+            'message' => ['success' => $notify],
+            'data' => [
+                'beneficiaries' => $beneficiaries,
+                'banks' => $otherBanks,
+                'path' => $path,
+            ],
+        ]);
+    }
+
+    public function addOwnBeneficiary(Request $request): JsonResponse
+    {
         $validator = Validator::make($request->all(), [
             'account_number' => 'required|string',
-            'account_name'   => 'required|string',
-            'short_name'     => 'required|string',
+            'account_name' => 'required|string',
+            'short_name' => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'remark'  => 'validation_error',
-                'status'  => 'error',
+                'remark' => 'validation_error',
+                'status' => 'error',
                 'message' => ['error' => $validator->errors()->all()],
             ]);
         }
 
         $beneficiaryUser = User::where('account_number', $request->account_number)->where('username', $request->account_name)->first();
 
-        if (!$beneficiaryUser) {
+        if (! $beneficiaryUser) {
             $notify[] = 'Beneficiary account doesn\'t exists';
+
             return response()->json([
-                'remark'  => 'validation_error',
-                'status'  => 'error',
+                'remark' => 'validation_error',
+                'status' => 'error',
                 'message' => ['error' => $notify],
             ]);
         }
@@ -77,117 +84,127 @@ class BeneficiaryController extends Controller {
 
         if ($beneficiaryExist) {
             $notify[] = 'This beneficiary already added';
+
             return response()->json([
-                'remark'  => 'validation_error',
-                'status'  => 'error',
+                'remark' => 'validation_error',
+                'status' => 'error',
                 'message' => ['error' => $notify],
             ]);
         }
 
-        $beneficiary                 = new Beneficiary();
-        $beneficiary->user_id        = auth()->id();
+        $beneficiary = new Beneficiary();
+        $beneficiary->user_id = auth()->id();
         $beneficiary->account_number = $request->account_number;
-        $beneficiary->account_name   = $request->account_name;
-        $beneficiary->short_name     = $request->short_name;
+        $beneficiary->account_name = $request->account_name;
+        $beneficiary->short_name = $request->short_name;
 
         $beneficiaryUser->beneficiaryTypes()->save($beneficiary);
 
         $notify[] = 'Beneficiary added successfully';
+
         return response()->json([
-            'remark'  => 'beneficiary',
-            'status'  => 'success',
+            'remark' => 'beneficiary',
+            'status' => 'success',
             'message' => ['success' => $notify],
         ]);
     }
 
-    public function addOtherBeneficiary(Request $request) {
+    public function addOtherBeneficiary(Request $request): JsonResponse
+    {
 
         $validator = Validator::make($request->all(), [
-            'bank'       => 'required|integer',
+            'bank' => 'required|integer',
             'short_name' => 'required',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'remark'  => 'validation_error',
-                'status'  => 'error',
+                'remark' => 'validation_error',
+                'status' => 'error',
                 'message' => ['error' => $validator->errors()->all()],
             ]);
         }
 
         $bank = OtherBank::active()->find($request->bank);
-        if (!$bank) {
+        if (! $bank) {
             $notify[] = 'Bank not found';
+
             return response()->json([
-                'remark'  => 'validation_error',
-                'status'  => 'error',
+                'remark' => 'validation_error',
+                'status' => 'error',
                 'message' => ['error' => $notify],
             ]);
         }
 
         $userData = null;
         if (@$bank->form->form_data) {
-            $formData           = $bank->form->form_data;
-            $formProcessor      = new FormProcessor();
-            $validationRule     = $formProcessor->valueValidation($formData);
+            $formData = $bank->form->form_data;
+            $formProcessor = new FormProcessor();
+            $validationRule = $formProcessor->valueValidation($formData);
             $formDataValidation = Validator::make($request->all(), $validationRule);
 
             if ($formDataValidation->fails()) {
                 return response()->json([
-                    'remark'  => 'validation_error',
-                    'status'  => 'error',
+                    'remark' => 'validation_error',
+                    'status' => 'error',
                     'message' => ['error' => $formDataValidation->errors()->all()],
                 ]);
             }
             $userData = $formProcessor->processFormData($request, $formData);
         }
 
-        $beneficiary                 = new Beneficiary();
-        $beneficiary->user_id        = auth()->id();
+        $beneficiary = new Beneficiary();
+        $beneficiary->user_id = auth()->id();
         $beneficiary->account_number = $request->account_number;
-        $beneficiary->account_name   = $request->account_name;
-        $beneficiary->short_name     = $request->short_name;
-        $beneficiary->details        = $userData;
+        $beneficiary->account_name = $request->account_name;
+        $beneficiary->short_name = $request->short_name;
+        $beneficiary->details = $userData;
 
         $bank->beneficiaryTypes()->save($beneficiary);
 
         $notify[] = 'Beneficiary added successfully';
+
         return response()->json([
-            'remark'  => 'beneficiary',
-            'status'  => 'success',
+            'remark' => 'beneficiary',
+            'status' => 'success',
             'message' => ['success' => $notify],
         ]);
     }
 
-    public function details($id) {
+    public function details($id): JsonResponse
+    {
         $beneficiary = Beneficiary::where('id', $id)->first();
 
-        if (!$beneficiary) {
+        if (! $beneficiary) {
             $notify[] = 'Beneficiary Not Found';
+
             return response()->json([
-                'remark'  => 'beneficiary_error',
-                'status'  => 'error',
+                'remark' => 'beneficiary_error',
+                'status' => 'error',
                 'message' => ['error' => $notify],
             ]);
         }
         $notify[] = 'Beneficiary Data';
+
         return response()->json([
-            'remark'  => 'beneficiary',
-            'status'  => 'success',
+            'remark' => 'beneficiary',
+            'status' => 'success',
             'message' => ['success' => $notify],
-            'data'    => [
+            'data' => [
                 'beneficiary' => $beneficiary,
             ],
         ]);
     }
 
-    public function bankFormData(Request $request) {
+    public function bankFormData(Request $request): JsonResponse
+    {
         $bank = OtherBank::active()->where('id', $request->id)->first();
-        if (!$bank) {
+        if (! $bank) {
             $notify[] = 'Bank not found';
+
             return response()->json([
-                'remark'  => 'bank_not_found',
-                'status'  => 'error',
+                'remark' => 'bank_not_found',
+                'status' => 'error',
                 'message' => ['error' => $notify],
             ]);
 
@@ -195,38 +212,42 @@ class BeneficiaryController extends Controller {
 
         $formData = $bank->form->form_data;
         $notify[] = 'Bank form data';
+
         return response()->json([
-            'remark'  => 'bank_data',
-            'status'  => 'success',
+            'remark' => 'bank_data',
+            'status' => 'success',
             'message' => ['success' => $notify],
-            'data'    => [
+            'data' => [
                 'html' => $formData,
             ],
         ]);
     }
 
-    public function checkAccountNumber(Request $request) {
+    public function checkAccountNumber(Request $request): JsonResponse
+    {
         $user = User::where('account_number', $request->account_number)->orWhere('username', $request->account_name)->first();
-        if (!$user || @$user->id == auth()->id()) {
+        if (! $user || @$user->id == auth()->id()) {
             $notify[] = 'No such account found';
+
             return response()->json([
-                'remark'  => 'check_account_number',
-                'status'  => 'error',
+                'remark' => 'check_account_number',
+                'status' => 'error',
                 'message' => ['error' => $notify],
             ]);
         }
 
         $data = [
             'account_number' => $user->account_number,
-            'account_name'   => $user->username,
+            'account_name' => $user->username,
         ];
 
         $notify[] = 'Account found';
+
         return response()->json([
-            'remark'  => 'account_found',
-            'status'  => 'success',
+            'remark' => 'account_found',
+            'status' => 'success',
             'message' => ['success' => $notify],
-            'data'    => [
+            'data' => [
                 'user' => $data,
             ],
         ]);

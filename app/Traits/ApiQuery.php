@@ -2,8 +2,10 @@
 
 namespace App\Traits;
 
-trait ApiQuery {
-    public function scopeApiQuery($query) {
+trait ApiQuery
+{
+    public function scopeApiQuery($query)
+    {
         $request = request();
         if ($request->take) {
             return $query->limit($request->take)->get();
@@ -20,11 +22,13 @@ trait ApiQuery {
             } else {
                 $calculation = $query->count();
             }
+
             return $calculation;
         }
         if ($request->pagination) {
             return $query->paginate(getPaginate($request->pagination));
         }
+
         return $query->paginate(getPaginate());
     }
 }

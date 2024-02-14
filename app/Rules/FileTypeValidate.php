@@ -7,6 +7,7 @@ use Illuminate\Contracts\Validation\Rule;
 class FileTypeValidate implements Rule
 {
     protected $extensions;
+
     /**
      * Create a new rule instance.
      *
@@ -21,21 +22,17 @@ class FileTypeValidate implements Rule
     /**
      * Determine if the validation rule passes.
      *
-     * @param  string  $attribute
      * @param  mixed  $value
-     * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(string $attribute, $value): bool
     {
         return in_array($value->getClientOriginalExtension(), $this->extensions);
     }
 
     /**
      * Get the validation error message.
-     *
-     * @return string
      */
-    public function message()
+    public function message(): string
     {
         return ':attribute file type is not supported.';
     }

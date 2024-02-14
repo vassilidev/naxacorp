@@ -6,18 +6,18 @@ use App\Constants\Status;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use SendGrid\Mail\To;
+use Symfony\Component\HttpFoundation\Response;
 
-class RedirectIfNotBranchStaff {
+class RedirectIfNotBranchStaff
+{
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next, $guard = "branch_staff") {
-        if (!Auth::guard($guard)->check()) {
+    public function handle(Request $request, Closure $next, $guard = 'branch_staff'): Response
+    {
+        if (! Auth::guard($guard)->check()) {
             return to_route('staff.login');
         }
 
@@ -25,7 +25,7 @@ class RedirectIfNotBranchStaff {
             return to_route('staff.banned');
         }
 
-        if (!session('branchId')) {
+        if (! session('branchId')) {
             session()->put('branchId', authStaff()->branch()->id);
         }
 

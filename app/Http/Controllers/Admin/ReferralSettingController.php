@@ -6,18 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\GeneralSetting;
 use App\Models\ReferralSetting;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
-class ReferralSettingController extends Controller {
-    public function index() {
+class ReferralSettingController extends Controller
+{
+    public function index(): View
+    {
         $pageTitle = 'Manage Referral';
-        $levels    = ReferralSetting::all();
+        $levels = ReferralSetting::all();
+
         return view('admin.referral.setting', compact('pageTitle', 'levels'));
     }
 
-    public function save(Request $request) {
+    public function save(Request $request)
+    {
         $request->validate([
-            'commission'            => 'required|array',
-            'commission.*.level'    => 'required|integer|min:1',
+            'commission' => 'required|array',
+            'commission.*.level' => 'required|integer|min:1',
             'commission.*.percent*' => 'required|numeric|gte:0',
         ]);
 
@@ -26,10 +31,12 @@ class ReferralSettingController extends Controller {
         ReferralSetting::insert($request->commission);
 
         $notify[] = ['success', 'Referral setting updated successfully'];
+
         return back()->withNotify($notify);
     }
 
-    public function commissionCount(Request $request) {
+    public function commissionCount(Request $request)
+    {
         $request->validate([
             'commission_count' => 'required|integer',
         ]);
@@ -39,6 +46,7 @@ class ReferralSettingController extends Controller {
         $general->save();
 
         $notify[] = ['success', 'Commission count updated successfully'];
+
         return back()->withNotify($notify);
     }
 }

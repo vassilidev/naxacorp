@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Frontend extends Model
 {
     protected $casts = [
-        'data_values' => 'object'
+        'data_values' => 'object',
     ];
 
     public static function scopeGetContent($data_keys)

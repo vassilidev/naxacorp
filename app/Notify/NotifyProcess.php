@@ -7,8 +7,8 @@ use App\Models\AdminNotification;
 use App\Models\NotificationLog;
 use App\Models\NotificationTemplate;
 
-class NotifyProcess {
-
+class NotifyProcess
+{
     /*
     |--------------------------------------------------------------------------
     | Notification Process
@@ -137,19 +137,18 @@ class NotifyProcess {
      * Get the final message after replacing the short code.
      *
      * Also custom message will be return from here if notification template doesn't exist.
-     *
-     * @return string
      */
-    protected function getMessage() {
+    protected function getMessage(): string
+    {
         $this->prevConfiguration();
         $this->setSetting();
 
-        $body           = $this->body;
-        $user           = $this->user;
+        $body = $this->body;
+        $user = $this->user;
         $globalTemplate = $this->globalTemplate;
 
         //finding the notification template
-        $template       = NotificationTemplate::where('act', $this->templateName)->where($this->statusField, Status::ENABLE)->first();
+        $template = NotificationTemplate::where('act', $this->templateName)->where($this->statusField, Status::ENABLE)->first();
         $this->template = $template;
 
         //Getting the notification message from database if use and template exist
@@ -166,12 +165,12 @@ class NotifyProcess {
         //replace the all short cod of template
         if ($this->shortCodes) {
             foreach ($this->shortCodes as $code => $value) {
-                $message = str_replace('{{' . $code . '}}', $value, $message);
+                $message = str_replace('{{'.$code.'}}', $value, $message);
             }
         }
 
         //Check email enable
-        if (!$this->template && $this->templateName) {
+        if (! $this->template && $this->templateName) {
             return false;
         }
 
@@ -186,27 +185,26 @@ class NotifyProcess {
 
     /**
      * Replace the short code of global template
-     *
-     * @return string
      */
-    protected function replaceShortCode($name, $username, $template, $body) {
-        $message = str_replace("{{fullname}}", $name, $template);
-        $message = str_replace("{{username}}", $username, $message);
-        $message = str_replace("{{message}}", $body, $message);
+    protected function replaceShortCode($name, $username, $template, $body): string
+    {
+        $message = str_replace('{{fullname}}', $name, $template);
+        $message = str_replace('{{username}}', $username, $message);
+        $message = str_replace('{{message}}', $body, $message);
+
         return $message;
     }
 
     /**
      * Set the subject with replaced the short codes
-     *
-     * @return void
      */
-    protected function getSubject() {
+    protected function getSubject(): void
+    {
         if ($this->template) {
             $subject = $this->template->subj;
             if ($this->shortCodes) {
                 foreach ($this->shortCodes as $code => $value) {
-                    $subject = str_replace('{{' . $code . '}}', $value, $subject);
+                    $subject = str_replace('{{'.$code.'}}', $value, $subject);
                 }
             }
             $this->subject = $subject;
@@ -215,48 +213,45 @@ class NotifyProcess {
 
     /**
      * Set the setting if not set yet
-     *
-     * @return void
      */
-    protected function setSetting() {
-        if (!$this->setting) {
+    protected function setSetting(): void
+    {
+        if (! $this->setting) {
             $this->setting = gs();
         }
     }
 
     /**
      * Create the notification log
-     *
-     * @return void
      */
-    public function createErrorLog($message) {
-        $adminNotification            = new AdminNotification();
-        $adminNotification->user_id   = 0;
-        $adminNotification->title     = $message;
+    public function createErrorLog($message): void
+    {
+        $adminNotification = new AdminNotification();
+        $adminNotification->user_id = 0;
+        $adminNotification->title = $message;
         $adminNotification->click_url = '#';
         $adminNotification->save();
     }
 
     /**
      * Create the error log
-     *
-     * @return void
      */
-    public function createLog($type) {
+    public function createLog($type): void
+    {
         $userColumn = $this->userColumn;
         if ($this->user && $this->createLog) {
-            $notifyConfig    = $this->notifyConfig;
-            $config          = $this->setting->$notifyConfig;
+            $notifyConfig = $this->notifyConfig;
+            $config = $this->setting->$notifyConfig;
             $notificationLog = new NotificationLog();
             if (@$this->user->id) {
                 $notificationLog->$userColumn = $this->user->id;
             }
             $notificationLog->notification_type = $type;
-            $notificationLog->sender            = @$config->name ? @$config->name : trans('Firebase');
-            $notificationLog->sent_from         = $this->setting->email_from;
-            $notificationLog->sent_to           = is_array($this->toAddress) ? json_encode($this->toAddress) : $this->toAddress;
-            $notificationLog->subject           = $this->subject;
-            $notificationLog->message           = $type == 'email' ? $this->finalMessage : strip_tags($this->finalMessage);
+            $notificationLog->sender = @$config->name ? @$config->name : trans('Firebase');
+            $notificationLog->sent_from = $this->setting->email_from;
+            $notificationLog->sent_to = is_array($this->toAddress) ? json_encode($this->toAddress) : $this->toAddress;
+            $notificationLog->subject = $this->subject;
+            $notificationLog->message = $type == 'email' ? $this->finalMessage : strip_tags($this->finalMessage);
             $notificationLog->save();
         }
     }

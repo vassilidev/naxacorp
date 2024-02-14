@@ -2,8 +2,6 @@
 
 namespace App\Notify;
 
-use App\Notify\NotifyProcess;
-use App\Notify\Notifiable;
 use Mailjet\Client;
 use Mailjet\Resources;
 use PHPMailer\PHPMailer\Exception;
@@ -11,8 +9,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use SendGrid;
 use SendGrid\Mail\Mail;
 
-class Email extends NotifyProcess implements Notifiable {
-
+class Email extends NotifyProcess implements Notifiable
+{
     /**
      * Email of receiver
      *
@@ -25,7 +23,8 @@ class Email extends NotifyProcess implements Notifiable {
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->statusField = 'email_status';
         $this->body = 'email_body';
         $this->globalTemplate = 'email_template';
@@ -37,7 +36,8 @@ class Email extends NotifyProcess implements Notifiable {
      *
      * @return void|bool
      */
-    public function send() {
+    public function send()
+    {
 
         //get message from parent
         $message = $this->getMessage();
@@ -57,20 +57,21 @@ class Email extends NotifyProcess implements Notifiable {
 
     /**
      * Get the method name
-     *
-     * @return string
      */
-    protected function mailMethods($name) {
+    protected function mailMethods($name): string
+    {
         $methods = [
             'php' => 'sendPhpMail',
             'smtp' => 'sendSmtpMail',
             'sendgrid' => 'sendSendGridMail',
             'mailjet' => 'sendMailjetMail',
         ];
+
         return $methods[$name];
     }
 
-    protected function sendPhpMail() {
+    protected function sendPhpMail()
+    {
         $general = $this->setting;
         $headers = "From: $general->site_name <$general->email_from> \r\n";
         $headers .= "Reply-To: $general->site_name <$general->email_from> \r\n";
@@ -79,22 +80,23 @@ class Email extends NotifyProcess implements Notifiable {
         @mail($this->email, $this->subject, $this->finalMessage, $headers);
     }
 
-    protected function sendSmtpMail() {
+    protected function sendSmtpMail()
+    {
         $mail = new PHPMailer(true);
         $config = $this->setting->mail_config;
         $general = $this->setting;
         //Server settings
         $mail->isSMTP();
-        $mail->Host       = $config->host;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $config->username;
-        $mail->Password   = $config->password;
+        $mail->Host = $config->host;
+        $mail->SMTPAuth = true;
+        $mail->Username = $config->username;
+        $mail->Password = $config->password;
         if ($config->enc == 'ssl') {
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
         } else {
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         }
-        $mail->Port       = $config->port;
+        $mail->Port = $config->port;
         $mail->CharSet = 'UTF-8';
         //Recipients
         $mail->setFrom($general->email_from, $general->site_name);
@@ -103,17 +105,18 @@ class Email extends NotifyProcess implements Notifiable {
         // Content
         $mail->isHTML(true);
         $mail->Subject = $this->subject;
-        $mail->Body    = $this->finalMessage;
+        $mail->Body = $this->finalMessage;
         $mail->send();
     }
 
-    protected function sendSendGridMail() {
+    protected function sendSendGridMail()
+    {
         $general = $this->setting;
         $sendgridMail = new Mail();
         $sendgridMail->setFrom($general->email_from, $general->site_name);
         $sendgridMail->setSubject($this->subject);
         $sendgridMail->addTo($this->email, $this->receiverName);
-        $sendgridMail->addContent("text/html", $this->finalMessage);
+        $sendgridMail->addContent('text/html', $this->finalMessage);
         $sendgrid = new SendGrid($general->mail_config->appkey);
         $response = $sendgrid->send($sendgridMail);
         if ($response->statusCode() != 202) {
@@ -121,7 +124,8 @@ class Email extends NotifyProcess implements Notifiable {
         }
     }
 
-    protected function sendMailjetMail() {
+    protected function sendMailjetMail()
+    {
         $general = $this->setting;
         $mj = new Client($general->mail_config->public_key, $general->mail_config->secret_key, true, ['version' => 'v3.1']);
         $body = [
@@ -135,23 +139,22 @@ class Email extends NotifyProcess implements Notifiable {
                         [
                             'Email' => $this->email,
                             'Name' => $this->receiverName,
-                        ]
+                        ],
                     ],
                     'Subject' => $this->subject,
-                    'TextPart' => "",
+                    'TextPart' => '',
                     'HTMLPart' => $this->finalMessage,
-                ]
-            ]
+                ],
+            ],
         ];
         $response = $mj->post(Resources::$Email, ['body' => $body]);
     }
 
     /**
      * Configure some properties
-     *
-     * @return void
      */
-    public function prevConfiguration() {
+    public function prevConfiguration(): void
+    {
         if ($this->user) {
             $this->email = $this->user->email;
             $this->receiverName = $this->user->fullname;

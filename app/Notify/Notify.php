@@ -2,7 +2,8 @@
 
 namespace App\Notify;
 
-class Notify {
+class Notify
+{
     /*
     |--------------------------------------------------------------------------
     | Send Notification
@@ -69,16 +70,16 @@ class Notify {
      *
      * @var object
      */
-
     public $clickValue;
 
     /**
      * Assign value to sendVia and setting property
      *
-     * @param null $sendVia
+     * @param  null  $sendVia
      * @return void
      */
-    public function __construct($sendVia = null) {
+    public function __construct($sendVia = null)
+    {
         $this->sendVia = $sendVia;
         $this->setting = gs();
     }
@@ -87,10 +88,9 @@ class Notify {
      * Send notification via methods.
      *
      * This method is creating instances of notifications to send the notification.
-     *
-     * @return void
      */
-    public function send() {
+    public function send(): void
+    {
         $methods = [];
         //get the notification method classes which are selected
         if ($this->sendVia) {
@@ -103,14 +103,14 @@ class Notify {
 
         //send the notification via methods one by one
         foreach ($methods as $method) {
-            $notify               = new $method;
+            $notify = new $method;
             $notify->templateName = $this->templateName;
-            $notify->shortCodes   = $this->shortCodes;
-            $notify->user         = $this->user;
-            $notify->setting      = $this->setting;
-            $notify->createLog    = $this->createLog;
-            $notify->userColumn   = $this->userColumn;
-            $notify->clickValue   = $this->clickValue;
+            $notify->shortCodes = $this->shortCodes;
+            $notify->user = $this->user;
+            $notify->setting = $this->setting;
+            $notify->createLog = $this->createLog;
+            $notify->userColumn = $this->userColumn;
+            $notify->clickValue = $this->clickValue;
             $notify->send();
         }
     }
@@ -118,18 +118,19 @@ class Notify {
     /**
      * Get the notification method classes.
      *
-     * @param array|null $sendVia
      * @return array|string
      */
-    protected function notifyMethods($sendVia = null) {
+    protected function notifyMethods(?array $sendVia = null)
+    {
         $methods = [
-            'email'             => Email::class,
-            'sms'               => Sms::class,
+            'email' => Email::class,
+            'sms' => Sms::class,
             'push_notification' => PushNotification::class,
         ];
         if ($sendVia) {
             return $methods[$sendVia];
         }
+
         return $methods;
     }
 }

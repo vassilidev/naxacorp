@@ -22,6 +22,7 @@ class FormProcessor
             'form_generator.form_type.*.required' => 'All form type is required',
             'form_generator.form_type.*.in' => 'Some selected form type is invalid',
         ];
+
         return $validation;
     }
 
@@ -36,7 +37,7 @@ class FormProcessor
                     $extensionsArr = explode(',', $extensions);
                     $notMatchedExt = count(array_diff($extensionsArr, $this->supportedExt()));
                     if ($notMatchedExt > 0) {
-                        throw new \Exception("Your selected extensions are invalid");
+                        throw new \Exception('Your selected extensions are invalid');
                     }
                 }
                 $label = titleToKey($forms['form_label'][$i]);
@@ -44,8 +45,8 @@ class FormProcessor
                     'name' => $forms['form_label'][$i],
                     'label' => $label,
                     'is_required' => $forms['is_required'][$i],
-                    'extensions' => $forms['extensions'][$i] == 'null' ? "" : $forms['extensions'][$i],
-                    'options' => $forms['options'][$i] ? explode(",", $forms['options'][$i]) : [],
+                    'extensions' => $forms['extensions'][$i] == 'null' ? '' : $forms['extensions'][$i],
+                    'options' => $forms['options'][$i] ? explode(',', $forms['options'][$i]) : [],
                     'type' => $forms['form_type'][$i],
                 ];
             }
@@ -55,7 +56,7 @@ class FormProcessor
                 $identifier = $act;
             }
             $form = Form::where($identifierField, $identifier)->first();
-            if (!$form) {
+            if (! $form) {
                 $form = new Form();
             }
         } else {
@@ -64,6 +65,7 @@ class FormProcessor
         $form->act = $act;
         $form->form_data = $formData;
         $form->save();
+
         return $form;
     }
 
@@ -79,18 +81,19 @@ class FormProcessor
                 $rule = array_merge($rule, ['nullable']);
             }
             if ($data->type == 'select' || $data->type == 'checkbox' || $data->type == 'radio') {
-                $rule = array_merge($rule, ['in:' . implode(',', $data->options)]);
+                $rule = array_merge($rule, ['in:'.implode(',', $data->options)]);
             }
             if ($data->type == 'file') {
-                $rule = array_merge($rule, ['mimes:' . $data->extensions]);
+                $rule = array_merge($rule, ['mimes:'.$data->extensions]);
             }
             if ($data->type == 'checkbox') {
-                $validationRule[$data->label . '.*'] = $rule;
+                $validationRule[$data->label.'.*'] = $rule;
             } else {
                 $validationRule[$data->label] = $rule;
             }
             $rule = [];
         }
+
         return $validationRule;
     }
 
@@ -102,9 +105,9 @@ class FormProcessor
             $value = $request->$name;
             if ($data->type == 'file') {
                 if ($request->hasFile($name)) {
-                    $directory = date("Y") . "/" . date("m") . "/" . date("d");
-                    $path = getFilePath('verify') . '/' . $directory;
-                    $value = $directory . '/' . fileUploader($value, $path);
+                    $directory = date('Y').'/'.date('m').'/'.date('d');
+                    $path = getFilePath('verify').'/'.$directory;
+                    $value = $directory.'/'.fileUploader($value, $path);
                 } else {
                     $value = null;
                 }
@@ -115,6 +118,7 @@ class FormProcessor
                 'value' => $value,
             ];
         }
+
         return $requestForm;
     }
 
@@ -130,7 +134,7 @@ class FormProcessor
             'txt',
             'xlx',
             'xlsx',
-            'csv'
+            'csv',
         ];
     }
 }

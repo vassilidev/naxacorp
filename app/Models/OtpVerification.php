@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class OtpVerification extends Model
 {
-
     public $timestamps = false;
 
     protected $casts = [
@@ -16,12 +17,12 @@ class OtpVerification extends Model
         'expired_at' => 'datetime',
     ];
 
-    public function verifiable()
+    public function verifiable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

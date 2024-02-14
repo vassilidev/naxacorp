@@ -5,11 +5,12 @@ namespace App\Traits;
 use App\Constants\Status;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
-trait GlobalStatus {
-
-    public static function changeStatus($id) {
+trait GlobalStatus
+{
+    public static function changeStatus($id)
+    {
         $modelName = get_class();
-        $query     = $modelName::findOrFail($id);
+        $query = $modelName::findOrFail($id);
 
         if ($query->status == Status::ENABLE) {
             $query->status = Status::DISABLE;
@@ -21,30 +22,36 @@ trait GlobalStatus {
 
         $query->save();
         $notify[] = ['success', $message];
+
         return back()->withNotify($notify);
     }
 
-    public function statusBadge(): Attribute {
+    public function statusBadge(): Attribute
+    {
         return new Attribute(
             get: fn () => $this->badgeData(),
         );
     }
 
-    public function badgeData() {
+    public function badgeData()
+    {
         $html = '';
         if ($this->status == Status::ENABLE) {
-            $html = '<span class="badge badge--success">' . trans('Enabled') . '</span>';
+            $html = '<span class="badge badge--success">'.trans('Enabled').'</span>';
         } else {
-            $html = '<span class="badge badge--danger">' . trans('Disabled') . '</span>';
+            $html = '<span class="badge badge--danger">'.trans('Disabled').'</span>';
         }
+
         return $html;
     }
 
-    public function scopeActive($query) {
+    public function scopeActive($query)
+    {
         return $query->where('status', Status::ENABLE);
     }
 
-    public function scopeInactive($query) {
+    public function scopeInactive($query)
+    {
         return $query->where('status', Status::DISABLE);
     }
 }

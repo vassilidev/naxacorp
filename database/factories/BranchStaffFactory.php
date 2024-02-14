@@ -15,15 +15,15 @@ class BranchStaffFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         return [
-            'name'        => $this->faker->name(),
-            'mobile'      => $this->faker->phoneNumber,
-            'address'     => $this->faker->address(),
-            'email'       => $this->faker->unique()->safeEmail(),
-            'password'    => Hash::make('123456'),
-            'designation' => rand(0,1)
+            'name' => $this->faker->name(),
+            'mobile' => $this->faker->phoneNumber(),
+            'address' => $this->faker->address(),
+            'email' => $this->faker->unique()->safeEmail(),
+            'password' => Hash::make('123456'),
+            'designation' => rand(0, 1),
         ];
     }
 }

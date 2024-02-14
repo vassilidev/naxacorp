@@ -7,9 +7,11 @@ use App\Traits\ApiQuery;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class BalanceTransfer extends Model {
-    use Searchable, ApiQuery;
+class BalanceTransfer extends Model
+{
+    use ApiQuery, Searchable;
 
     protected $guarded = ['id'];
 
@@ -18,50 +20,60 @@ class BalanceTransfer extends Model {
     ];
 
     // Relations
-    public function user() {
+    public function user(): BelongsTo
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function beneficiary() {
+    public function beneficiary(): BelongsTo
+    {
         return $this->belongsTo(Beneficiary::class, 'beneficiary_id', 'id');
     }
 
     // Scopes
-    public function scopePending($query) {
+    public function scopePending($query)
+    {
         return $query->where('status', Status::TRANSFER_PENDING);
     }
 
-    public function scopeCompleted($query) {
+    public function scopeCompleted($query)
+    {
         return $query->where('status', Status::TRANSFER_COMPLETED);
     }
 
-    public function scopeRejected($query) {
+    public function scopeRejected($query)
+    {
         return $query->where('status', Status::TRANSFER_REJECTED);
     }
 
-    public function scopeNotRejected($query) {
+    public function scopeNotRejected($query)
+    {
         return $query->where('status', '!=', Status::TRANSFER_REJECTED);
     }
 
-    public function scopeWireTransfer($query) {
+    public function scopeWireTransfer($query)
+    {
         return $query->where('beneficiary_id', 0);
     }
 
-    public function scopeOwnBank($query) {
+    public function scopeOwnBank($query)
+    {
         return $query->whereHas('beneficiary', function ($q) {
             return $q->where('beneficiary_type', User::class);
         });
     }
 
-    public function scopeOtherBank($query) {
+    public function scopeOtherBank($query)
+    {
         return $query->whereHas('beneficiary', function ($q) {
             return $q->where('beneficiary_type', OtherBank::class);
         });
     }
 
     /* ========= Accessors ========= */
-    public function statusBadge(): Attribute {
-        return Attribute::make(get:function () {
+    public function statusBadge(): Attribute
+    {
+        return Attribute::make(get: function () {
             if ($this->status == Status::TRANSFER_PENDING) {
                 return createBadge('warning', 'Pending');
             } elseif ($this->status == Status::TRANSFER_COMPLETED) {
@@ -71,19 +83,25 @@ class BalanceTransfer extends Model {
             }
         });
     }
-    public function finalAmount(): Attribute {
-        return Attribute::make(get:fn() => $this->amount + $this->charge);
+
+    public function finalAmount(): Attribute
+    {
+        return Attribute::make(get: fn () => $this->amount + $this->charge);
     }
 
     // Other Methods
 
-    public function wireTransferAccountNumber() {
+    public function wireTransferAccountNumber()
+    {
         $number = collect($this->wire_transfer_data)->where('name', 'Account Number')->first();
+
         return $number->value ?? '';
     }
 
-    public function wireTransferAccountName() {
+    public function wireTransferAccountName()
+    {
         $name = collect($this->wire_transfer_data)->where('name', 'Account Name')->first();
+
         return $name->value ?? '';
     }
 }

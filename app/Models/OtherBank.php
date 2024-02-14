@@ -2,29 +2,35 @@
 
 namespace App\Models;
 
-use App\Traits\Searchable;
 use App\Traits\GlobalStatus;
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-class OtherBank extends Model {
+class OtherBank extends Model
+{
     use GlobalStatus, Searchable;
 
-    public function beneficiaryTypes() {
+    public function beneficiaryTypes(): MorphMany
+    {
         return $this->morphMany(Beneficiary::class, 'beneficiary', 'beneficiary_type', 'beneficiary_id');
     }
 
-    public function form() {
+    public function form(): BelongsTo
+    {
         return $this->belongsTo(Form::class);
     }
 
     // Accessors
-    public function chargeText(): Attribute {
+    public function chargeText(): Attribute
+    {
         return Attribute::make(get: function () {
             $charge = '';
 
             if ($this->percent_charge > 0) {
-                $charge .= getAmount($this->percent_charge) . '%';
+                $charge .= getAmount($this->percent_charge).'%';
             }
 
             if ($this->percent_charge > 0 && $this->fixed_charge > 0) {
@@ -32,7 +38,7 @@ class OtherBank extends Model {
             }
 
             if ($this->fixed_charge > 0) {
-                $charge .= gs()->cur_sym . showAmount($this->fixed_charge);
+                $charge .= gs()->cur_sym.showAmount($this->fixed_charge);
             }
 
             return $charge;

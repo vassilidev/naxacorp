@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class NotificationTemplate extends Model
 {
     protected $casts = [
-        'shortcodes' => 'object'
+        'shortcodes' => 'object',
     ];
-
 }

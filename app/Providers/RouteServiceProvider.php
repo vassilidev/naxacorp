@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Laramin\Utility\VugiChugi;
 
-class RouteServiceProvider extends ServiceProvider {
+class RouteServiceProvider extends ServiceProvider
+{
     /**
      * The path to the "home" route for your application.
      *
@@ -18,36 +19,32 @@ class RouteServiceProvider extends ServiceProvider {
      * @var string
      */
 
-    protected $namespace = 'App\Http\Controllers';
-
     /**
      * Define your route model bindings, pattern filters, etc.
-     *
-     * @return void
      */
-    public function boot() {
-        $this->configureRateLimiting();
+    public function boot(): void
+    {
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
 
         $this->routes(function () {
-            Route::namespace($this->namespace)->middleware(VugiChugi::mdNm())->group(function () {
+            Route::middleware(VugiChugi::mdNm())->group(function () {
                 Route::prefix('api')
-                    ->middleware(['api','maintenance'])
+                    ->middleware(['api', 'maintenance'])
                     ->group(base_path('routes/api.php'));
-                    
+
                 Route::middleware(['web', 'maintenance'])
-                    ->namespace('Gateway')
                     ->prefix('ipn')
                     ->name('ipn.')
                     ->group(base_path('routes/ipn.php'));
 
                 Route::middleware(['web'])
-                    ->namespace('Admin')
                     ->prefix('manageme')
                     ->name('admin.')
                     ->group(base_path('routes/admin.php'));
 
                 Route::middleware(['web'])
-                    ->namespace('BranchStaff')
                     ->prefix('staff')
                     ->name('staff.')
                     ->group(base_path('routes/branch_staff.php'));
@@ -60,17 +57,6 @@ class RouteServiceProvider extends ServiceProvider {
             });
         });
 
-        Route::get('maintenance-mode', 'App\Http\Controllers\SiteController@maintenance')->name('maintenance');
-    }
-
-    /**
-     * Configure the rate limiters for the application.
-     *
-     * @return void
-     */
-    protected function configureRateLimiting() {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
+        Route::get('maintenance-mode', [App\Http\Controllers\SiteController::class, 'maintenance'])->name('maintenance');
     }
 }

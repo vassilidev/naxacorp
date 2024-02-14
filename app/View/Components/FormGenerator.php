@@ -11,7 +11,6 @@ class FormGenerator extends Component
      *
      * @return void
      */
-
     public $formClassName;
 
     public function __construct($formClassName = null)

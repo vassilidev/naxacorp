@@ -14,15 +14,16 @@ class BranchFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    public function definition()
+    public function definition(): array
     {
         $branch = $this->faker->country();
+
         return [
-            'name'    => $branch . '- Branch',
-            'code'    => rand(1000, 9999),
+            'name' => $branch.'- Branch',
+            'code' => rand(1000, 9999),
             'address' => $branch,
-            'email'   => $this->faker->unique()->safeEmail(),
-            'mobile'  => $this->faker->phoneNumber,
+            'email' => $this->faker->unique()->safeEmail(),
+            'mobile' => $this->faker->phoneNumber(),
         ];
 
     }

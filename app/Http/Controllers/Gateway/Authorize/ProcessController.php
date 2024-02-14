@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Gateway\Authorize;
 
 use App\Constants\Status;
-use App\Models\Deposit;
-use App\Http\Controllers\Gateway\PaymentController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Gateway\PaymentController;
+use App\Models\Deposit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use net\authorize\api\constants\ANetEnvironment;
@@ -16,23 +16,26 @@ use net\authorize\api\contract\v1\PaymentType;
 use net\authorize\api\contract\v1\TransactionRequestType;
 use net\authorize\api\controller\CreateTransactionController;
 
-
-class ProcessController extends Controller {
-
-    public static function process($deposit) {
+class ProcessController extends Controller
+{
+    public static function process($deposit)
+    {
         $alias = $deposit->gateway->alias;
         $send['track'] = $deposit->trx;
-        $send['view'] = 'user.payment.' . $alias;
+        $send['view'] = 'user.payment.'.$alias;
         $send['method'] = 'post';
-        $send['url'] = route('ipn.' . $alias);
+        $send['url'] = route('ipn.'.$alias);
+
         return json_encode($send);
     }
 
-    public function ipn(Request $request) {
+    public function ipn(Request $request)
+    {
         $track = Session::get('Track');
         $deposit = Deposit::where('trx', $track)->where('status', Status::PAYMENT_INITIATE)->orderBy('id', 'DESC')->first();
         if ($deposit->status == Status::PAYMENT_SUCCESS) {
             $notify[] = ['error', 'Invalid request.'];
+
             return to_route(gatewayRedirectUrl())->withNotify($notify);
         }
 
@@ -61,7 +64,7 @@ class ProcessController extends Controller {
 
         // Create a transaction
         $transactionRequestType = new TransactionRequestType();
-        $transactionRequestType->setTransactionType("authCaptureTransaction");
+        $transactionRequestType->setTransactionType('authCaptureTransaction');
         $transactionRequestType->setAmount($deposit->final_amo);
         $transactionRequestType->setPayment($paymentOne);
 
@@ -74,12 +77,14 @@ class ProcessController extends Controller {
         $response = $controller->executeWithApiResponse(ANetEnvironment::SANDBOX);
         $response = $response->getTransactionResponse();
 
-        if (($response != null) && ($response->getResponseCode() == "1")) {
+        if (($response != null) && ($response->getResponseCode() == '1')) {
             PaymentController::userDataUpdate($deposit);
             $notify[] = ['success', 'Payment captured successfully'];
+
             return to_route(gatewayRedirectUrl(true))->withNotify($notify);
         }
         $notify[] = ['error', 'Something went wrong'];
+
         return to_route(gatewayRedirectUrl())->withNotify($notify);
     }
 }

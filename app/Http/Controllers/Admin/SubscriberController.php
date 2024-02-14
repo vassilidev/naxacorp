@@ -5,19 +5,22 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class SubscriberController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $pageTitle = 'Subscriber Manager';
-        $subscribers = Subscriber::orderBy('id','desc')->paginate(getPaginate());
+        $subscribers = Subscriber::orderBy('id', 'desc')->paginate(getPaginate());
+
         return view('admin.subscriber.index', compact('pageTitle', 'subscribers'));
     }
 
-    public function sendEmailForm()
+    public function sendEmailForm(): View
     {
         $pageTitle = 'Email to Subscribers';
+
         return view('admin.subscriber.send_email', compact('pageTitle'));
     }
 
@@ -27,6 +30,7 @@ class SubscriberController extends Controller
         $subscriber->delete();
 
         $notify[] = ['success', 'Subscriber deleted successfully'];
+
         return back()->withNotify($notify);
     }
 
@@ -40,16 +44,17 @@ class SubscriberController extends Controller
         foreach ($subscribers as $subscriber) {
             $receiverName = explode('@', $subscriber->email)[0];
             $user = [
-                'username'=>$subscriber->email,
-                'email'=>$subscriber->email,
-                'fullname'=>$receiverName,
+                'username' => $subscriber->email,
+                'email' => $subscriber->email,
+                'fullname' => $receiverName,
             ];
-            notify($user,'DEFAULT',[
-                'subject'=>$request->subject,
-                'message'=>$request->body,
-            ],['email']);
+            notify($user, 'DEFAULT', [
+                'subject' => $request->subject,
+                'message' => $request->body,
+            ], ['email']);
         }
         $notify[] = ['success', 'Email will be send to all subscribers'];
+
         return back()->withNotify($notify);
     }
 }

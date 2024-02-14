@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api;
 use App\Models\GeneralSetting;
 use Illuminate\Support\Facades\Route;
 
@@ -14,51 +15,51 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::namespace ('Api')->name('api.')->group(function () {
+Route::name('api.')->group(function () {
 
     Route::get('general-setting', function () {
-        $general  = GeneralSetting::first();
+        $general = GeneralSetting::first();
         $notify[] = 'General setting data';
+
         return response()->json([
-            'remark'  => 'general_setting',
-            'status'  => 'success',
+            'remark' => 'general_setting',
+            'status' => 'success',
             'message' => ['success' => $notify],
-            'data'    => [
+            'data' => [
                 'general_setting' => $general,
             ],
         ]);
     });
 
     Route::get('get-countries', function () {
-        $c        = json_decode(file_get_contents(resource_path('views/partials/country.json')));
+        $c = json_decode(file_get_contents(resource_path('views/partials/country.json')));
         $notify[] = 'General setting data';
         foreach ($c as $k => $country) {
             $countries[] = [
-                'country'      => $country->country,
-                'dial_code'    => $country->dial_code,
+                'country' => $country->country,
+                'dial_code' => $country->dial_code,
                 'country_code' => $k,
             ];
         }
+
         return response()->json([
-            'remark'  => 'country_data',
-            'status'  => 'success',
+            'remark' => 'country_data',
+            'status' => 'success',
             'message' => ['success' => $notify],
-            'data'    => [
+            'data' => [
                 'countries' => $countries,
             ],
         ]);
     });
 
-    Route::namespace ('Auth')->group(function () {
-        Route::post('login', 'LoginController@login');
-        Route::post('register', 'RegisterController@register');
-        Route::get('logout', 'LoginController@logout')->middleware('auth:sanctum');
+    Route::post('login', [Api\Auth\LoginController::class, 'login']);
+    Route::post('register', [Api\Auth\RegisterController::class, 'register']);
+    Route::get('logout', [Api\Auth\LoginController::class, 'logout'])->middleware('auth:sanctum');
 
-        Route::controller('ForgotPasswordController')->group(function () {
-            Route::post('password/email', 'sendResetCodeEmail');
-            Route::post('password/verify-code', 'verifyCode');
-            Route::post('password/reset', 'reset');
-        });
+    Route::controller('ForgotPasswordController')->group(function () {
+        Route::post('password/email', 'sendResetCodeEmail');
+        Route::post('password/verify-code', 'verifyCode');
+        Route::post('password/reset', 'reset');
     });
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -73,8 +74,8 @@ Route::namespace ('Api')->name('api.')->group(function () {
         });
 
         Route::middleware(['check.status'])->group(function () {
-            Route::post('user-data-submit', 'UserController@userDataSubmit')->name('data.submit');
-            Route::post('get/device/token', 'UserController@getDeviceToken')->name('get.device.token');
+            Route::post('user-data-submit', [Api\UserController::class, 'userDataSubmit'])->name('data.submit');
+            Route::post('get/device/token', [Api\UserController::class, 'getDeviceToken'])->name('get.device.token');
 
             Route::middleware('registration.complete')->group(function () {
 
@@ -135,7 +136,7 @@ Route::namespace ('Api')->name('api.')->group(function () {
                     Route::get('list', 'list');
                     Route::get('plans', 'plans');
                     Route::post('apply/{id}', 'apply');
-                    Route::get('preview/{id}', 'preview')->name('apply.preview');;
+                    Route::get('preview/{id}', 'preview')->name('apply.preview');
                     Route::post('confirm/{id}', 'confirm');
                     Route::post('close/{id}', 'close')->name('close');
                     Route::get('instalment/logs/{fdr_number}', 'installments');
@@ -198,9 +199,9 @@ Route::namespace ('Api')->name('api.')->group(function () {
         });
     });
 
-    Route::get('unauthenticated', 'UserController@unauthenticated');
-    Route::get('language/{code}', 'UserController@language');
-    Route::get('policy-pages', 'UserController@policyPages');
-    Route::get('policy-detail', 'UserController@policyDetail');
-    Route::get('faq', 'UserController@faq');
+    Route::get('unauthenticated', [Api\UserController::class, 'unauthenticated']);
+    Route::get('language/{code}', [Api\UserController::class, 'language']);
+    Route::get('policy-pages', [Api\UserController::class, 'policyPages']);
+    Route::get('policy-detail', [Api\UserController::class, 'policyDetail']);
+    Route::get('faq', [Api\UserController::class, 'faq']);
 });

@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Admin\Auth;
 
 use App\Constants\Status;
+use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\AdminPasswordReset;
-use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Auth\PasswordBroker;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
-class ResetPasswordController extends Controller {
+class ResetPasswordController extends Controller
+{
     /*
         |--------------------------------------------------------------------------
         | Password Reset Controller
@@ -32,13 +35,13 @@ class ResetPasswordController extends Controller {
      */
     public $redirectTo = '/admin/dashboard';
 
-
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->middleware('admin.guest');
     }
@@ -48,24 +51,25 @@ class ResetPasswordController extends Controller {
      *
      * If no token is present, display the link request form.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  string|null  $token
      * @return \Illuminate\Http\Response
      */
-    public function showResetForm(Request $request, $token) {
-        $pageTitle = "Account Recovery";
+    public function showResetForm(Request $request, ?string $token)
+    {
+        $pageTitle = 'Account Recovery';
         $resetToken = AdminPasswordReset::where('token', $token)->where('status', Status::ENABLE)->first();
 
-        if (!$resetToken) {
+        if (! $resetToken) {
             $notify[] = ['error', 'Verification code mismatch'];
+
             return to_route('admin.password.reset')->withNotify($notify);
         }
         $email = $resetToken->email;
+
         return view('admin.auth.passwords.reset', compact('pageTitle', 'email', 'token'));
     }
 
-
-    public function reset(Request $request) {
+    public function reset(Request $request)
+    {
         $this->validate($request, [
             'email' => 'required|email',
             'token' => 'required',
@@ -76,6 +80,7 @@ class ResetPasswordController extends Controller {
         $admin = Admin::where('email', $reset->email)->first();
         if ($reset->status == Status::DISABLE) {
             $notify[] = ['error', 'Invalid code'];
+
             return to_route('admin.login')->withNotify($notify);
         }
 
@@ -90,28 +95,27 @@ class ResetPasswordController extends Controller {
             'operating_system' => $browser['os_platform'],
             'browser' => $browser['browser'],
             'ip' => $ipInfo['ip'],
-            'time' => $ipInfo['time']
+            'time' => $ipInfo['time'],
         ], ['email'], false);
 
         $notify[] = ['success', 'Password changed'];
+
         return to_route('admin.login')->withNotify($notify);
     }
 
     /**
      * Get the broker to be used during password reset.
-     *
-     * @return \Illuminate\Contracts\Auth\PasswordBroker
      */
-    public function broker() {
+    public function broker(): PasswordBroker
+    {
         return Password::broker('admins');
     }
 
     /**
      * Get the guard to be used during password reset.
-     *
-     * @return \Illuminate\Contracts\Auth\StatefulGuard
      */
-    protected function guard() {
+    protected function guard(): StatefulGuard
+    {
         return auth()->guard('admin');
     }
 }

@@ -7,15 +7,20 @@ use App\Models\Gateway;
 use App\Models\GatewayCurrency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
-class AutomaticGatewayController extends Controller {
-    public function index() {
+class AutomaticGatewayController extends Controller
+{
+    public function index(): View
+    {
         $pageTitle = 'Automatic Gateways';
         $gateways = Gateway::automatic()->with('currencies')->get();
+
         return view('admin.gateways.automatic.list', compact('pageTitle', 'gateways'));
     }
 
-    public function edit($alias) {
+    public function edit($alias): View
+    {
         $gateway = Gateway::automatic()->with('currencies', 'currencies.method')->where('alias', $alias)->firstOrFail();
         $pageTitle = 'Update Gateway';
 
@@ -33,8 +38,8 @@ class AutomaticGatewayController extends Controller {
         return view('admin.gateways.automatic.edit', compact('pageTitle', 'gateway', 'supportedCurrencies', 'parameters', 'hasCurrencies', 'currencyIndex', 'globalParameters'));
     }
 
-
-    public function update(Request $request, $code) {
+    public function update(Request $request, $code)
+    {
 
         $gateway = Gateway::where('code', $code)->firstOrFail();
         $this->gatewayValidator($request)->validate();
@@ -55,7 +60,7 @@ class AutomaticGatewayController extends Controller {
             $gateway->currencies()->delete();
 
             foreach ($request->currency as $key => $currency) {
-                $currencyIdentifier = $this->currencyIdentifier($currency['name'], $gateway->name . ' ' . $currency['currency']);
+                $currencyIdentifier = $this->currencyIdentifier($currency['name'], $gateway->name.' '.$currency['currency']);
 
                 $param = [];
                 foreach ($parameters->where('global', true) as $pkey => $pram) {
@@ -82,30 +87,37 @@ class AutomaticGatewayController extends Controller {
             }
         }
 
-        $notify[] = ['success', $gateway->name . ' updated successfully'];
+        $notify[] = ['success', $gateway->name.' updated successfully'];
+
         return to_route('admin.gateway.automatic.edit', $gateway->alias)->withNotify($notify);
     }
 
-    public function remove($id) {
+    public function remove($id)
+    {
         $gatewayCurrency = GatewayCurrency::find($id);
         $gatewayCurrency->delete();
         $notify[] = ['success', 'Gateway currency removed successfully'];
+
         return back()->withNotify($notify);
     }
 
-    public function status($id) {
+    public function status($id)
+    {
         return Gateway::changeStatus($id);
     }
 
-    public function gatewayValidator(Request $request) {
+    public function gatewayValidator(Request $request)
+    {
         $validationRule = [
             'alias' => 'required',
         ];
         $validator = Validator::make($request->all(), $validationRule);
+
         return $validator;
     }
 
-    public function gatewayCurrencyValidator(Request $request, Gateway $gateway) {
+    public function gatewayCurrencyValidator(Request $request, Gateway $gateway)
+    {
         $customAttributes = [];
         $validationRule = [];
 
@@ -113,50 +125,51 @@ class AutomaticGatewayController extends Controller {
         $supportedCurrencies = collect($gateway->supported_currencies)->flip()->implode(',');
 
         foreach ($paramList->where('global', true) as $key => $pram) {
-            $validationRule['global.' . $key] = 'required';
-            $customAttributes['global.' . $key] = keyToTitle($key);
+            $validationRule['global.'.$key] = 'required';
+            $customAttributes['global.'.$key] = keyToTitle($key);
         }
-
 
         if ($request->has('currency')) {
             foreach ($request->currency as $key => $currency) {
-                $validationRule['currency.' . $key . '.currency']       = 'required|string|in:' . $supportedCurrencies;
-                $validationRule['currency.' . $key . '.symbol']         = 'required|max:3|string';
+                $validationRule['currency.'.$key.'.currency'] = 'required|string|in:'.$supportedCurrencies;
+                $validationRule['currency.'.$key.'.symbol'] = 'required|max:3|string';
 
-                $validationRule['currency.' . $key . '.name']           = 'required';
-                $validationRule['currency.' . $key . '.min_amount']     = 'required|numeric|gt:0|lte:currency.' . $key . '.max_amount';
-                $validationRule['currency.' . $key . '.max_amount']     = 'required|numeric|gt:0|gte:currency.' . $key . '.min_amount';
-                $validationRule['currency.' . $key . '.fixed_charge']   = 'required|numeric|gte:0';
-                $validationRule['currency.' . $key . '.percent_charge'] = 'required|numeric|gte:0|max:100';
-                $validationRule['currency.' . $key . '.rate']           = 'required|numeric|gt:0';
+                $validationRule['currency.'.$key.'.name'] = 'required';
+                $validationRule['currency.'.$key.'.min_amount'] = 'required|numeric|gt:0|lte:currency.'.$key.'.max_amount';
+                $validationRule['currency.'.$key.'.max_amount'] = 'required|numeric|gt:0|gte:currency.'.$key.'.min_amount';
+                $validationRule['currency.'.$key.'.fixed_charge'] = 'required|numeric|gte:0';
+                $validationRule['currency.'.$key.'.percent_charge'] = 'required|numeric|gte:0|max:100';
+                $validationRule['currency.'.$key.'.rate'] = 'required|numeric|gt:0';
 
                 $supportedCurrencies = explode(',', $supportedCurrencies);
 
                 $supportedCurrencies = collect(removeElement($supportedCurrencies, $currency['currency']))->implode(',');
 
-                $currencyIdentifier = $this->currencyIdentifier($currency['name'], $gateway->name . ' ' . $currency['currency']);
+                $currencyIdentifier = $this->currencyIdentifier($currency['name'], $gateway->name.' '.$currency['currency']);
 
-                $customAttributes['currency.' . $key . '.name']           = $currencyIdentifier . ' name';
-                $customAttributes['currency.' . $key . '.min_amount']     = $currencyIdentifier . ' ' . keyToTitle('min_amount');
-                $customAttributes['currency.' . $key . '.max_amount']     = $currencyIdentifier . ' ' . keyToTitle('max_amount');
-                $customAttributes['currency.' . $key . '.fixed_charge']   = $currencyIdentifier . ' ' . keyToTitle('fixed_charge');
-                $customAttributes['currency.' . $key . '.percent_charge'] = $currencyIdentifier . ' ' . keyToTitle('percent_charge');
-                $customAttributes['currency.' . $key . '.rate']           = $currencyIdentifier . ' ' . keyToTitle('rate');
-                $customAttributes['currency.' . $key . '.currency']           = $currencyIdentifier . ' ' . keyToTitle('currency');
-                $customAttributes['currency.' . $key . '.symbol']           = $currencyIdentifier . ' ' . keyToTitle('symbol');
+                $customAttributes['currency.'.$key.'.name'] = $currencyIdentifier.' name';
+                $customAttributes['currency.'.$key.'.min_amount'] = $currencyIdentifier.' '.keyToTitle('min_amount');
+                $customAttributes['currency.'.$key.'.max_amount'] = $currencyIdentifier.' '.keyToTitle('max_amount');
+                $customAttributes['currency.'.$key.'.fixed_charge'] = $currencyIdentifier.' '.keyToTitle('fixed_charge');
+                $customAttributes['currency.'.$key.'.percent_charge'] = $currencyIdentifier.' '.keyToTitle('percent_charge');
+                $customAttributes['currency.'.$key.'.rate'] = $currencyIdentifier.' '.keyToTitle('rate');
+                $customAttributes['currency.'.$key.'.currency'] = $currencyIdentifier.' '.keyToTitle('currency');
+                $customAttributes['currency.'.$key.'.symbol'] = $currencyIdentifier.' '.keyToTitle('symbol');
 
                 foreach ($paramList->where('global', false) as $param_key => $param_value) {
-                    $validationRule['currency.' . $key . '.param.' . $param_key] = 'required';
-                    $customAttributes['currency.' . $key . '.param.' . $param_key] = $currencyIdentifier . ' ' . keyToTitle($param_value->title);
+                    $validationRule['currency.'.$key.'.param.'.$param_key] = 'required';
+                    $customAttributes['currency.'.$key.'.param.'.$param_key] = $currencyIdentifier.' '.keyToTitle($param_value->title);
                 }
             }
         }
 
         $validator = Validator::make($request->all(), $validationRule, $customAttributes);
+
         return $validator;
     }
 
-    private function currencyIdentifier($name, $default = '') {
+    private function currencyIdentifier($name, $default = '')
+    {
         return $name ?? $default;
     }
 }

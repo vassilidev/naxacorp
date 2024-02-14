@@ -7,8 +7,10 @@ use App\Models\PasswordReset;
 use App\Models\User;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
-class ForgotPasswordController extends Controller {
+class ForgotPasswordController extends Controller
+{
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -22,26 +24,30 @@ class ForgotPasswordController extends Controller {
 
     use SendsPasswordResetEmails;
 
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         $this->middleware('guest');
     }
 
+    public function showLinkRequestForm(): View
+    {
+        $pageTitle = 'Account Recovery';
 
-    public function showLinkRequestForm() {
-        $pageTitle = "Account Recovery";
-        return view($this->activeTemplate . 'user.auth.passwords.email', compact('pageTitle'));
+        return view($this->activeTemplate.'user.auth.passwords.email', compact('pageTitle'));
     }
 
-    public function sendResetCodeEmail(Request $request) {
+    public function sendResetCodeEmail(Request $request)
+    {
         $request->validate([
-            'value' => 'required'
+            'value' => 'required',
         ]);
         $fieldType = $this->findFieldType();
         $user = User::where($fieldType, $request->value)->first();
 
-        if (!$user) {
+        if (! $user) {
             $notify[] = ['error', 'Couldn\'t find any account with this information'];
+
             return back()->withNotify($notify);
         }
 
@@ -60,46 +66,55 @@ class ForgotPasswordController extends Controller {
             'operating_system' => @$userBrowserInfo['os_platform'],
             'browser' => @$userBrowserInfo['browser'],
             'ip' => @$userIpInfo['ip'],
-            'time' => @$userIpInfo['time']
-        ], ['email'],false);
+            'time' => @$userIpInfo['time'],
+        ], ['email'], false);
 
         $email = $user->email;
         session()->put('pass_res_mail', $email);
         $notify[] = ['success', 'Password reset email sent successfully'];
+
         return to_route('user.password.code.verify')->withNotify($notify);
     }
 
-    public function findFieldType() {
+    public function findFieldType()
+    {
         $input = request()->input('value');
 
         $fieldType = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         request()->merge([$fieldType => $input]);
+
         return $fieldType;
     }
 
-    public function codeVerify() {
+    public function codeVerify()
+    {
         $pageTitle = 'Verify Email';
         $email = session()->get('pass_res_mail');
-        if (!$email) {
+        if (! $email) {
             $notify[] = ['error', 'Oops! session expired'];
+
             return to_route('user.password.request')->withNotify($notify);
         }
-        return view($this->activeTemplate . 'user.auth.passwords.code_verify', compact('pageTitle', 'email'));
+
+        return view($this->activeTemplate.'user.auth.passwords.code_verify', compact('pageTitle', 'email'));
     }
 
-    public function verifyCode(Request $request) {
+    public function verifyCode(Request $request)
+    {
         $request->validate([
             'code' => 'required',
-            'email' => 'required'
+            'email' => 'required',
         ]);
-        $code =  str_replace(' ', '', $request->code);
+        $code = str_replace(' ', '', $request->code);
 
         if (PasswordReset::where('token', $code)->where('email', $request->email)->count() != 1) {
             $notify[] = ['error', 'Verification code doesn\'t match'];
+
             return to_route('user.password.request')->withNotify($notify);
         }
         $notify[] = ['success', 'You can change your password.'];
         session()->flash('fpass_email', $request->email);
+
         return to_route('user.password.reset', $code)->withNotify($notify);
     }
 }

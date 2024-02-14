@@ -6,7 +6,6 @@ class GoogleAuthenticator
 {
     protected $_codeLength = 6;
 
-
     public function createSecret($secretLength = 16)
     {
         $validChars = $this->_getBase32LookupTable();
@@ -23,12 +22,12 @@ class GoogleAuthenticator
             $rnd = mcrypt_create_iv($secretLength, MCRYPT_DEV_URANDOM);
         } elseif (function_exists('openssl_random_pseudo_bytes')) {
             $rnd = openssl_random_pseudo_bytes($secretLength, $cryptoStrong);
-            if (!$cryptoStrong) {
+            if (! $cryptoStrong) {
                 $rnd = false;
             }
         }
         if ($rnd !== false) {
-            for ($i = 0; $i < $secretLength; ++$i) {
+            for ($i = 0; $i < $secretLength; $i++) {
                 $secret .= $validChars[ord($rnd[$i]) & 31];
             }
         } else {
@@ -37,7 +36,6 @@ class GoogleAuthenticator
 
         return $secret;
     }
-
 
     public function getCode($secret, $timeSlice = null)
     {
@@ -48,7 +46,7 @@ class GoogleAuthenticator
         $secretkey = $this->_base32Decode($secret);
 
         // Pack time into binary string
-        $time = chr(0) . chr(0) . chr(0) . chr(0) . pack('N*', $timeSlice);
+        $time = chr(0).chr(0).chr(0).chr(0).pack('N*', $timeSlice);
         // Hash it with users secret key
         $hm = hash_hmac('SHA1', $time, $secretkey, true);
         // Use last nipple of result as index/offset
@@ -69,26 +67,19 @@ class GoogleAuthenticator
 
     /**
      * Get QR-Code URL for image, from google charts.
-     *
-     * @param string $name
-     * @param string $secret
-     * @param string $title
-     * @param array  $params
-     *
-     * @return string
      */
-    public function getQRCodeGoogleUrl($name, $secret, $title = null, $params = array())
+    public function getQRCodeGoogleUrl(string $name, string $secret, ?string $title = null, array $params = []): string
     {
-        $width = !empty($params['width']) && (int) $params['width'] > 0 ? (int) $params['width'] : 200;
-        $height = !empty($params['height']) && (int) $params['height'] > 0 ? (int) $params['height'] : 200;
-        $level = !empty($params['level']) && array_search($params['level'], array('L', 'M', 'Q', 'H')) !== false ? $params['level'] : 'M';
+        $width = ! empty($params['width']) && (int) $params['width'] > 0 ? (int) $params['width'] : 200;
+        $height = ! empty($params['height']) && (int) $params['height'] > 0 ? (int) $params['height'] : 200;
+        $level = ! empty($params['level']) && array_search($params['level'], ['L', 'M', 'Q', 'H']) !== false ? $params['level'] : 'M';
 
-        $urlencoded = urlencode('otpauth://totp/' . $name . '?secret=' . $secret . '');
+        $urlencoded = urlencode('otpauth://totp/'.$name.'?secret='.$secret.'');
         if (isset($title)) {
-            $urlencoded .= urlencode('&issuer=' . urlencode($title));
+            $urlencoded .= urlencode('&issuer='.urlencode($title));
         }
 
-        return 'https://chart.googleapis.com/chart?chs=' . $width . 'x' . $height . '&chld=' . $level . '|0&cht=qr&chl=' . $urlencoded . '';
+        return 'https://chart.googleapis.com/chart?chs='.$width.'x'.$height.'&chld='.$level.'|0&cht=qr&chl='.$urlencoded.'';
     }
 
     public function verifyCode($secret, $code, $discrepancy = 1, $currentTimeSlice = null)
@@ -101,7 +92,7 @@ class GoogleAuthenticator
             return false;
         }
 
-        for ($i = -$discrepancy; $i <= $discrepancy; ++$i) {
+        for ($i = -$discrepancy; $i <= $discrepancy; $i++) {
             $calculatedCode = $this->getCode($secret, $currentTimeSlice + $i);
             if ($this->timingSafeEquals($calculatedCode, $code)) {
                 return true;
@@ -128,11 +119,11 @@ class GoogleAuthenticator
         $base32charsFlipped = array_flip($base32chars);
 
         $paddingCharCount = substr_count($secret, $base32chars[32]);
-        $allowedValues = array(6, 4, 3, 1, 0);
-        if (!in_array($paddingCharCount, $allowedValues)) {
+        $allowedValues = [6, 4, 3, 1, 0];
+        if (! in_array($paddingCharCount, $allowedValues)) {
             return false;
         }
-        for ($i = 0; $i < 4; ++$i) {
+        for ($i = 0; $i < 4; $i++) {
             if (
                 $paddingCharCount == $allowedValues[$i] &&
                 substr($secret, -($allowedValues[$i])) != str_repeat($base32chars[32], $allowedValues[$i])
@@ -145,14 +136,14 @@ class GoogleAuthenticator
         $binaryString = '';
         for ($i = 0; $i < count($secret); $i = $i + 8) {
             $x = '';
-            if (!in_array($secret[$i], $base32chars)) {
+            if (! in_array($secret[$i], $base32chars)) {
                 return false;
             }
-            for ($j = 0; $j < 8; ++$j) {
+            for ($j = 0; $j < 8; $j++) {
                 $x .= str_pad(base_convert(@$base32charsFlipped[@$secret[$i + $j]], 10, 2), 5, '0', STR_PAD_LEFT);
             }
             $eightBits = str_split($x, 8);
-            for ($z = 0; $z < count($eightBits); ++$z) {
+            for ($z = 0; $z < count($eightBits); $z++) {
                 $binaryString .= (($y = chr(base_convert($eightBits[$z], 2, 10))) || ord($y) == 48) ? $y : '';
             }
         }
@@ -162,13 +153,13 @@ class GoogleAuthenticator
 
     protected function _getBase32LookupTable()
     {
-        return array(
+        return [
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', //  7
             'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', // 15
             'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', // 23
             'Y', 'Z', '2', '3', '4', '5', '6', '7', // 31
             '=',  // padding char
-        );
+        ];
     }
 
     private function timingSafeEquals($safeString, $userString)
@@ -185,7 +176,7 @@ class GoogleAuthenticator
 
         $result = 0;
 
-        for ($i = 0; $i < $userLen; ++$i) {
+        for ($i = 0; $i < $userLen; $i++) {
             $result |= (ord($safeString[$i]) ^ ord($userString[$i]));
         }
 

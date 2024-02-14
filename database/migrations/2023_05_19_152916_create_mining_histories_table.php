@@ -8,16 +8,14 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('mining_histories', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor('\App\Models\User');
-            $table->foreignIdFor('\App\Models\MiningConfig');
-            $table->foreignIdFor('\App\Models\MiningStack');
+            $table->foreignIdFor(\App\Models\User::class);
+            $table->foreignIdFor(\App\Models\MiningConfig::class);
+            $table->foreignIdFor(\App\Models\MiningStack::class);
             $table->decimal('earned');
             $table->timestamps();
         });
@@ -25,10 +23,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('mining_histories');
     }
